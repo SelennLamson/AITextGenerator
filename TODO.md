@@ -1,12 +1,12 @@
 # TODO-LIST
 
 ## Data acquisition
-1. Download data --> data/raw/ID.txt
+1. Download data `--> data/raw/ID.txt`
 2. Verify integrity (english, consistensy) for at least 100 novels
-3. Select ~10 caracteristic novels with their themes (by hand)
+3. **DONE** - Select ~10 caracteristic novels with their themes (by hand)
 4. Script to extract clean novels and their themes (at scale): catalog file with file/title/author/theme + novel text files
 
---> ID_novel.json
+`--> ID_novel.json`
 
 ## Preprocessing
 0. Define preproc_JSON architecture
@@ -15,14 +15,15 @@
 3. Paragraph adaptive separator - V2
 4. Check extraction consistensy
 
---> ID_preproc.json
+`--> ID_preproc.json`
 
 ## NER & Summarization
 0. Define ent_sum.JSON architecture
-1. BERT-NER script architecture --> add to JSON
+1. BERT-NER script architecture `--> add to JSON`
 2. Research: Are other NER algorithms working better?
-3. Summarizers: apply different summarizers on each paragraph --> add to JSON
---> ID_ent_sum.json
+3. Summarizers: apply different summarizers on each paragraph `--> add to JSON`
+
+`--> ID_ent_sum.json`
 
 ## Evaluation STEP 0
 1. Evaluate summarization quality by hand
