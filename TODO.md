@@ -14,7 +14,6 @@
 2. Study paragraph size distribution: is it consistent?
 3. Paragraph adaptive separator - V2
 4. Check extraction consistensy
-5. Retrieve book-level metadata (theme, author, genre...) --> add to JSON root
 
 --> ID_preproc.json
 
