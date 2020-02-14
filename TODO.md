@@ -1,39 +1,41 @@
-## TODO-LIST
+# TODO-LIST
 
-# Data acquisition
+## Data acquisition
 1. Download data
 2. Verify integrity (english, consistensy) for at least 100 novels
 3. Select ~10 caracteristic novels with their themes (by hand)
 4. Script to extract clean novels and their themes (at scale): catalog file with file/title/author/theme + novel text files
+
 --> ID_novel.txt
 
-# Preprocessing
+## Preprocessing
 0. Define preproc_JSON architecture
 1. Paragraph separator (parameters: min size, max size) - V1
 2. Study paragraph size distribution: is it consistent?
 3. Paragraph adaptive separator - V2
 4. Check extraction consistensy
 5. Retrieve book-level metadata (theme, author, genre...) --> add to JSON root
+
 --> ID_preproc.json
 
-# NER & Summarization
+## NER & Summarization
 0. Define ent_sum.JSON architecture
 1. BERT-NER script architecture --> add to JSON
 2. Research: Are other NER algorithms working better?
 3. Summarizers: apply different summarizers on each paragraph --> add to JSON
 --> ID_ent_sum.json
 
-# Evaluation STEP 0
+## Evaluation STEP 0
 1. Evaluate summarization quality by hand
 2. Evaluate BERT distance between P2 and SP2, with real summaries dataset as a benchmark
 
-# Training STEP 1
+## Training STEP 1
 1. Triplet DataLoader
 2. Research: How can we finetune GPT-2 with custom made DataLoader?
 3. Research: How can we parameter the size of generated paragraphs
 4. Fine-tune GPT-2 Medium on a small dataset
 
-# Evaluation STEP 1
+## Evaluation STEP 1
 1. Evaluate loss evolution during training
 2. Benchmark (loss + BERT distance) against raw GPT-2 ; against GPT-2 with P1 only ; against GPT-2 with P1 and P3 only
 3. Control of generated length
@@ -41,9 +43,10 @@
 5. Control of named entity occurence
 6. Control of BERT consistency over P1-P2-P3
 
-# Iterate over results (PPLM, CTRL codes, graph based generation...)
+## Iterate over results
+(PPLM, CTRL codes, graph based generation...)
 
-# Webservice & Integration
+## Webservice & Integration
 1. Frontend
 2. Backend
 3. Fullstack integration
@@ -52,12 +55,12 @@
 6. Tests
 7. Communication
 
-# Final evaluation
+## Final evaluation
 
-# User evaluation
+## User evaluation
 
-# Edit paper
+## Edit paper
 
-# Publish & Distribute
+## Publish & Distribute
 
 
