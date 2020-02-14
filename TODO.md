@@ -1,12 +1,12 @@
 # TODO-LIST
 
 ## Data acquisition
-1. Download data
+1. Download data --> data/raw/ID.txt
 2. Verify integrity (english, consistensy) for at least 100 novels
 3. Select ~10 caracteristic novels with their themes (by hand)
 4. Script to extract clean novels and their themes (at scale): catalog file with file/title/author/theme + novel text files
 
---> ID_novel.txt
+--> ID_novel.json
 
 ## Preprocessing
 0. Define preproc_JSON architecture
