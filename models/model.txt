@@ -1,1 +1,0 @@
-Mettre dans ce dossier (en local...) les modèles fine_tunés
