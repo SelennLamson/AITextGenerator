@@ -9,8 +9,8 @@
 `--> ID_novel.json`
 
 ## Preprocessing
-0. Define preproc_JSON architecture
-1. Paragraph separator (parameters: min size, max size) - V1
+0. **DONE** - Define preproc_JSON architecture
+1. **DONE, TO CHECK** - Paragraph separator (parameters: min size, max size) - V1
 2. Study paragraph size distribution: is it consistent?
 3. Paragraph adaptive separator - V2
 4. Check extraction consistensy
@@ -18,7 +18,7 @@
 `--> ID_preproc.json`
 
 ## NER & Summarization
-0. Define ent_sum.JSON architecture
+0. **DONE** - Define ent_sum.JSON architecture
 1. BERT-NER script architecture `--> add to JSON`
 2. Research: Are other NER algorithms working better?
 3. Summarizers: apply different summarizers on each paragraph `--> add to JSON`

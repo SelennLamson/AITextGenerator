@@ -2,6 +2,12 @@ import urllib.request
 import os
 from zipfile import ZipFile
 
+
+######################################################################
+# Not working yet, it has to been updated with new folders structure #
+######################################################################
+
+
 if not os.path.exists("treated_files.txt"):
     open("treated_files.txt", 'a').close()
 if not os.path.exists("extracted"):
