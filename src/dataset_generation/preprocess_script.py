@@ -61,7 +61,7 @@ for rp in real_paragraphs:
 	for i, p in enumerate(current_paragraphs):
 		if i == len(current_paragraphs) - 1:
 			break
-		if len(p) > MAX_LENGTH:
+		if len(p) >= MAX_LENGTH:
 			words = p.split(' ')
 			new_p = ''
 			wi = 0
@@ -72,7 +72,7 @@ for rp in real_paragraphs:
 			current_paragraphs[i+1] = ' '.join(words[wi:]) + ' ' + current_paragraphs[i+1]
 
 	for p in current_paragraphs:
-		if 0.5 * MIN_LENGTH < len(p) < MAX_LENGTH:
+		if 0.5 * MIN_LENGTH <= len(p) <= MAX_LENGTH:
 			add_paragraph(p)
 
 # Saving JSON file
