@@ -6,6 +6,7 @@ Created on Feb 15 2020
 @author: thomaslamson
 """
 
+# Import libraries 
 import json
 import os
 import re
@@ -18,6 +19,7 @@ def separate_paragraphs_all_files(overwrite, min_threshold=20, min_length=600, m
 	treated_files = os.listdir(PREPROC_PATH)
 	treated_ids = [f[:-len(PREPROC_SUFFIX)] for f in treated_files]
 
+	# Loop over all stored texts, already converted json format but not fully pre-processed
 	for f in files:
 		d_id = f[:-len(NOVEL_SUFFIX)]
 		if not os.path.exists(NOVEL_PATH + d_id + NOVEL_SUFFIX):
@@ -43,15 +45,16 @@ def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_i
 	except UnicodeDecodeError:
 		data = json.load(open(NOVEL_PATH + d_id + NOVEL_SUFFIX, 'r', encoding='utf-8'))
 	novel_data = data['novel']
-	full_text = novel_data['text']
+	full_text = novel_data['text'] 
 	paragraphs = []
 
+	# Display som info about the text regarded
 	if verbose >= 1:
 		print("\n--- NOVEL DATA ---")
 		print("Title:\t", novel_data['title'])
 		print("Author:\t", novel_data['author'])
 		print("Theme:\t", novel_data['theme'])
-		print("Text:\t\"", full_text[:100].replace('\n', ' ') + "...\"")
+		print("Text:\t\"", full_text[:100].replace('\n', ' ') + "...\"") 
 
 	# Parsing paragraphs
 	def add_paragraph(content):
@@ -62,7 +65,7 @@ def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_i
 			'text': c
 		})
 
-	# Removing any isolated line-breaks, any multiple whitespaces and separating in real paragraphs
+	# Removing any isolated line-breaks, any multiple whitespaces and separating text into real paragraphs
 	striped_of_linebreaks = ' '.join('\n' if elt == '' else elt for elt in full_text.split('\n'))
 	striped_of_multispaces = re.sub(r'[ ]+', ' ', striped_of_linebreaks)
 	real_paragraphs = [elt.strip() for elt in striped_of_multispaces.split('\n') if elt != '']
