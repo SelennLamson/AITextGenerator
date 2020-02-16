@@ -15,6 +15,15 @@ from src.utils import *
 
 
 def separate_paragraphs_all_files(overwrite, min_threshold=20, min_length=600, max_length=900, verbose=1):
+	"""
+	Applies the paragraph separation process on all _novel.json files to produce _preproc.json files.
+	:param overwrite: should already preprocessed files be re-preprocessed
+	:param min_threshold: minimum length (in chars) a paragraph should be to be taken into account.
+						  Lower than this threshold often means it's a title or a chapter separator.
+	:param min_length: minimum length of final sub-paragraphs. It will not be strictly respected though.
+	:param max_length: maximum length of final sub-paragraphs. Strictly respected.
+	:param verbose: 0 for silent execution, 1 for statistics and 2 for statistics and histogram of paragraphs sizes.
+	"""
 	files = os.listdir(NOVEL_PATH)
 	treated_files = os.listdir(PREPROC_PATH)
 	treated_ids = [f[:-len(PREPROC_SUFFIX)] for f in treated_files]
@@ -29,6 +38,16 @@ def separate_paragraphs_all_files(overwrite, min_threshold=20, min_length=600, m
 
 
 def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_id=None, verbose=2):
+	"""
+	Separates the text contained in a _novel.json file into sub-paragraphs of desired length in a _preproc.json file.
+	It will try to preserve consistency by avoiding to merge different parts of the book and to cut sentences in the middle.
+	:param min_threshold: minimum length (in chars) a paragraph should be to be taken into account.
+						  Lower than this threshold often means it's a title or a chapter separator.
+	:param min_length: minimum length of final sub-paragraphs. It will not be strictly respected though.
+	:param max_length: maximum length of final sub-paragraphs. Strictly respected.
+	:param d_id: prefix to the _novel.json and _preproc.json files.
+	:param verbose: 0 for silent execution, 1 for statistics and 2 for statistics and histogram of paragraphs sizes.
+	"""
 	target_length = (min_length + max_length) / 2
 
 	# Input of file ID
@@ -48,7 +67,7 @@ def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_i
 	full_text = novel_data['text'] 
 	paragraphs = []
 
-	# Display som info about the text regarded
+	# Display some information about the novel
 	if verbose >= 1:
 		print("\n--- NOVEL DATA ---")
 		print("Title:\t", novel_data['title'])
@@ -70,6 +89,9 @@ def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_i
 	striped_of_multispaces = re.sub(r'[ ]+', ' ', striped_of_linebreaks)
 	real_paragraphs = [elt.strip() for elt in striped_of_multispaces.split('\n') if elt != '']
 
+	# Splitting the book in parts (= sequence of consecutive paragraphs)
+	# Every paragraph that is less than min_threshold length is considered a separator:
+	# It is discarded and marks the end of current part and the beginning of the next one.
 	parts = []
 	current_part = []
 	for i, p in enumerate(real_paragraphs):
@@ -96,7 +118,7 @@ def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_i
 		print("Paragraphs per part:\t\t {:.2f}".format(avg_paragraphs_per_part))
 		print("Average paragraph length:\t {:.2f}".format(avg_paragraph_length))
 
-	# Propagating small parts (< MIN_LENGTH) to next parts, because it probably comes from wrong parsing
+	# Concatenating small parts (< MIN_LENGTH) with the next one, because it probably comes from wrong parsing
 	i = 0
 	while i < len(parts):
 		if sum(len(p) for p in parts[i]) >= min_length:
@@ -135,7 +157,7 @@ def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_i
 				#  3. When we pass TARGET_LENGTH, we keep a memory of the current paragraph.
 				#  4. If we encounter a final point, we end the split. --> NEXT (with empty)
 				#  5. When we pass MAX_LENGTH, we end the split with step 3's memory. --> NEXT (with current - saved)
-				#  6. If end of paragraph and we are below MIN_LENGTH, add to next paragraph. --> END
+				#  6. If end of paragraph and we are below MIN_LENGTH --> SPECIAL CONDITIONS
 				to_add = []
 				current_split = ""
 				saved_split = ""
@@ -154,19 +176,15 @@ def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_i
 					elif target_length <= len(current_split) and saved_split == "":
 						saved_split = current_split
 					elif wi == len(words) - 1:  # current_split is too small, and it's the end of the paragraph
-						if pi < len(part) - 1:  # there is still a paragraph after that
+						# We check if we can put it back to the previous paragraph
+						if len(to_add) > 0 and len(to_add[-1]) + len(current_split) + 1 <= max_length:
+							to_add[-1] += ' ' + current_split
+						# Otherwise, we check if there is a paragraph after the current one
+						elif pi < len(part) - 1:
 							part[pi + 1] = current_split + ' ' + part[pi + 1]
-						else:					# there is no paragraph in this part
-							# We check if we can put it back to the previous paragraph
-							if len(to_add) > 0 and len(to_add[-1]) + len(current_split) + 1 <= max_length:
-								to_add[-1] += ' ' + current_split
-							else:
-								# Else we add it as is
-								to_add.append(current_split.strip())
-								if len(current_split) < 60:
-									print("Adding too small, L:", len(current_split))
-									print(current_split)
-									print(to_add[-2])
+						# Finally, we cannot add it back to previous or to next one, so we add it as is
+						else:
+							to_add.append(current_split.strip())
 				for p in to_add:
 					add_paragraph(p)
 
@@ -192,5 +210,7 @@ def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_i
 
 		if verbose >= 2:
 			plt.hist(sizes)
+			plt.xlabel("Paragraph sizes")
+			plt.ylabel("# paragraphs")
 			plt.show()
 
