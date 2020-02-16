@@ -10,15 +10,7 @@ import json
 import os
 import re
 import matplotlib.pyplot as plt
-
-
-# Constants
-NOVEL_PATH = '../data/novel/'
-NOVEL_SUFFIX = '_novel.json'
-PREPROC_PATH = '../data/preproc/'
-PREPROC_SUFFIX = '_preproc.json'
-ENTSUM_PATH = '../data/ent_sum/'
-ENTSUM_SUFFIX = '_entsum.json'
+from src.utils import *
 
 
 def separate_paragraphs_all_files(overwrite, min_threshold=20, min_length=600, max_length=900, verbose=1):
