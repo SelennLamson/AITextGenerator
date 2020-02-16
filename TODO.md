@@ -23,7 +23,7 @@
 2. Research: Are other NER algorithms working better?
 3. Summarizers: apply different summarizers on each paragraph `--> add to JSON`
 
-`--> ID_ent_sum.json`
+`--> ID_entsum.json`
 
 ## Evaluation STEP 0
 1. Evaluate summarization quality by hand
