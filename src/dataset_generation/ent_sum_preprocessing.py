@@ -13,7 +13,8 @@ from src.utils import *
 
 def prepare_json_templates(overwrite):
 	"""
-	Prepare json files so as to be able to include information like 'persons', 'summary'... for each paragraph of a book
+	Prepares _entsum.json files from _preproc.json files. It simply adds empty lists to each paragraph: persons, locations, organisations, misc and summaries.
+	:param overwrite: Should already existing files be overwritten?
 	"""
 	files = os.listdir(PREPROC_PATH)
 	treated_files = os.listdir(ENTSUM_PATH)
@@ -42,23 +43,103 @@ def prepare_json_templates(overwrite):
 			json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w'))
 
 
-def perform_ner_on_all(model, verbose=1):
+def perform_summarization_on_all(models, replace=False, max_length=2000, verbose=1):
 	"""
-	Apply NER model on all books
+	Applies summarization models to all _ent_sum.json file and their paragraphs.
+	:param models: a list of models to apply, all of them having a predict(text) method.
+	:param replace: True to erase existing summaries and replace them, False (default) to add to existing ones.
+	:param max_length: the maximum text length the model can accept. Paragraphs above that will be split and results will be merged.
+	:param verbose: 0 for silent execution, 1 to display progress.
 	"""
-	files = os.listdir(PREPROC_PATH)
+	files = os.listdir(ENTSUM_PATH)
 	for f in files:
-		d_id = f[:-len(PREPROC_SUFFIX)]
-		if not os.path.exists(PREPROC_PATH + d_id + PREPROC_SUFFIX):
+		d_id = f[:-len(ENTSUM_SUFFIX)]
+		if not os.path.exists(ENTSUM_PATH + d_id + ENTSUM_SUFFIX):
 			continue
-		print("Processing file:", f)
-		perform_entity_recognition(model, d_id, verbose)
+		if verbose >= 1:
+			print("Processing file:", f)
+		add_summaries(models, replace, d_id, max_length, verbose)
 
 
-def perform_entity_recognition(model, d_id=None, verbose=1):
+def add_summaries(models, replace=False, d_id=None, max_length=2000, verbose=1):
 	"""
-	Define NER model for a single book, looping on paragraphs
+	Applies summarization model to an _ent_sum.json file for each of its paragraphs.
+	:param models: a list of models to apply, all of them having a predict(text) method.
+	:param replace: True to erase existing summaries and replace them, False (default) to add to existing ones.
+	:param d_id: prefix to the _entsum.json file.
+	:param max_length: the maximum text length the models can accept. Paragraphs above that will be split and results will be merged.
+	:param verbose: 0 for silent execution, 1 to display progress.
 	"""
+
+	# Input of file ID
+	if d_id is None:
+		while True:
+			d_id = input("Select a novel id: ")
+			if os.path.exists(ENTSUM_PATH + d_id + ENTSUM_SUFFIX):
+				break
+			print("ERROR - Id", d_id, "not found.")
+
+	# Reading JSON file
+	data = json.load(open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'r'))
+	novel_data = data['novel']
+	paragraphs = novel_data['paragraphs']
+
+	total_p = len(paragraphs)
+	current_percent = 0
+	for pi, p in enumerate(paragraphs):
+		if verbose >= 1:
+			if int(pi / total_p * 100) > current_percent:
+				current_percent = int(pi / total_p * 100)
+				print("\rSUMMARIZATION - {}%".format(current_percent), end="")
+
+		text = p['text']
+		if replace:
+			p['summaries'] = []
+
+		# Applying the different summarization models to the paragraph
+		for model in models:
+
+			###########################################################
+			# TODO: Use model to predict a summary for each paragraph #
+			###########################################################
+			summary = ''
+
+			summary = summary.replace('\n', ' ').strip()
+			if summary not in p['summaries'] and summary != '':
+				p['summaries'].append(summary)
+
+	# Saving JSON file
+	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w'))
+	if verbose >= 1:
+		print("\rSUMMARIZATION - 100%")
+
+
+def perform_ner_on_all(model, max_length=2000, verbose=1):
+	"""
+	Applies NER model to all _entsum.json and their paragraphs, replacing already existing entities in the way.
+	:param model: the NER model to apply, should have a predict(text) method.
+	:param max_length: the maximum text length the model can accept. Paragraphs above that will be split and results will be merged.
+	:param verbose: 0 for silent execution, 1 to display progress.
+	"""
+	files = os.listdir(ENTSUM_PATH)
+	for f in files:
+		d_id = f[:-len(ENTSUM_SUFFIX)]
+		if not os.path.exists(ENTSUM_PATH + d_id + ENTSUM_SUFFIX):
+			continue
+		if verbose >= 1:
+			print("Processing file:", f)
+		perform_entity_recognition(model, d_id, max_length, verbose)
+
+
+def perform_entity_recognition(model, d_id=None, max_length=2000, verbose=1):
+	"""
+	Applies NER model to a _entsum.json file for each paragraph, replacing already existing entities in the way.
+	:param model: the NER model to apply, should have a predict(text) method.
+	:param d_id: prefix to the _entsum.json file.
+	:param max_length: the maximum text length the model can accept. Paragraphs above that will be split and results will be merged.
+	:param verbose: 0 for silent execution, 1 to display progress.
+	"""
+
 	# Input of file ID
 	if d_id is None:
 		while True:
@@ -84,7 +165,7 @@ def perform_entity_recognition(model, d_id=None, verbose=1):
 
 		# Splitting the text in sequences the model can accept
 		words = text.split()
-		n_seqs = len(text) // 2000 + 1
+		n_seqs = len(text) // max_length + 1
 		seqs = []
 		wi = 0
 		for i in range(n_seqs):

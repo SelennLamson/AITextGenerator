@@ -963,30 +963,31 @@
         "summaries": []
       },
       {
-        "size": 620,
-        "text": "Trogool is the Thing that is neither god nor beast, who neither howls nor breathes, only _It_ turns over the leaves of a great book, black and white, black and white for ever until THE END. And all that is to be is written in the book is also all that was. When _It_ turneth a black page it is night, and when _It_ turneth a white page it is day. Because it is written that there are gods--there are the gods. Also there is writing about thee and me until the page where our names no more are written. Then as the prophet watched _It_, Trogool turned a page--a black one, and night was over, and day shone on the Worlds.",
+        "size": 776,
+        "text": "Trogool is the Thing that is neither god nor beast, who neither howls nor breathes, only _It_ turns over the leaves of a great book, black and white, black and white for ever until THE END. And all that is to be is written in the book is also all that was. When _It_ turneth a black page it is night, and when _It_ turneth a white page it is day. Because it is written that there are gods--there are the gods. Also there is writing about thee and me until the page where our names no more are written. Then as the prophet watched _It_, Trogool turned a page--a black one, and night was over, and day shone on the Worlds. Trogool is the Thing that men in many countries have called by many names, _It_ is the Thing that sits behind the gods, whose book is the Scheme of Things.",
         "persons": [
           "Trogool"
         ],
         "locations": [],
         "organisations": [],
-        "misc": [],
+        "misc": [
+          "Worlds",
+          "Scheme of Things"
+        ],
         "summaries": []
       },
       {
-        "size": 761,
-        "text": "Trogool is the Thing that men in many countries have called by many names, _It_ is the Thing that sits behind the gods, whose book is the Scheme of Things. But when Yadin saw that old remembered days were hidden away with the part that _It_ had turned, and knew that upon one whose name is writ no more the last page had turned for ever a thousand pages back. Then did he utter his prayer in the fact of Trogool who only turns the pages and never answers prayer. He prayed in the face of Trogool: \"Only turn back thy pages to the name of one which is writ no more, and far away upon a place named Earth shall rise the prayers of a little people that acclaim the name of Trogool, for there is indeed far off a place called Earth where men shall pray to Trogool.\"",
+        "size": 605,
+        "text": "But when Yadin saw that old remembered days were hidden away with the part that _It_ had turned, and knew that upon one whose name is writ no more the last page had turned for ever a thousand pages back. Then did he utter his prayer in the fact of Trogool who only turns the pages and never answers prayer. He prayed in the face of Trogool: \"Only turn back thy pages to the name of one which is writ no more, and far away upon a place named Earth shall rise the prayers of a little people that acclaim the name of Trogool, for there is indeed far off a place called Earth where men shall pray to Trogool.\"",
         "persons": [
-          "Trogool",
-          "Yadin"
+          "Yadin",
+          "Trogool"
         ],
         "locations": [
           "Earth"
         ],
         "organisations": [],
-        "misc": [
-          "Scheme of Things"
-        ],
+        "misc": [],
         "summaries": []
       },
       {
@@ -1506,8 +1507,8 @@
         "summaries": []
       },
       {
-        "size": 663,
-        "text": "\"When the wind blows not, where, then, is the wind? \"Or when thou art not living, where art thou? \"What should the wind care for the hours of calm or thou for death? \"Thy life is long, Eternity is short. \"So short that, shouldst thou die and Eternity should pass, and after the passing of Eternity thou shouldst live again, thou wouldst say: 'I closed mine eyes but for an instant.' \"There is an eternity behind thee as well as one before. Hast thou bewailed the aeons that passed without thee, who art so much afraid of the aeons that shall pass?\" Then said the prophet: \"How shall I tell the people that the gods have not spoken and their prophet doth not know?",
+        "size": 761,
+        "text": "\"When the wind blows not, where, then, is the wind? \"Or when thou art not living, where art thou? \"What should the wind care for the hours of calm or thou for death? \"Thy life is long, Eternity is short. \"So short that, shouldst thou die and Eternity should pass, and after the passing of Eternity thou shouldst live again, thou wouldst say: 'I closed mine eyes but for an instant.' \"There is an eternity behind thee as well as one before. Hast thou bewailed the aeons that passed without thee, who art so much afraid of the aeons that shall pass?\" Then said the prophet: \"How shall I tell the people that the gods have not spoken and their prophet doth not know? For then should I be prophet no longer, and another would take the people's gifts instead of me.\"",
         "persons": [],
         "locations": [],
         "organisations": [],
@@ -1515,8 +1516,8 @@
         "summaries": []
       },
       {
-        "size": 606,
-        "text": "For then should I be prophet no longer, and another would take the people's gifts instead of me.\" Then said Imbaun to the people: \"The gods have spoken, saying: 'O Imbaun, Our prophet, it is as the people believe whose wisdom hath discovered the secret of the gods, and the people when they die shall come to Pegana, and there live with the gods, and there have pleasure without toil. And Pegana is a place all white with the peaks of mountains, on each of them a god, and the people shall lie upon the slopes of the mountains each under the god that he hath worshipped most when his lot was in the Worlds.",
+        "size": 702,
+        "text": "Then said Imbaun to the people: \"The gods have spoken, saying: 'O Imbaun, Our prophet, it is as the people believe whose wisdom hath discovered the secret of the gods, and the people when they die shall come to Pegana, and there live with the gods, and there have pleasure without toil. And Pegana is a place all white with the peaks of mountains, on each of them a god, and the people shall lie upon the slopes of the mountains each under the god that he hath worshipped most when his lot was in the Worlds. And there shall music beyond thy dreaming come drifting through the scent of all the orchards in the Worlds, with somewhere someone singing an old song that shall be as a half-remembered thing.",
         "persons": [
           "Imbaun"
         ],
@@ -1530,20 +1531,8 @@
         "summaries": []
       },
       {
-        "size": 605,
-        "text": "And there shall music beyond thy dreaming come drifting through the scent of all the orchards in the Worlds, with somewhere someone singing an old song that shall be as a half-remembered thing. And there shall be gardens that have always sunlight, and streams that are lost in no sea beneath skies for ever blue. And there shall be no rain nor no regrets. Only the roses that in highest Pegana have achieved their prime shall shed their petals in showers at thy feet, and only far away on the forgotten earth shall voices drift up to thee that cheered thee in thy childhood about the gardens of thy youth.",
-        "persons": [],
-        "locations": [],
-        "organisations": [],
-        "misc": [
-          "Worlds",
-          "Pegana"
-        ],
-        "summaries": []
-      },
-      {
-        "size": 621,
-        "text": "And if thou sighest for any memory of earth because thou hearest unforgotten voices, then will the gods send messengers on wings to soothe thee in Pegana, saying to them: \"There one sigheth who hath remembered Earth.\" And they shall make Pegana more seductive for thee still, and they shall take thee by the hand and whisper in thine ear till the old voices are forgot. \"'And besides the flowers of Pegana there shall have climbed by then until it hath reached to Pegana the rose that clambered about the house where thou wast born. Thither shall also come the wandering echoes of all such music as charmed thee long ago.",
+        "size": 629,
+        "text": "And there shall be gardens that have always sunlight, and streams that are lost in no sea beneath skies for ever blue. And there shall be no rain nor no regrets. Only the roses that in highest Pegana have achieved their prime shall shed their petals in showers at thy feet, and only far away on the forgotten earth shall voices drift up to thee that cheered thee in thy childhood about the gardens of thy youth. And if thou sighest for any memory of earth because thou hearest unforgotten voices, then will the gods send messengers on wings to soothe thee in Pegana, saying to them: \"There one sigheth who hath remembered Earth.\"",
         "persons": [],
         "locations": [
           "Pegana",
@@ -1554,28 +1543,28 @@
         "summaries": []
       },
       {
-        "size": 876,
-        "text": "\"'Moreover, as thou sittest on the orchard lawns that clothe Pegana's mountains, and as thou hearkenest to melody that sways the souls of the gods, there shall stretch away far down beneath thee the great unhappy Earth, till gazing from rapture upon sorrows thou shalt be glad that thou wert dead. \"'And from the three great mountains that stand aloof and over all the others--Grimbol, Zeebol, and Trehagobol--shall blow the wind of the morning and the wind of all the day, borne upon the wings of all the butterflies that have died upon the Worlds, to cool the gods and Pegana. \"'Far through Pegana a silvery fountain, lured upward by the gods from the Central Sea, shall fling its waters aloft, and over the highest of Pegana's peaks, above Trehagobol, shall burst into gleaming mists, to cover Highest Pegana, and make a curtain about the resting-place of MANA-YOOD-SUSHAI.",
+        "size": 701,
+        "text": "And they shall make Pegana more seductive for thee still, and they shall take thee by the hand and whisper in thine ear till the old voices are forgot. \"'And besides the flowers of Pegana there shall have climbed by then until it hath reached to Pegana the rose that clambered about the house where thou wast born. Thither shall also come the wandering echoes of all such music as charmed thee long ago. \"'Moreover, as thou sittest on the orchard lawns that clothe Pegana's mountains, and as thou hearkenest to melody that sways the souls of the gods, there shall stretch away far down beneath thee the great unhappy Earth, till gazing from rapture upon sorrows thou shalt be glad that thou wert dead.",
         "persons": [],
         "locations": [
           "Pegana",
-          "Earth",
-          "Grimbol",
-          "Zeebol",
-          "Trehagobol",
-          "Central Sea",
-          "MANA-YOOD-SUSHAI"
+          "Earth"
         ],
         "organisations": [],
         "misc": [],
         "summaries": []
       },
       {
-        "size": 609,
-        "text": "\"'Alone, still and remote below the base of one of the inner mountains, lieth a great blue pool. \"'Whoever looketh down into its waters may behold all his life that was upon the Worlds and all the deeds that he hath done. \"'None walk by the pool and none regard its depths, for all in Pegana have suffered and all have sinned some sin, and it lieth in the pool. \"'And there is no darkness in Pegana, for when night hath conquered the sun and stilled the Worlds and turned the white peaks of Pegana into grey then shine the blue eyes of the gods like sunlight on the sea, where each god sits upon his mountain.",
+        "size": 675,
+        "text": "\"'And from the three great mountains that stand aloof and over all the others--Grimbol, Zeebol, and Trehagobol--shall blow the wind of the morning and the wind of all the day, borne upon the wings of all the butterflies that have died upon the Worlds, to cool the gods and Pegana. \"'Far through Pegana a silvery fountain, lured upward by the gods from the Central Sea, shall fling its waters aloft, and over the highest of Pegana's peaks, above Trehagobol, shall burst into gleaming mists, to cover Highest Pegana, and make a curtain about the resting-place of MANA-YOOD-SUSHAI. \"'Alone, still and remote below the base of one of the inner mountains, lieth a great blue pool.",
         "persons": [],
         "locations": [
-          "Pegana"
+          "Grimbol",
+          "Zeebol",
+          "Trehagobol",
+          "Pegana",
+          "Central Sea",
+          "MANA-YOOD-SUSHAI"
         ],
         "organisations": [],
         "misc": [
@@ -1584,8 +1573,22 @@
         "summaries": []
       },
       {
-        "size": 773,
-        "text": "\"'And at the Last, upon some afternoon, perhaps in summer, shall the gods say, speaking to the gods: \"What is the likeness of MANA-YOOD-SUSHAI and what THE END?\" \"'And then shall MANA-YOOD-SUSHAI draw back with his hand the mists that cover his resting, saying: \"This is the Face of MANA-YOOD-SUSHAI and this THE END.\"'\" Then said the people to the prophet: \"Shall not black hills draw round in some forsaken land, to make a vale-wide cauldron wherein the molten rock shall seethe and roar, and where the crags of mountains shall be hurled upward to the surface and bubble and go down again, that there our enemies may boil for ever?\" And the prophet answered: \"It is writ large about the bases of Pegana's mountains, upon which sit the gods: 'Thine Enemies Are Forgiven.\"'",
+        "size": 674,
+        "text": "\"'Whoever looketh down into its waters may behold all his life that was upon the Worlds and all the deeds that he hath done. \"'None walk by the pool and none regard its depths, for all in Pegana have suffered and all have sinned some sin, and it lieth in the pool. \"'And there is no darkness in Pegana, for when night hath conquered the sun and stilled the Worlds and turned the white peaks of Pegana into grey then shine the blue eyes of the gods like sunlight on the sea, where each god sits upon his mountain. \"'And at the Last, upon some afternoon, perhaps in summer, shall the gods say, speaking to the gods: \"What is the likeness of MANA-YOOD-SUSHAI and what THE END?\"",
+        "persons": [],
+        "locations": [
+          "Pegana",
+          "MANA-YOOD-SUSHAI"
+        ],
+        "organisations": [],
+        "misc": [
+          "Worlds"
+        ],
+        "summaries": []
+      },
+      {
+        "size": 611,
+        "text": "\"'And then shall MANA-YOOD-SUSHAI draw back with his hand the mists that cover his resting, saying: \"This is the Face of MANA-YOOD-SUSHAI and this THE END.\"'\" Then said the people to the prophet: \"Shall not black hills draw round in some forsaken land, to make a vale-wide cauldron wherein the molten rock shall seethe and roar, and where the crags of mountains shall be hurled upward to the surface and bubble and go down again, that there our enemies may boil for ever?\" And the prophet answered: \"It is writ large about the bases of Pegana's mountains, upon which sit the gods: 'Thine Enemies Are Forgiven.\"'",
         "persons": [
           "MANA-YOOD-SUSHAI"
         ],

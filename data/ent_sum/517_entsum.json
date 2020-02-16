@@ -239,8 +239,8 @@
         "summaries": []
       },
       {
-        "size": 630,
-        "text": "That cost a lot of money, too. Uncle Henry grew poorer every year, and the crops raised on the farm only bought food for the family. Therefore the mortgage could not be paid. At last the banker who had loaned him the money said that if he did not pay on a certain day, his farm would be taken away from him. This worried Uncle Henry a good deal, for without the farm he would have no way to earn a living. He was a good man, and worked in the field as hard as he could; and Aunt Em did all the housework, with Dorothy's help. Yet they did not seem to get along. This little girl, Dorothy, was like dozens of little girls you know.",
+        "size": 882,
+        "text": "That cost a lot of money, too. Uncle Henry grew poorer every year, and the crops raised on the farm only bought food for the family. Therefore the mortgage could not be paid. At last the banker who had loaned him the money said that if he did not pay on a certain day, his farm would be taken away from him. This worried Uncle Henry a good deal, for without the farm he would have no way to earn a living. He was a good man, and worked in the field as hard as he could; and Aunt Em did all the housework, with Dorothy's help. Yet they did not seem to get along. This little girl, Dorothy, was like dozens of little girls you know. She was loving and usually sweet-tempered, and had a round rosy face and earnest eyes. Life was a serious thing to Dorothy, and a wonderful thing, too, for she had encountered more strange adventures in her short life than many other girls of her age.",
         "persons": [
           "Dorothy"
         ],
@@ -250,8 +250,8 @@
         "summaries": []
       },
       {
-        "size": 653,
-        "text": "She was loving and usually sweet-tempered, and had a round rosy face and earnest eyes. Life was a serious thing to Dorothy, and a wonderful thing, too, for she had encountered more strange adventures in her short life than many other girls of her age. Aunt Em once said she thought the fairies must have marked Dorothy at her birth, because she had wandered into strange places and had always been protected by some unseen power. As for Uncle Henry, he thought his little niece merely a dreamer, as her dead mother had been, for he could not quite believe all the curious stories Dorothy told them of the Land of Oz, which she had several times visited.",
+        "size": 622,
+        "text": "Aunt Em once said she thought the fairies must have marked Dorothy at her birth, because she had wandered into strange places and had always been protected by some unseen power. As for Uncle Henry, he thought his little niece merely a dreamer, as her dead mother had been, for he could not quite believe all the curious stories Dorothy told them of the Land of Oz, which she had several times visited. He did not think that she tried to deceive her uncle and aunt, but he imagined that she had dreamed all of those astonishing adventures, and that the dreams had been so real to her that she had come to believe them true.",
         "persons": [
           "Dorothy"
         ],
@@ -263,40 +263,38 @@
         "summaries": []
       },
       {
-        "size": 736,
-        "text": "He did not think that she tried to deceive her uncle and aunt, but he imagined that she had dreamed all of those astonishing adventures, and that the dreams had been so real to her that she had come to believe them true. Whatever the explanation might be, it was certain that Dorothy had been absent from her Kansas home for several long periods, always disappearing unexpectedly, yet always coming back safe and sound, with amazing tales of where she had been and the unusual people she had met. Her uncle and aunt listened to her stories eagerly and in spite of their doubts began to feel that the little girl had gained a lot of experience and wisdom that were unaccountable in this age, when fairies are supposed no longer to exist.",
+        "size": 696,
+        "text": "Whatever the explanation might be, it was certain that Dorothy had been absent from her Kansas home for several long periods, always disappearing unexpectedly, yet always coming back safe and sound, with amazing tales of where she had been and the unusual people she had met. Her uncle and aunt listened to her stories eagerly and in spite of their doubts began to feel that the little girl had gained a lot of experience and wisdom that were unaccountable in this age, when fairies are supposed no longer to exist. Most of Dorothy's stories were about the Land of Oz, with its beautiful Emerald City and a lovely girl Ruler named Ozma, who was the most faithful friend of the little Kansas girl.",
         "persons": [
-          "Dorothy"
+          "Dorothy",
+          "Ozma"
         ],
         "locations": [
-          "Kansas"
+          "Kansas",
+          "Land of Oz",
+          "Emerald City"
         ],
+        "organisations": [],
+        "misc": [],
+        "summaries": []
+      },
+      {
+        "size": 671,
+        "text": "When Dorothy told about the riches of this fairy country Uncle Henry would sigh, for he knew that a single one of the great emeralds that were so common there would pay all his debts and leave his farm free. But Dorothy never brought any jewels home with her, so their poverty became greater every year. When the banker told Uncle Henry that he must pay the money in thirty days or leave the farm, the poor man was in despair, as he knew he could not possibly get the money. So he told his wife, Aunt Em, of his trouble, and she first cried a little and then said that they must be brave and do the best they could, and go away somewhere and try to earn an honest living.",
+        "persons": [
+          "Dorothy",
+          "Uncle Henry"
+        ],
+        "locations": [],
         "organisations": [],
         "misc": [],
         "summaries": []
       },
       {
         "size": 655,
-        "text": "Most of Dorothy's stories were about the Land of Oz, with its beautiful Emerald City and a lovely girl Ruler named Ozma, who was the most faithful friend of the little Kansas girl. When Dorothy told about the riches of this fairy country Uncle Henry would sigh, for he knew that a single one of the great emeralds that were so common there would pay all his debts and leave his farm free. But Dorothy never brought any jewels home with her, so their poverty became greater every year. When the banker told Uncle Henry that he must pay the money in thirty days or leave the farm, the poor man was in despair, as he knew he could not possibly get the money.",
+        "text": "But they were getting old and feeble and she feared that they could not take care of Dorothy as well as they had formerly done. Probably the little girl would also be obliged to go to work. They did not tell their niece the sad news for several days, not wishing to make her unhappy; but one morning the little girl found Aunt Em softly crying while Uncle Henry tried to comfort her. Then Dorothy asked them to tell her what was the matter. \"We must give up the farm, my dear,\" replied her uncle sadly, \"and wander away into the world to work for our living.\" The girl listened quite seriously, for she had not known before how desperately poor they were.",
         "persons": [
-          "Dorothy",
-          "Ozma"
-        ],
-        "locations": [
-          "Land of Oz",
-          "Emerald City",
-          "Kansas"
-        ],
-        "organisations": [],
-        "misc": [],
-        "summaries": []
-      },
-      {
-        "size": 637,
-        "text": "So he told his wife, Aunt Em, of his trouble, and she first cried a little and then said that they must be brave and do the best they could, and go away somewhere and try to earn an honest living. But they were getting old and feeble and she feared that they could not take care of Dorothy as well as they had formerly done. Probably the little girl would also be obliged to go to work. They did not tell their niece the sad news for several days, not wishing to make her unhappy; but one morning the little girl found Aunt Em softly crying while Uncle Henry tried to comfort her. Then Dorothy asked them to tell her what was the matter.",
-        "persons": [
-          "Dorothy",
-          "Aunt Em"
+          "Dorothy"
         ],
         "locations": [],
         "organisations": [],
@@ -304,20 +302,11 @@
         "summaries": []
       },
       {
-        "size": 645,
-        "text": "\"We must give up the farm, my dear,\" replied her uncle sadly, \"and wander away into the world to work for our living.\" The girl listened quite seriously, for she had not known before how desperately poor they were. \"We don't mind for ourselves,\" said her aunt, stroking the little girl's head tenderly; \"but we love you as if you were our own child, and we are heart-broken to think that you must also endure poverty, and work for a living before you have grown big and strong.\" \"What could I do to earn money?\" asked Dorothy. \"You might do housework for some one, dear, you are so handy; or perhaps you could be a nurse-maid to little children.",
+        "size": 749,
+        "text": "\"We don't mind for ourselves,\" said her aunt, stroking the little girl's head tenderly; \"but we love you as if you were our own child, and we are heart-broken to think that you must also endure poverty, and work for a living before you have grown big and strong.\" \"What could I do to earn money?\" asked Dorothy. \"You might do housework for some one, dear, you are so handy; or perhaps you could be a nurse-maid to little children. I'm sure I don't know exactly what you CAN do to earn money, but if your uncle and I are able to support you we will do it willingly, and send you to school. We fear, though, that we shall have much trouble in earning a living for ourselves. No one wants to employ old people who are broken down in health, as we are.\"",
         "persons": [
-          "Dorothy ."
+          "Dorothy"
         ],
-        "locations": [],
-        "organisations": [],
-        "misc": [],
-        "summaries": []
-      },
-      {
-        "size": 318,
-        "text": "I'm sure I don't know exactly what you CAN do to earn money, but if your uncle and I are able to support you we will do it willingly, and send you to school. We fear, though, that we shall have much trouble in earning a living for ourselves. No one wants to employ old people who are broken down in health, as we are.\"",
-        "persons": [],
         "locations": [],
         "organisations": [],
         "misc": [],
@@ -2353,8 +2342,8 @@
         "summaries": []
       },
       {
-        "size": 617,
-        "text": "\"Do you make all the paper dolls?\" inquired Dorothy. \"Yes; I cut them out with my scissors, and paint the faces and some of the costumes. It is very pleasant work, and I am happy making my paper village grow.\" \"But how do the paper dolls happen to be alive?\" asked Aunt Em. \"The first dolls I made were not alive,\" said Miss Cuttenclip. \"I used to live near the castle of a great Sorceress named Glinda the Good, and she saw my dolls and said they were very pretty. I told her I thought I would like them better if they were alive, and the next day the Sorceress brought me a lot of magic paper. 'This is live paper,'",
+        "size": 778,
+        "text": "\"Do you make all the paper dolls?\" inquired Dorothy. \"Yes; I cut them out with my scissors, and paint the faces and some of the costumes. It is very pleasant work, and I am happy making my paper village grow.\" \"But how do the paper dolls happen to be alive?\" asked Aunt Em. \"The first dolls I made were not alive,\" said Miss Cuttenclip. \"I used to live near the castle of a great Sorceress named Glinda the Good, and she saw my dolls and said they were very pretty. I told her I thought I would like them better if they were alive, and the next day the Sorceress brought me a lot of magic paper. 'This is live paper,' she said, 'and all the dolls you cut out of it will be alive, and able to think and to talk. When you have used it all up, come to me and I will give you more.'",
         "persons": [
           "Dorothy",
           "Miss Cuttenclip",
@@ -2368,10 +2357,10 @@
         "summaries": []
       },
       {
-        "size": 664,
-        "text": "she said, 'and all the dolls you cut out of it will be alive, and able to think and to talk. When you have used it all up, come to me and I will give you more.' \"Of course I was delighted with this present,\" continued Miss Cuttenclip, \"and at once set to work and made several paper dolls, which, as soon as they were cut out, began to walk around and talk to me. But they were so thin that I found that any breeze would blow them over and scatter them dreadfully; so Glinda found this lonely place for me, where few people ever come. She built the wall to keep any wind from blowing away my people, and told me I could build a paper village here and be its Queen.",
+        "size": 759,
+        "text": "\"Of course I was delighted with this present,\" continued Miss Cuttenclip, \"and at once set to work and made several paper dolls, which, as soon as they were cut out, began to walk around and talk to me. But they were so thin that I found that any breeze would blow them over and scatter them dreadfully; so Glinda found this lonely place for me, where few people ever come. She built the wall to keep any wind from blowing away my people, and told me I could build a paper village here and be its Queen. That is why I came here and settled down to work and started the village you now see. It was many years ago that I built the first houses, and I've kept pretty busy and made my village grow finely; and I need not tell you that I am very happy in my work.\"",
         "persons": [
-          "Miss Cuttenclip",
+          "Cuttenclip",
           "Glinda"
         ],
         "locations": [],
@@ -2380,22 +2369,11 @@
         "summaries": []
       },
       {
-        "size": 679,
-        "text": "That is why I came here and settled down to work and started the village you now see. It was many years ago that I built the first houses, and I've kept pretty busy and made my village grow finely; and I need not tell you that I am very happy in my work.\" \"Many years ago!\" exclaimed Aunt Em. \"Why, how old are you, child?\" \"I never keep track of the years,\" said Miss Cuttenclip, laughing. \"You see, I don't grow up at all, but stay just the same as I was when first I came here. Perhaps I'm older even than you are, madam; but I couldn't say for sure.\" They looked at the lovely little girl wonderingly, and the Wizard asked: \"What happens to your paper village when it rains?\"",
+        "size": 653,
+        "text": "\"Many years ago!\" exclaimed Aunt Em. \"Why, how old are you, child?\" \"I never keep track of the years,\" said Miss Cuttenclip, laughing. \"You see, I don't grow up at all, but stay just the same as I was when first I came here. Perhaps I'm older even than you are, madam; but I couldn't say for sure.\" They looked at the lovely little girl wonderingly, and the Wizard asked: \"What happens to your paper village when it rains?\" \"It does not rain here,\" replied Miss Cuttenclip. \"Glinda keeps all the rain storms away; so I never worry about my dolls getting wet. But now, if you will come with me, it will give me pleasure to show you over my paper kingdom.",
         "persons": [
           "Miss Cuttenclip",
-          "Wizard"
-        ],
-        "locations": [],
-        "organisations": [],
-        "misc": [],
-        "summaries": []
-      },
-      {
-        "size": 728,
-        "text": "\"It does not rain here,\" replied Miss Cuttenclip. \"Glinda keeps all the rain storms away; so I never worry about my dolls getting wet. But now, if you will come with me, it will give me pleasure to show you over my paper kingdom. Of course you must go slowly and carefully, and avoid making any breeze.\" They left the cottage and followed their guide through the various streets of the village. It was indeed an amazing place, when one considered that it was all made with scissors, and the visitors were not only greatly interested but full of admiration for the skill of little Miss Cuttenclip. In one place a large group of especially nice paper dolls assembled to greet their Queen, whom it was easy to see they loved early.",
-        "persons": [
-          "Miss Cuttenclip",
+          "Wizard",
           "Glinda"
         ],
         "locations": [],
@@ -2404,11 +2382,10 @@
         "summaries": []
       },
       {
-        "size": 692,
-        "text": "These dolls marched and danced before the visitors, and then they all waved their paper handkerchiefs and sang in a sweet chorus a song called \"The Flag of Our Native Land.\" At the conclusion of the song they ran up a handsome paper flag on a tall flagpole, and all of the people of the village gathered around to cheer as loudly as they could--although, of course, their voices were not especially strong. Miss Cuttenclip was about to make her subjects a speech in reply to this patriotic song, when the Shaggy Man happened to sneeze. He was a very loud and powerful sneezer at any time, and he had tried so hard to hold in this sneeze that when it suddenly exploded the result was terrible.",
+        "size": 672,
+        "text": "Of course you must go slowly and carefully, and avoid making any breeze.\" They left the cottage and followed their guide through the various streets of the village. It was indeed an amazing place, when one considered that it was all made with scissors, and the visitors were not only greatly interested but full of admiration for the skill of little Miss Cuttenclip. In one place a large group of especially nice paper dolls assembled to greet their Queen, whom it was easy to see they loved early. These dolls marched and danced before the visitors, and then they all waved their paper handkerchiefs and sang in a sweet chorus a song called \"The Flag of Our Native Land.\"",
         "persons": [
-          "Miss Cuttenclip",
-          "Shaggy Man"
+          "Miss Cuttenclip"
         ],
         "locations": [],
         "organisations": [],
@@ -2418,12 +2395,24 @@
         "summaries": []
       },
       {
-        "size": 638,
-        "text": "The paper dolls were mowed down by dozens, and flew and fluttered in wild confusion in every direction, tumbling this way and that and getting more or less wrinkled and bent. A wail of terror and grief came from the scattered throng, and Miss Cuttenclip exclaimed: \"Dear me! dear me!\" and hurried at once to the rescue of her overturned people. \"Oh, Shaggy Man! How could you?\" asked Dorothy, reproachfully. \"I couldn't help it--really I couldn't,\" protested the Shaggy Man, looking quite ashamed. \"And I had no idea it took so little to upset these paper dolls.\" \"So little!\" said Dorothy. \"Why, it was 'most as bad as a Kansas cyclone.\"",
+        "size": 693,
+        "text": "At the conclusion of the song they ran up a handsome paper flag on a tall flagpole, and all of the people of the village gathered around to cheer as loudly as they could--although, of course, their voices were not especially strong. Miss Cuttenclip was about to make her subjects a speech in reply to this patriotic song, when the Shaggy Man happened to sneeze. He was a very loud and powerful sneezer at any time, and he had tried so hard to hold in this sneeze that when it suddenly exploded the result was terrible. The paper dolls were mowed down by dozens, and flew and fluttered in wild confusion in every direction, tumbling this way and that and getting more or less wrinkled and bent.",
+        "persons": [
+          "Shaggy Man"
+        ],
+        "locations": [],
+        "organisations": [],
+        "misc": [],
+        "summaries": []
+      },
+      {
+        "size": 725,
+        "text": "A wail of terror and grief came from the scattered throng, and Miss Cuttenclip exclaimed: \"Dear me! dear me!\" and hurried at once to the rescue of her overturned people. \"Oh, Shaggy Man! How could you?\" asked Dorothy, reproachfully. \"I couldn't help it--really I couldn't,\" protested the Shaggy Man, looking quite ashamed. \"And I had no idea it took so little to upset these paper dolls.\" \"So little!\" said Dorothy. \"Why, it was 'most as bad as a Kansas cyclone.\" And then she helped Miss Cuttenclip rescue the paper folk and stand them on their feet again. Two of the cardboard houses had also tumbled over, and the little Queen said she would have to repair them and paste them together before they could be lived in again.",
         "persons": [
           "Miss Cuttenclip",
           "Shaggy",
-          "Dorothy"
+          "Dorothy",
+          "Dorothy ."
         ],
         "locations": [
           "Kansas"
@@ -2433,23 +2422,11 @@
         "summaries": []
       },
       {
-        "size": 686,
-        "text": "And then she helped Miss Cuttenclip rescue the paper folk and stand them on their feet again. Two of the cardboard houses had also tumbled over, and the little Queen said she would have to repair them and paste them together before they could be lived in again. And now, fearing they might do more damage to the flimsy paper people, they decided to go away. But first they thanked Miss Cuttenclip very warmly for her courtesy and kindness to them. \"Any friend of Princess Ozma is always welcome here--unless he sneezes,\" said the Queen with a rather severe look at the Shaggy Man, who hung his head. \"I like to have visitors admire my wonderful village, and I hope you will call again.\"",
+        "size": 719,
+        "text": "And now, fearing they might do more damage to the flimsy paper people, they decided to go away. But first they thanked Miss Cuttenclip very warmly for her courtesy and kindness to them. \"Any friend of Princess Ozma is always welcome here--unless he sneezes,\" said the Queen with a rather severe look at the Shaggy Man, who hung his head. \"I like to have visitors admire my wonderful village, and I hope you will call again.\" Miss Cuttenclip herself led them to the door in the wall, and as they passed along the street the paper dolls peeped at them half fearfully from the doors and windows. Perhaps they will never forget the Shaggy Man's awful sneeze, and I am sure they were all glad to see the meat people go away.",
         "persons": [
           "Miss Cuttenclip",
           "Ozma",
-          "Shaggy Man"
-        ],
-        "locations": [],
-        "organisations": [],
-        "misc": [],
-        "summaries": []
-      },
-      {
-        "size": 294,
-        "text": "Miss Cuttenclip herself led them to the door in the wall, and as they passed along the street the paper dolls peeped at them half fearfully from the doors and windows. Perhaps they will never forget the Shaggy Man's awful sneeze, and I am sure they were all glad to see the meat people go away.",
-        "persons": [
-          "Miss Cuttenclip",
           "Shaggy Man"
         ],
         "locations": [],
@@ -2641,8 +2618,8 @@
         "summaries": []
       },
       {
-        "size": 647,
-        "text": "The sorcery of the Phanfasms permitted him to see no more. Suddenly the First and Foremost swung his brass hoop and caught Guph around the neck with it. The next instant, before the General could think what had happened to him, he was dragged inside the rock hut. Here, his eyes still blinded to realities, he perceived only a dim light, by which the hut seemed as rough and rude inside as it was outside. Yet he had a strange feeling that many bright eyes were fastened upon him and that he stood in a vast and extensive hall. The First and Foremost now laughed grimly and released his prisoner. \"If you have anything to say that is interesting,\"",
+        "size": 696,
+        "text": "The sorcery of the Phanfasms permitted him to see no more. Suddenly the First and Foremost swung his brass hoop and caught Guph around the neck with it. The next instant, before the General could think what had happened to him, he was dragged inside the rock hut. Here, his eyes still blinded to realities, he perceived only a dim light, by which the hut seemed as rough and rude inside as it was outside. Yet he had a strange feeling that many bright eyes were fastened upon him and that he stood in a vast and extensive hall. The First and Foremost now laughed grimly and released his prisoner. \"If you have anything to say that is interesting,\" he remarked, \"speak out, before I strangle you.\"",
         "persons": [
           "Guph"
         ],
@@ -2654,13 +2631,13 @@
         "summaries": []
       },
       {
-        "size": 666,
-        "text": "he remarked, \"speak out, before I strangle you.\" So Guph spoke out. He tried not to pay any attention to a strange rustling sound that he heard, as of an unseen multitude drawing near to listen to his words. His eyes could see only the fierce bear-man, and to him he addressed his speech. First he told of his plan to conquer the Land of Oz and plunder the country of its riches and enslave its people, who, being fairies, could not be killed. After relating all this, and telling of the tunnel the Nome King was building, he said he had come to ask the First and Foremost to join the Nomes, with his band of terrible warriors, and help them to defeat the Oz people.",
+        "size": 617,
+        "text": "So Guph spoke out. He tried not to pay any attention to a strange rustling sound that he heard, as of an unseen multitude drawing near to listen to his words. His eyes could see only the fierce bear-man, and to him he addressed his speech. First he told of his plan to conquer the Land of Oz and plunder the country of its riches and enslave its people, who, being fairies, could not be killed. After relating all this, and telling of the tunnel the Nome King was building, he said he had come to ask the First and Foremost to join the Nomes, with his band of terrible warriors, and help them to defeat the Oz people.",
         "persons": [
           "Guph"
         ],
         "locations": [
-          "Land of Oz",
+          "Land of",
           "Oz"
         ],
         "organisations": [],
@@ -3696,9 +3673,24 @@
         "summaries": []
       },
       {
-        "size": 611,
-        "text": "I won't say they loved each other dearly, but at least they had stopped quarreling and now managed to get on together very well. The day was growing lighter every minute and driving the black shadows out of the forest; so Dorothy found it very pleasant walking under the trees. She went some distance in one direction, but not finding a path, presently turned in a different direction. There was no path here, either, although she advanced quite a way into the forest, winding here and there among the trees and peering through the bushes in an endeavor to find some beaten track. \"I think we'd better go back,\"",
+        "size": 795,
+        "text": "I won't say they loved each other dearly, but at least they had stopped quarreling and now managed to get on together very well. The day was growing lighter every minute and driving the black shadows out of the forest; so Dorothy found it very pleasant walking under the trees. She went some distance in one direction, but not finding a path, presently turned in a different direction. There was no path here, either, although she advanced quite a way into the forest, winding here and there among the trees and peering through the bushes in an endeavor to find some beaten track. \"I think we'd better go back,\" suggested the Yellow Hen, after a time. \"The people will all be up by this time and breakfast will be ready.\" \"Very well,\" agreed Dorothy. \"Let's see--the camp must be over this way.\"",
         "persons": [
+          "Dorothy",
+          "Yellow"
+        ],
+        "locations": [],
+        "organisations": [],
+        "misc": [],
+        "summaries": []
+      },
+      {
+        "size": 713,
+        "text": "She had probably made a mistake about that, for after they had gone far enough to have reached the camp they still found themselves in the thick of the woods. So the little girl stopped short and looked around her, and Toto glanced up into her face with his bright little eyes and wagged his tail as if he knew something was wrong. He couldn't tell much about direction himself, because he had spent his time prowling among the bushes and running here and there; nor had Billina paid much attention to where they were going, being interested in picking bugs from the moss as they passed along. The Yellow Hen now turned one eye up toward the little girl and asked: \"Have you forgotten where the camp is, Dorothy?\"",
+        "persons": [
+          "Toto",
+          "Billina",
+          "Yellow Hen",
           "Dorothy"
         ],
         "locations": [],
@@ -3707,25 +3699,11 @@
         "summaries": []
       },
       {
-        "size": 777,
-        "text": "suggested the Yellow Hen, after a time. \"The people will all be up by this time and breakfast will be ready.\" \"Very well,\" agreed Dorothy. \"Let's see--the camp must be over this way.\" She had probably made a mistake about that, for after they had gone far enough to have reached the camp they still found themselves in the thick of the woods. So the little girl stopped short and looked around her, and Toto glanced up into her face with his bright little eyes and wagged his tail as if he knew something was wrong. He couldn't tell much about direction himself, because he had spent his time prowling among the bushes and running here and there; nor had Billina paid much attention to where they were going, being interested in picking bugs from the moss as they passed along.",
+        "size": 536,
+        "text": "\"Yes,\" she admitted; \"have you, Billina?\" \"I didn't try to remember,\" returned Billina. \"I'd no idea you would get lost, Dorothy.\" \"It's the thing we don't expect, Billina, that usually happens,\" observed the girl, thoughtfully. \"But it's no use standing here. Let's go in that direction,\" pointing a finger at random. \"It may be we'll get out of the forest over there.\" So on they went again, but this way the trees were closer together, and the vines were so tangled that often they tripped Dorothy up. Suddenly a voice cried sharply:",
         "persons": [
-          "Yellow Hen",
-          "Dorothy",
-          "Toto",
-          "Billina"
-        ],
-        "locations": [],
-        "organisations": [],
-        "misc": [],
-        "summaries": []
-      },
-      {
-        "size": 656,
-        "text": "The Yellow Hen now turned one eye up toward the little girl and asked: \"Have you forgotten where the camp is, Dorothy?\" \"Yes,\" she admitted; \"have you, Billina?\" \"I didn't try to remember,\" returned Billina. \"I'd no idea you would get lost, Dorothy.\" \"It's the thing we don't expect, Billina, that usually happens,\" observed the girl, thoughtfully. \"But it's no use standing here. Let's go in that direction,\" pointing a finger at random. \"It may be we'll get out of the forest over there.\" So on they went again, but this way the trees were closer together, and the vines were so tangled that often they tripped Dorothy up. Suddenly a voice cried sharply:",
-        "persons": [
-          "Dorothy",
-          "Billina"
+          "Billina",
+          "Dorothy"
         ],
         "locations": [],
         "organisations": [],
@@ -4720,20 +4698,20 @@
         "summaries": []
       },
       {
-        "size": 709,
-        "text": "It is being King that has absolutely ruined my happiness.\" \"Why wouldn't you live here by choice?\" she asked. \"Because it is all unnatural, my dear. Rabbits are out of place in such luxury. When I was young I lived in a burrow in the forest. I was surrounded by enemies and often had to run for my life. It was hard getting enough to eat, at times, and when I found a bunch of clover I had to listen and look for danger while I ate it. Wolves prowled around the hole in which I lived and sometimes I didn't dare stir out for days at a time. Oh, how happy and contented I was then! I was a real rabbit, as nature made me--wild and free!--and I even enjoyed listening to the startled throbbing of my own heart!\"",
-        "persons": [],
+        "size": 807,
+        "text": "It is being King that has absolutely ruined my happiness.\" \"Why wouldn't you live here by choice?\" she asked. \"Because it is all unnatural, my dear. Rabbits are out of place in such luxury. When I was young I lived in a burrow in the forest. I was surrounded by enemies and often had to run for my life. It was hard getting enough to eat, at times, and when I found a bunch of clover I had to listen and look for danger while I ate it. Wolves prowled around the hole in which I lived and sometimes I didn't dare stir out for days at a time. Oh, how happy and contented I was then! I was a real rabbit, as nature made me--wild and free!--and I even enjoyed listening to the startled throbbing of my own heart!\" \"I've often thought,\" said Dorothy, who was busily eating, \"that it would be fun to be a rabbit.\"",
+        "persons": [
+          "Dorothy"
+        ],
         "locations": [],
         "organisations": [],
         "misc": [],
         "summaries": []
       },
       {
-        "size": 718,
-        "text": "\"I've often thought,\" said Dorothy, who was busily eating, \"that it would be fun to be a rabbit.\" \"It IS fun--when you're the genuine article,\" agreed his Majesty. \"But look at me now! I live in a marble palace instead of a hole in the ground. I have all I want to eat, without the joy of hunting for it. Every day I must dress in fine clothes and wear that horrible crown till it makes my head ache. Rabbits come to me with all sorts of troubles, when my own troubles are the only ones I care about. When I walk out I can't hop and run; I must strut on my rear legs and wear an ermine robe! And the soldiers salute me and the band plays and the other rabbits laugh and clap their paws and cry out: 'Hail to the King!'",
-        "persons": [
-          "Dorothy"
-        ],
+        "size": 620,
+        "text": "\"It IS fun--when you're the genuine article,\" agreed his Majesty. \"But look at me now! I live in a marble palace instead of a hole in the ground. I have all I want to eat, without the joy of hunting for it. Every day I must dress in fine clothes and wear that horrible crown till it makes my head ache. Rabbits come to me with all sorts of troubles, when my own troubles are the only ones I care about. When I walk out I can't hop and run; I must strut on my rear legs and wear an ermine robe! And the soldiers salute me and the band plays and the other rabbits laugh and clap their paws and cry out: 'Hail to the King!'",
+        "persons": [],
         "locations": [],
         "organisations": [],
         "misc": [],
