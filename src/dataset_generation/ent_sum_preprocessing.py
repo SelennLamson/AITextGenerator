@@ -12,6 +12,9 @@ from src.utils import *
 
 
 def prepare_json_templates(overwrite):
+	"""
+	Prepare json files so as to be able to include information like 'persons', 'summary'... for each paragraph of a book
+	"""
 	files = os.listdir(PREPROC_PATH)
 	treated_files = os.listdir(ENTSUM_PATH)
 	treated_ids = [f[:-len(ENTSUM_SUFFIX)] for f in treated_files]
@@ -40,6 +43,9 @@ def prepare_json_templates(overwrite):
 
 
 def perform_ner_on_all(model, verbose=1):
+	"""
+	Apply NER model on all books
+	"""
 	files = os.listdir(PREPROC_PATH)
 	for f in files:
 		d_id = f[:-len(PREPROC_SUFFIX)]
@@ -50,6 +56,9 @@ def perform_ner_on_all(model, verbose=1):
 
 
 def perform_entity_recognition(model, d_id=None, verbose=1):
+	"""
+	Define NER model for a single book, looping on paragraphs
+	"""
 	# Input of file ID
 	if d_id is None:
 		while True:
