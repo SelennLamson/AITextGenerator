@@ -33,7 +33,7 @@ cache.populate()
 print(list_supported_metadatas()) # prints (u'author', u'formaturi', u'language', ...)
 
 # Extract metadata from that file
-book_id = 1000 
+book_id = 1 
 print(get_metadata('title', book_id))  
 print(get_metadata('author', book_id)) 
 print(get_metadata('subject', book_id)) 
