@@ -1,0 +1,11 @@
+pytorch-transformers==1.2.0
+#torch==1.2.0
+# metric
+seqeval==0.0.5
+# training progressbar
+tqdm==4.31.1
+# tokeniztion
+nltk==3.4.5
+# for rest api
+Flask==1.1.1
+Flask-Cors==3.0.8
