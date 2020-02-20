@@ -17,7 +17,9 @@ class DatasetFromJsonRepo(Dataset):
         :param path: repository of all JSON files
         :param transform: function to transform paragraph into a vectorized form
         """
-        datasets = [DatasetFromJsonFile(json_files, transform) for json_files in os.listdir(path)]
+        # We only use json file so before scrapping we check if the extention is json
+        datasets = [DatasetFromJsonFile(path + json_files, transform) for json_files in os.listdir(path)
+                                                                      if json_files[-4:] == "json"]
         self.dataset = ConcatDataset(datasets)
 
     def __getitem__(self, idx):
@@ -58,8 +60,8 @@ class DatasetFromJsonFile(Dataset):
         """
         with open(self.path) as json_files:
             data = json.load(json_files)
-        P1, P2, P3 = data['novel']['paragraphs'][idx : idx+3]
+        P1, P2, P3 = data['novel']['paragraphs'][idx:idx+3]
         metadata = {k: data['novel'][k] for k in ('title', 'author', 'theme')}
-        sample = {'input': (metadata, P1, P3), 'target': P2}
+        sample = (metadata, P1, P3, P2)
 
         return self.transform(sample)
