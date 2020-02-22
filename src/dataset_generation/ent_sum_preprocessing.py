@@ -128,10 +128,10 @@ def perform_ner_on_all(model, max_length=2000, verbose=1):
 			continue
 		if verbose >= 1:
 			print("Processing file:", f)
-		perform_entity_recognition(model, d_id, max_length, verbose)
+		perform_ner_on_file(model, d_id, max_length, verbose)
 
 
-def perform_entity_recognition(model, d_id=None, max_length=2000, verbose=1):
+def perform_ner_on_file(model, d_id=None, max_length=2000, verbose=1):
 	"""
 	Applies NER model to a _entsum.json file for each paragraph, replacing already existing entities in the way.
 	:param model: the NER model to apply, should have a predict(text) method.
@@ -161,67 +161,8 @@ def perform_entity_recognition(model, d_id=None, max_length=2000, verbose=1):
 				current_percent = int(pi / total_p * 100)
 				print("\rNER - {}%".format(current_percent), end="")
 
-		text = p['text']
-
-		# Splitting the text in sequences the model can accept
-		words = text.split()
-		n_seqs = len(text) // max_length + 1
-		seqs = []
-		wi = 0
-		for i in range(n_seqs):
-			current = ""
-			while len(current) < len(text) / n_seqs and wi < len(words):
-				current += words[wi] + " "
-				wi += 1
-			seqs.append(current)
-
-		# Performing inference on each sequence
-		output = []
-		for seq in seqs:
-			output += model.predict(seq + ".")
-
-		# Merging predictions together, using probability rule: p(A or B) = p(A) + p(B) - p(A)*p(B)
-		entities = dict()
-		current_entity = None
-		current_confidence = 0
-		current_tag = None
-		for o in output:
-			tag = o['tag'][2:]
-			begin = o['tag'][0] == 'B'
-			entity = o['word']
-			confidence = o['confidence']
-
-			# 1. If we encounter a new entity, but current one is not registered yet
-			# OR
-			# 2. We see no tag anymore but we had an entity in mind, so we register it
-			if (tag != "" and begin and current_entity is not None) or \
-			   (tag == "" and current_entity is not None):
-				if current_entity in entities:
-					# We already encountered this entity in a previous sequence
-					prev_tag, prev_conf = entities[current_entity]
-					if prev_tag == current_tag:
-						# This is the same tag, we apply p(A or B) rule
-						conf = prev_conf + current_confidence - prev_conf * current_confidence
-						entities[current_entity] = (prev_tag, conf)
-					elif prev_conf < current_confidence:
-						# This is not the same tag as before, we just keep the best one
-						entities[current_entity] = (current_tag, current_confidence)
-				else:
-					# This is the first time we encounter this entity
-					entities[current_entity] = (current_tag, current_confidence)
-
-				# After registering, we reset the entity to None
-				current_entity = None
-
-			# Now, we process the current tag
-			if tag != "":	# We have a Named Entity
-				if begin:	# It is a new one
-					current_entity = entity
-					current_confidence = confidence
-					current_tag = tag
-				elif current_entity is not None and not begin:	# It is continuing the current one
-					current_entity += " " + entity
-					current_confidence = current_confidence * 0.7 + confidence * 0.3  # Simple heuristic to merge confidences
+		# Performing NER
+		entities = perform_ner(model, p['text'], max_length)
 
 		# Registering inferred data to JSON file
 		persons = []
@@ -246,3 +187,75 @@ def perform_entity_recognition(model, d_id=None, max_length=2000, verbose=1):
 	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w'))
 	if verbose >= 1:
 		print("\rNER - 100%")
+
+
+def perform_ner(model, text, max_length=2000):
+	"""
+	Applies NER model to a string, returning the dictionnary of entities, containing their type and confidence.
+	:param model: the NER model to apply, should have a predict(text) method.
+	:param text: the text to perform NER on.
+	:param max_length: the maximum text length the model can accept. Paragraphs above that will be split and results will be merged.
+	:return: Dict[string: entities, Tuple[string: type, float: confidence]]
+	"""
+
+	# Splitting the text in sequences the model can accept
+	words = text.split()
+	n_seqs = len(text) // max_length + 1
+	seqs = []
+	wi = 0
+	for i in range(n_seqs):
+		current = ""
+		while len(current) < len(text) / n_seqs and wi < len(words):
+			current += words[wi] + " "
+			wi += 1
+		seqs.append(current)
+
+	# Performing inference on each sequence
+	output = []
+	for seq in seqs:
+		output += model.predict(seq + ".")
+
+	# Merging predictions together, using probability rule: p(A or B) = p(A) + p(B) - p(A)*p(B)
+	entities = dict()
+	current_entity = None
+	current_confidence = 0
+	current_tag = None
+	for o in output:
+		tag = o['tag'][2:]
+		begin = o['tag'][0] == 'B'
+		entity = o['word'].replace('.', '').replace(' ', '')
+		confidence = o['confidence']
+
+		# 1. If we encounter a new entity, but current one is not registered yet
+		# OR
+		# 2. We see no tag anymore but we had an entity in mind, so we register it
+		if (tag != "" and begin and current_entity is not None) or \
+				(tag == "" and current_entity is not None):
+			if current_entity in entities:
+				# We already encountered this entity in a previous sequence
+				prev_tag, prev_conf = entities[current_entity]
+				if prev_tag == current_tag:
+					# This is the same tag, we apply p(A or B) rule
+					conf = prev_conf + current_confidence - prev_conf * current_confidence
+					entities[current_entity] = (prev_tag, conf)
+				elif prev_conf < current_confidence:
+					# This is not the same tag as before, we just keep the best one
+					entities[current_entity] = (current_tag, current_confidence)
+			else:
+				# This is the first time we encounter this entity
+				entities[current_entity] = (current_tag, current_confidence)
+
+			# After registering, we reset the entity to None
+			current_entity = None
+
+		# Now, we process the current tag
+		if tag != "":  # We have a Named Entity
+			if begin:  # It is a new one
+				current_entity = entity
+				current_confidence = confidence
+				current_tag = tag
+			elif current_entity is not None and not begin:  # It is continuing the current one
+				current_entity += " " + entity
+				current_confidence = current_confidence * 0.7 + confidence * 0.3  # Simple heuristic to merge confidences
+
+	return entities

@@ -64,7 +64,7 @@ def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_i
 	except UnicodeDecodeError:
 		data = json.load(open(NOVEL_PATH + d_id + NOVEL_SUFFIX, 'r', encoding='utf-8'))
 	novel_data = data['novel']
-	full_text = novel_data['text'] 
+	full_text = novel_data['text']
 	paragraphs = []
 
 	# Display some information about the novel
@@ -154,7 +154,7 @@ def separate_in_paragraphs(min_threshold=20, min_length=600, max_length=900, d_i
 				# Splitting the paragraph at target_length, without cutting words
 				#  1. We add words until we pass MIN_LENGTH
 				#  2. If we encounter a final point, we end the split. --> NEXT (with empty)
-				#  3. When we pass TARGET_LENGTH, we keep a memory of the current paragraph.
+				#  3. When we pass target_length, we keep a memory of the current paragraph.
 				#  4. If we encounter a final point, we end the split. --> NEXT (with empty)
 				#  5. When we pass MAX_LENGTH, we end the split with step 3's memory. --> NEXT (with current - saved)
 				#  6. If end of paragraph and we are below MIN_LENGTH --> SPECIAL CONDITIONS
