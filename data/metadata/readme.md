@@ -5,7 +5,6 @@ Here are the cleaned metadata content (without text for now)
 **Structure:**
 ```json
 {
-  "1": {
     "author": [
       "Jefferson, Thomas"
     ],
@@ -20,7 +19,17 @@ Here are the cleaned metadata content (without text for now)
       "JK",
       "United States. Declaration of Independence",
       "E201"
-    ]
-  }, 
+    ],
+    "id": [
+       "1"
+    ],
+    "genre":[
+      'history'
+     ],
+     "text":[
+     ...
+     ],   
 }
 ```
+
+
