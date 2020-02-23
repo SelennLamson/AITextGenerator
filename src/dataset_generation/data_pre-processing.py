@@ -70,6 +70,7 @@ def FindRealGenre(l, Genres, new_el):
         for i,sublist in enumerate(list(Genres.values())):
             if el in sublist:  
                 genre.append(Genres.keys()[i])
+                genre = list(set(genre))
     # Create a new key with the genre(s) of the book
     new_el['genre'] = genre
     return new_el
@@ -99,6 +100,6 @@ def CreateJson(b_id, Genres):
         
         
 # FOR ALL DATAPOINTS 
-for i in tqdm(range(1,5000)): 
+for i in tqdm(range(1,500)): 
     b_id = i 
     CreateJson(b_id, Genres)
