@@ -27,7 +27,7 @@ Here are the cleaned metadata content (without text for now)
       "history"
      ],
      "text":[
-     blablabla
+     "blablabla"
      ],   
 }
 ```
