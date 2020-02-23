@@ -24,10 +24,10 @@ Here are the cleaned metadata content (without text for now)
        "1"
     ],
     "genre":[
-      'history'
+      "history"
      ],
      "text":[
-     ...
+     blablabla
      ],   
 }
 ```
