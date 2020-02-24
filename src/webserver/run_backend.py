@@ -56,7 +56,7 @@ class AITextGeneratorHTTPServer(Handler):
 		body = body.replace('\\', '')
 
 		ent_dict = generator.perform_ner(body)
-		entities = [v[0] + ': ' + k for k, v in ent_dict.items()]
+		entities = [v[0] + ':' + k for k, v in ent_dict.items()]
 
 		response = BytesIO()
 		for i, e in enumerate(entities):
