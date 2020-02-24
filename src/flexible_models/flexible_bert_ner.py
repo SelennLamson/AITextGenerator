@@ -23,7 +23,14 @@ class FlexibleBERTNER (FlexibleModel):
 		:return: List[Dict[string: entities, Tuple[string: type, float: confidence]]]
 		"""
 		split_strings, split_information = text_batch_splitter(inputs, self.max_length)
-		outputs = [self.bert_model.predict(txt + '.') for txt in split_strings]
+
+		outputs = []
+		start_i = 0
+		while start_i < len(split_strings):
+			inputs = [s + '.' for s in split_strings[start_i:start_i + self.batch_size]]
+			outputs += self.bert_model.predict_batch(inputs)
+			start_i += self.batch_size
+
 		return batch_merger(outputs, split_information, merge_function=self.merge_entities, apply_on_single=True)
 
 	def merge_entities(self, outputs):

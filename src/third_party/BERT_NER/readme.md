@@ -1,3 +1,8 @@
+
+**Source:** https://github.com/kamalkraj/BERT-NER
+
+**Modification:** added a batch-prediction method in ```bert.py```.
+
 # BERT NER
 
 Use google BERT to do CoNLL-2003 NER !

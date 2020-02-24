@@ -1,9 +1,8 @@
 """BERT NER Inference."""
 
-from __future__ import absolute_import, division, print_function
-
 import json
 import os
+from typing import List
 
 import torch
 import torch.nn.functional as F
@@ -112,4 +111,48 @@ class Ner:
         assert len(labels) == len(words)
         output = [{"word":word,"tag":label,"confidence":confidence} for word,(label,confidence) in zip(words,labels)]
         return output
+
+    def predict_batch(self, inputs: List[str]):
+        input_ids = []
+        input_mask = []
+        segment_ids = []
+        valid_ids = []
+        for inp in inputs:
+            ids, mask, seg, val = self.preprocess(inp)
+            input_ids.append(ids)
+            input_mask.append(mask)
+            segment_ids.append(seg)
+            valid_ids.append(val)
+        input_ids = torch.tensor(input_ids,dtype=torch.long,device=self.device)
+        input_mask = torch.tensor(input_mask,dtype=torch.long,device=self.device)
+        segment_ids = torch.tensor(segment_ids,dtype=torch.long,device=self.device)
+        valid_ids = torch.tensor(valid_ids,dtype=torch.long,device=self.device)
+        with torch.no_grad():
+            logits = self.model(input_ids, segment_ids, input_mask,valid_ids)
+        logits = F.softmax(logits,dim=2)
+        logits_label = torch.argmax(logits,dim=2)
+        logits_label = logits_label.detach().cpu().numpy()
+
+        output = []
+        for sample in range(len(inputs)):
+            logits_confidence = [values[label].item() for values, label in zip(logits[sample], logits_label[sample])]
+            logits = []
+
+            pos = 0
+            for index, mask in enumerate(valid_ids[sample]):
+                if index == 0:
+                    continue
+                if mask == 1:
+                    logits.append((logits_label[sample, index - pos], logits_confidence[index - pos]))
+                else:
+                    pos += 1
+            logits.pop()
+
+            labels = [(self.label_map[label],confidence) for label, confidence in logits]
+            words = word_tokenize(inputs[sample])
+            assert len(labels) == len(words)
+
+            output.append([{"word":word, "tag":label, "confidence":confidence} for word, (label, confidence) in zip(words,labels)])
+        return output
+
 

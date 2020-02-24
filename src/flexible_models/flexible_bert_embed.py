@@ -7,17 +7,24 @@ from src.utils import *
 from .flexible_model import FlexibleModel
 
 class FlexibleBERTEmbed(FlexibleModel):
-	def __init__(self, max_length:int, batch_size:int, cuda_device:int = -1):
+	def __init__(self, max_length:int, batch_size:int, cuda_device:int = -2):
 		"""
 		Initializes a BERT embedding model (using [CLS] token).
 		:param max_length: The maximum length (in char) the model can handle
 		:param batch_size: Batch-size when predicting
-		:param cuda_device: Device number cuda should use (-1 = CPU)
+		:param cuda_device: Device number cuda should use (-1 = CPU, -2 = AUTO)
 		"""
 		super().__init__()
 		self.max_length = max_length
 		self.batch_size = batch_size
-		self.cuda_device = cuda_device
+
+		if cuda_device == -2:
+			if torch.cuda.is_available():
+				self.cuda_device = 0
+			else:
+				self.cuda_device = -1
+		else:
+			self.cuda_device = cuda_device
 
 		# Retrieving BERT model and weights handles
 		model_class, tokenizer_class, pretrained_weights = (ppb.BertModel, ppb.BertTokenizer, 'bert-base-uncased')
