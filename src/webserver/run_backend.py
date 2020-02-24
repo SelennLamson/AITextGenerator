@@ -3,9 +3,10 @@ import socketserver
 import json
 import random
 from io import BytesIO
+from typing import List, Dict, Tuple
 
-from src.third_party.BERT_NER.bert import Ner
-from src.dataset_generation.ent_sum_preprocessing import *
+from src.flexible_models import *
+
 
 PORT = 7777
 Handler = http.server.SimpleHTTPRequestHandler
@@ -14,9 +15,11 @@ Handler = http.server.SimpleHTTPRequestHandler
 class Generator:
 	def __init__(self):
 		print("Loading models...")
-		self.model = Ner("../../models/entity_recognition/BERT_NER_Large/")
+		self.ner_model = FlexibleBERTNER("../../models/entity_recognition/BERT_NER_Large/", 1, 2000)
 		print("Models loaded, ready to serve!")
-generator = Generator()
+
+	def perform_ner(self, text) -> Dict[str, Tuple[str, float]]:
+		return self.ner_model([text])[0]
 
 
 class AITextGeneratorHTTPServer(Handler):
@@ -52,8 +55,8 @@ class AITextGeneratorHTTPServer(Handler):
 		body = ' '.join(body.split('</p>')[:-1])
 		body = body.replace('\\', '')
 
-		ent_dict = perform_ner(generator.model, body, 2000)
-		entities = [v[0] + ': ' + k for k, v in ent_dict.items()]
+		ent_dict = generator.perform_ner(body)
+		entities = [v[0] + ':' + k for k, v in ent_dict.items()]
 
 		response = BytesIO()
 		for i, e in enumerate(entities):
@@ -62,7 +65,7 @@ class AITextGeneratorHTTPServer(Handler):
 
 
 with socketserver.TCPServer(("0.0.0.0", PORT), AITextGeneratorHTTPServer) as httpd:
+	generator = Generator()
 	print("serving at port", PORT)
 	httpd.serve_forever()
-
 

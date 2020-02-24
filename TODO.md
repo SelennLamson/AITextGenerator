@@ -4,7 +4,7 @@
 1. Download data `--> data/raw/ID.txt`
 2. Verify integrity (english, consistensy) for at least 100 novels
 3. **DONE** - Select ~10 caracteristic novels with their themes (by hand)
-4. Script to extract clean novels and their themes (at scale): catalog file with file/title/author/theme + novel text files
+4. **DONE** - Script to extract clean novels and their themes (at scale): catalog file with file/title/author/theme + novel text files
 
 `--> ID_novel.json`
 
@@ -49,7 +49,7 @@
 ## Webservice & Integration
 1. Frontend
 2. Backend
-3. Fullstack integration
+3. **DONE** - Fullstack integration
 4. Algorithm integration + metrics
 5. Distribution on server
 6. Tests
