@@ -10,12 +10,14 @@ from typing import List, Any, Tuple
 import functools
 
 # Constants
-NOVEL_PATH = '../data/novel/'
+NOVEL_PATH = 'data/novel/'
 NOVEL_SUFFIX = '_novel.json'
-PREPROC_PATH = '../data/preproc/'
+PREPROC_PATH = 'data/preproc/'
 PREPROC_SUFFIX = '_preproc.json'
-ENTSUM_PATH = '../data/ent_sum/'
+ENTSUM_PATH = 'data/ent_sum/'
 ENTSUM_SUFFIX = '_entsum.json'
+
+BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
 
 
 def text_batch_splitter(strings:List[str], max_length:int) -> Tuple[List[str], List[Tuple[int, int]]]:

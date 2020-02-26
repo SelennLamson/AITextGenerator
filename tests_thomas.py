@@ -6,10 +6,10 @@
 
 
 from src.dataset_generation.ent_sum_preprocessing import perform_ner_on_file
-
 from src.flexible_models import FlexibleBERTNER
+from src.utils import *
 
-model = FlexibleBERTNER("../models/entity_recognition/BERT_NER_Large/", batch_size=128, max_length=2000)
+model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=128, max_length=2000)
 perform_ner_on_file(model)
 
 
@@ -18,7 +18,7 @@ perform_ner_on_file(model)
 # prepare_json_templates(True)
 #
 # # Loading pre-trained model by feeding the folder where the pre-trained parameters are located.
-# model = Ner("../models/entity_recognition/BERT_NER_Large/")
+# model = Ner("BERT_NER_LARGE")
 # perform_ner_on_all(model)
 #
 #

@@ -1,5 +1,5 @@
 from .flexible_model import FlexibleModel
-from src.third_party.BERT_NER.bert import Ner
+from ..third_party.BERT_NER.bert import Ner
 from typing import List, Dict, Tuple
 from src.utils import *
 

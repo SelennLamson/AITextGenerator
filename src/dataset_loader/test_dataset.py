@@ -1,5 +1,5 @@
-from dataset_loader.torch_dataset_generation import DatasetFromJsonFile, DatasetFromJsonRepo
-from dataset_loader.GPT_2_tokenization import TransformParagraphes
+from .torch_dataset_generation import DatasetFromJsonFile, DatasetFromJsonRepo
+from .GPT_2_tokenization import TransformParagraphes
 import json
 from transformers import GPT2Tokenizer
 

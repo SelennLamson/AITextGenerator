@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import http.server
 import socketserver
 import json
@@ -6,6 +9,7 @@ from io import BytesIO
 from typing import List, Dict, Tuple
 
 from src.flexible_models import *
+from src.utils import *
 
 
 PORT = 7777
@@ -15,7 +19,7 @@ Handler = http.server.SimpleHTTPRequestHandler
 class Generator:
 	def __init__(self):
 		print("Loading models...")
-		self.ner_model = FlexibleBERTNER("../../models/entity_recognition/BERT_NER_Large/", 1, 2000)
+		self.ner_model = FlexibleBERTNER(BERT_NER_LARGE, 1, 2000)
 		print("Models loaded, ready to serve!")
 
 	def perform_ner(self, text) -> Dict[str, Tuple[str, float]]:
