@@ -17,9 +17,10 @@ class TransformParagraphes:
         """
         self.tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
 
-        self.tokenizer.add_special_tokens({'pad_token': '<pad>',
-                                            'additional_special_tokens': ['[P1]', '[P3]', '[S]', ' [M]', '[L]',
-                                                                          '[T]', '[Sum]', '[Ent]', '[EOS]']})
+        self.tokenizer.add_special_tokens({'pad_token': '[PAD]',
+                                           'eos_token': '[EOS]',
+                                           'additional_special_tokens': ['[P1]', '[P3]', '[S]', ' [M]',
+                                                                          '[L]', '[T]', '[Sum]', '[Ent]']})
         # We can add locations / organisations later
         # IMPORTANT : BEFORE FINE-TUNING THE MODEL, WE WILL NEED TO RESIZE THE TOKEN EMBEDDINGS
         # model.resize_token_embeddings(len(tokenizer))
