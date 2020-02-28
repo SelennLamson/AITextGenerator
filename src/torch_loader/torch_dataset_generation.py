@@ -46,13 +46,15 @@ class DatasetFromJsonFile(Dataset):
         self.path = path
         self.transform = transform
 
+        with open(self.path) as json_file:
+            data = json.load(json_file)
+        self.length = len(data['novel']['paragraphs']) - 2
+
     def __len__(self):
         """
         :return: number of paragraphes in the novel - 2
         """
-        with open(self.path) as json_file:
-            data = json.load(json_file)
-        return len(data['novel']['paragraphs']) - 2
+        return self.length
 
     def __getitem__(self, idx):
         """

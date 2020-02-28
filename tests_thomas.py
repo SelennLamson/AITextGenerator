@@ -1,11 +1,11 @@
 
 
-#####################################################
-# My file to do some tests, please do not modify ;) #
-#####################################################
+############################################
+# THOMAS's TEST FILE, PLEASE DO NOT MODIFY #
+############################################
 
 
-from src.dataset_generation.ent_sum_preprocessing import perform_ner_on_file
+from src.json_generation.ent_sum_preprocessing import perform_ner_on_file
 from src.flexible_models import FlexibleBERTNER
 from src.utils import *
 
