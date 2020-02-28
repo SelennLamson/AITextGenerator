@@ -1,12 +1,12 @@
 from .torch_dataset_generation import DatasetFromJsonFile, DatasetFromJsonRepo
-from .GPT_2_tokenization import TransformParagraphes
+from .GPT_2_tokenization import TransformParagraphs
 import json
 from transformers import GPT2Tokenizer
 
 JSON_FILE_PATH = "../data/ent_sum/"
 
 if __name__ == "__main__":
-    transform = TransformParagraphes()
+    transform = TransformParagraphs()
 
     def transform_nothing(x):
         return x

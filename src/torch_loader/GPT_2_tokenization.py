@@ -1,6 +1,6 @@
 from transformers import GPT2Tokenizer
 
-class TransformParagraphes:
+class TransformParagraphs:
     """
     class TransformParagraphes :
     from {input: (metadata, P1, P3), target: P2} generate {input: X, output: Y}
