@@ -56,7 +56,7 @@ genres = SortedDict({
 		'western': ['western']})
 
 
-def FindRealGenre(l, Genres, new_el):
+def find_real_genre(l, Genres, new_el):
 	"""
 	l contains sentences indicating the theme of the book; gathered from gutenberg
 	Use Genres dico above to infer the genre of the book
@@ -76,7 +76,7 @@ def FindRealGenre(l, Genres, new_el):
 	return new_el
 
 
-def CreateJson(b_id, Genres): 
+def create_json(b_id, Genres):
 	"""
 	Create json file for each book (b_id)
 	Don't for books where metadata is not accessible, cannot strip headers, is not in english, does not have a genre
@@ -86,7 +86,7 @@ def CreateJson(b_id, Genres):
 	new_el = data[str(b_id)]
 	if 'en' in new_el['language']: # keep only english files
 		new_el['id'] = str(b_id) # keep its id
-		new_el = FindRealGenre(new_el['theme'], Genres, new_el) # find genre
+		new_el = find_real_genre(new_el['theme'], Genres, new_el) # find genre
 		data[str(b_id)]['genre'] = new_el['genre'] # add genre to original document
 		try:
 			new_el['text'] = strip_headers(load_etext(b_id)).strip()
@@ -102,4 +102,4 @@ def CreateJson(b_id, Genres):
 # FOR ALL DATAPOINTS 
 for i in tqdm(range(1,500)): 
 	b_id = i
-	CreateJson(b_id, genres)
+	create_json(b_id, genres)

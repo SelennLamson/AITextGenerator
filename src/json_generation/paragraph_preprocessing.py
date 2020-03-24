@@ -59,7 +59,7 @@ def separate_in_paragraphs(parser: ParagraphParser, d_id:str = None, verbose:int
 		data = json.load(open(NOVEL_PATH + d_id + NOVEL_SUFFIX, 'r'))
 	except UnicodeDecodeError:
 		data = json.load(open(NOVEL_PATH + d_id + NOVEL_SUFFIX, 'r', encoding='utf-8'))
-	#novel_data = data['novel']
+	# novel_data = data['novel']
 	novel_data = data
 	full_text = novel_data['text']
 
@@ -73,4 +73,4 @@ def separate_in_paragraphs(parser: ParagraphParser, d_id:str = None, verbose:int
 	# Saving JSON file
 	novel_data.pop('text')
 	novel_data['paragraphs'] = paragraphs
-	json.dump(data, open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'w'))
+	json.dump(data, open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
