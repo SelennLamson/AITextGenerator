@@ -110,7 +110,7 @@ def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, ma
 				p['summaries'].append(summary)
 
 	# Saving JSON file
-	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w'))
+	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 	if verbose >= 1:
 		print("\rSUMMARIZATION - 100%")
 
@@ -185,7 +185,7 @@ def perform_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1
 		p['misc'] = misc
 
 	# Saving JSON file
-	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w'))
+	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 	if verbose >= 1:
 		print("\rNER - 100%")
 

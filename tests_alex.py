@@ -18,7 +18,7 @@ ent_sum_preprocessing.prepare_json_templates(True)
 
 # Perform NER
 model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=128, max_length=2000)
-ent_sum_preprocessing.perform_ner_on_all(model)
+ent_sum_preprocessing.perform_ner_on_file(model)
 
 
 
