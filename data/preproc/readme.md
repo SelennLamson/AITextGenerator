@@ -5,7 +5,6 @@ Here are the data-files after paragraph separation.
 **Structure:**
 ```json
 {
-  "novel": {
     "title": "The Lord of The Rings",
     "author": "J. R. R. Tolkien",
     "theme": "Fantasy",
@@ -19,6 +18,5 @@ Here are the data-files after paragraph separation.
         "text": "Without warning, he settled down in the Hobbit's kitchen. [...]"
       }
     ]
-  }
 }
 ```

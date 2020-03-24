@@ -3,7 +3,8 @@ from src.third_party.BERT_NER.bert import Ner
 from typing import List, Dict, Tuple
 from src.utils import *
 
-class FlexibleBERTNER (FlexibleModel):
+
+class FlexibleBERTNER(FlexibleModel):
 	def __init__(self, bert_path: str, batch_size:int, max_length: int):
 		"""
 		Initializes a BERT-NER model.
