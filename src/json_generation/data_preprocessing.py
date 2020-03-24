@@ -18,8 +18,8 @@ from gutenberg._domain_model.exceptions import UnknownDownloadUriException # err
 
 ### SET UP 
 # Populate the metadata cache - long operation 
-#cache = get_metadata_cache()
-#cache.populate()
+# cache = get_metadata_cache()
+# cache.populate()
 
 
 # Define paths 
