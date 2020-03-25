@@ -62,10 +62,10 @@ def perform_summarization_on_all(models: List[FlexibleSummarizer], replace=False
 			continue
 		if verbose >= 1:
 			print("Processing file:", f)
-		add_summaries(models, replace, d_id, max_length, verbose)
+		add_summaries(models, replace, d_id, verbose)
 
 
-def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, max_length=2000, verbose=1):
+def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, verbose=1):
 	"""
 	Applies summarization model to an _ent_sum.json file for each of its paragraphs.
 	:param models: a list of models to apply, all of them having a predict(text) method.
