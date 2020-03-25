@@ -29,8 +29,10 @@ def prepare_json_templates(overwrite):
 		if overwrite or d_id not in treated_ids:
 
 			# Reading JSON file
+			print(d_id)
 			data = json.load(open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'r'))
-			novel_data = data['novel']
+			# novel_data = data['novel']
+			novel_data = data
 			paragraphs = novel_data['paragraphs']
 
 			# Adding empty lists
@@ -42,7 +44,7 @@ def prepare_json_templates(overwrite):
 				p['summaries'] = []
 
 			# Saving JSON file
-			json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w'))
+			json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w', encoding = 'utf-8'), ensure_ascii = False, indent = 1)
 
 
 def perform_summarization_on_all(models: List[FlexibleSummarizer], replace=False, verbose=1):
@@ -60,10 +62,10 @@ def perform_summarization_on_all(models: List[FlexibleSummarizer], replace=False
 			continue
 		if verbose >= 1:
 			print("Processing file:", f)
-		add_summaries(models, replace, d_id, max_length, verbose)
+		add_summaries(models, replace, d_id, verbose)
 
 
-def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, max_length=2000, verbose=1):
+def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, verbose=1):
 	"""
 	Applies summarization model to an _ent_sum.json file for each of its paragraphs.
 	:param models: a list of models to apply, all of them having a predict(text) method.
@@ -83,7 +85,8 @@ def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, ma
 
 	# Reading JSON file
 	data = json.load(open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'r'))
-	novel_data = data['novel']
+	# novel_data = data['novel']
+	novel_data = data
 	paragraphs = novel_data['paragraphs']
 
 	total_p = len(paragraphs)
@@ -107,7 +110,7 @@ def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, ma
 				p['summaries'].append(summary)
 
 	# Saving JSON file
-	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w'))
+	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 	if verbose >= 1:
 		print("\rSUMMARIZATION - 100%")
 
@@ -146,7 +149,8 @@ def perform_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1
 
 	# Reading JSON file
 	data = json.load(open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'r'))
-	novel_data = data['novel']
+	# novel_data = data['novel']
+	novel_data = data
 	paragraphs = novel_data['paragraphs']
 
 	total_p = len(paragraphs)
@@ -157,6 +161,7 @@ def perform_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1
 				current_percent = int(pi / total_p * 100)
 				print("\rNER - {}%".format(current_percent), end="")
 
+		print('Before NER')
 		# Performing NER
 		entities = model([p['text']])[0]
 
@@ -180,7 +185,7 @@ def perform_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1
 		p['misc'] = misc
 
 	# Saving JSON file
-	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w'))
+	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 	if verbose >= 1:
 		print("\rNER - 100%")
 

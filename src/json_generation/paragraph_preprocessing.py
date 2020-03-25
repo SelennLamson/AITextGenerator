@@ -15,7 +15,7 @@ from src.flexible_models import *
 
 def separate_paragraphs_all_files(overwrite:bool, min_threshold:int = 20, min_length:int = 600, max_length:int = 900, verbose:int = 1):
 	"""
-	Applies the paragraph separation process on all _novel.json files to produce _preproc.json files.
+	Applies the paragraph separation process (next function) on all _novel.json files to produce _preproc.json files.
 	:param overwrite: should already preprocessed files be re-preprocessed
 	:param min_threshold: minimum length (in chars) a paragraph should be to be taken into account.
 						  Lower than this threshold often means it's a title or a chapter separator.
@@ -59,7 +59,8 @@ def separate_in_paragraphs(parser: ParagraphParser, d_id:str = None, verbose:int
 		data = json.load(open(NOVEL_PATH + d_id + NOVEL_SUFFIX, 'r'))
 	except UnicodeDecodeError:
 		data = json.load(open(NOVEL_PATH + d_id + NOVEL_SUFFIX, 'r', encoding='utf-8'))
-	novel_data = data['novel']
+	# novel_data = data['novel']
+	novel_data = data
 	full_text = novel_data['text']
 
 	if verbose >= 1:
@@ -72,4 +73,4 @@ def separate_in_paragraphs(parser: ParagraphParser, d_id:str = None, verbose:int
 	# Saving JSON file
 	novel_data.pop('text')
 	novel_data['paragraphs'] = paragraphs
-	json.dump(data, open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'w'))
+	json.dump(data, open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
