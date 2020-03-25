@@ -1,8 +1,9 @@
 from transformers import GPT2Tokenizer
+import torch
 
-class TransformParagraphs:
+class VectorizeParagraph:
     """
-    class TransformParagraphes :
+    class VectorizeParagrah :
     from {input: (metadata, P1, P3), target: P2} generate {input: X, output: Y}
     when X and Y are vectorized token tensors obtains using GPT2Tokenizer
 
@@ -63,10 +64,8 @@ class TransformParagraphs:
                         '[P2] ' + P2['text'] + '[EOS]'
         # '[Sum]' + P2['summaries'] + \  POUR LE MOMENT N'UTILISE PAS LES RÉSUMÉS
 
-        print("input_string", string_input)
-
         tokenized_input = self.tokenizer.encode(string_input,
                                                 max_length=self.block_size,
                                                 pad_to_max_length=True)
 
-        return tokenized_input
+        return torch.tensor(tokenized_input)
