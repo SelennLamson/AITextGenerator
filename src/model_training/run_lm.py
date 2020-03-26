@@ -38,7 +38,7 @@ from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
 
 from transformers import (
-    MODEL_WITH_LM_HEAD_MAPPING,
+    #MODEL_WITH_LM_HEAD_MAPPING,
     WEIGHTS_NAME,
     AdamW,
     AutoConfig,
