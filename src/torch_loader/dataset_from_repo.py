@@ -1,7 +1,7 @@
 from torch.utils.data import Dataset, ConcatDataset
 from .dataset_from_json import DatasetFromJson
 import os
-import json
+
 
 class DatasetFromRepo(Dataset):
     """
