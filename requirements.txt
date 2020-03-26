@@ -1,7 +1,6 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: osx-64
-aitextgeneration=0.0=dev_0
 alembic=1.4.0=pypi_0
 bert-extractive-summarizer=0.3.0=pypi_0
 blas=1.0=mkl
