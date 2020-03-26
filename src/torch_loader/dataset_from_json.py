@@ -35,7 +35,7 @@ class DatasetFromJson(Dataset):
         with open(self.path) as json_files:
             data = json.load(json_files)
         P1, P2, P3 = data['paragraphs'][idx:idx+3]
-        metadata = {k: data[k] for k in ('title', 'author', 'theme')}
+        metadata = {k: data[k] for k in ('title', 'author', 'genre')}
         sample = (metadata, P1, P3, P2)
 
         return self.transform(sample)
