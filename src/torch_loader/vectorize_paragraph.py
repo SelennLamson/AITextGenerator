@@ -56,12 +56,13 @@ class VectorizeParagraph:
             [P1] P1 [P3] P3 [Sum] Sum_P2 [T] Theme [ENT] list_of_person [Size] [P2] P2 [EOS]
         """
         metadata, P1, P3, P2 = sample
+        print(metadata)
         string_input = '[P1] ' + P1['text'] + \
                        '[P3] ' + P3['text'] + \
-                       '[T] ' + metadata['theme'] + \
+                       '[T] ' + self.reduce_string_list(metadata['theme']) + \
                        '[Ent] ' + self.reduce_string_list(P2["persons"]) + \
-                        self.bin_size(P2['size']) + \
-                        '[P2] ' + P2['text'] + '[EOS]'
+                        self.bin_size(P2['size'])  + \
+                       '[P2] ' + P2['text'] + '[EOS]'
         # '[Sum]' + P2['summaries'] + \  POUR LE MOMENT N'UTILISE PAS LES RÉSUMÉS
 
         tokenized_input = self.tokenizer.encode(string_input,

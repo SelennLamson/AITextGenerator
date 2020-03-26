@@ -20,7 +20,7 @@ class DatasetFromJson(Dataset):
 
         with open(self.path) as json_file:
             data = json.load(json_file)
-        self.length = len(data['novel']['paragraphs']) - 2
+        self.length = len(data['paragraphs']) - 2
 
     def __len__(self):
         """
@@ -34,8 +34,8 @@ class DatasetFromJson(Dataset):
         """
         with open(self.path) as json_files:
             data = json.load(json_files)
-        P1, P2, P3 = data['novel']['paragraphs'][idx:idx+3]
-        metadata = {k: data['novel'][k] for k in ('title', 'author', 'theme')}
+        P1, P2, P3 = data['paragraphs'][idx:idx+3]
+        metadata = {k: data[k] for k in ('title', 'author', 'theme')}
         sample = (metadata, P1, P3, P2)
 
         return self.transform(sample)
