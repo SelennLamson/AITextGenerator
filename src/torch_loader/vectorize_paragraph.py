@@ -1,4 +1,3 @@
-from transformers import GPT2Tokenizer
 import torch
 
 class VectorizeParagraph:
@@ -10,23 +9,18 @@ class VectorizeParagraph:
     An instance of this class will be callable on {input: (metadata, P1, P3), target: P2}
     Later it will be possible to configure it (for instance for randomly erase some data)
     """
-    def __init__(self, block_size=1020, debug_mode=False):
+    def __init__(self, tokenizer, block_size=1020, debug_mode=False):
         """
         Initialize GPT2Tokenizer and add specific token
         :param block_size : int, max sequence_token_len for GPT_2 input
             all our tokenized sentenced will be padded to have a block_size len
         """
-        self.tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+        self.tokenizer = tokenizer
 
-        self.tokenizer.add_special_tokens({'pad_token': '[PAD]',
-                                           'eos_token': '[EOS]',
-                                           'additional_special_tokens': ['[P1]', '[P3]', '[S]', ' [M]',
-                                                                          '[L]', '[T]', '[Sum]', '[Ent]']})
         # We can add locations / organisations later
         # IMPORTANT : BEFORE FINE-TUNING THE MODEL, WE WILL NEED TO RESIZE THE TOKEN EMBEDDINGS
         # model.resize_token_embeddings(len(tokenizer))
 
-        self.tokenizer.padding_side = "right"  # we will pad the right side
         self.block_size = block_size
         self.debug_mode = debug_mode
 
@@ -71,7 +65,7 @@ class VectorizeParagraph:
                       'metadata': self.tokenizer.encode('[T] ' + " - ".join(metadata['genre']) +
                                                         '[Ent] ' + " - ".join(P2["persons"]) +
                                                         self.bin_size(P2['size'])),
-                      'P2': self.tokenizer.encode('[P2] ' + P2['text'])}
+                      'P2': self.tokenizer.encode('[P2] ' + P2['text'] + '[EOS]')}
 
         def concat(input_d):
             return input_d['P1'] + input_d['P3'] + input_d['Sum'] + input_d['metadata'] + input_d['P2']
