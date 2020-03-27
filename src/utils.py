@@ -10,6 +10,8 @@ from typing import List, Any, Tuple
 import functools
 
 # Constants
+LOC = 'data/metadata/'
+NEW_LOC = 'data/metadata/files/'
 NOVEL_PATH = 'data/metadata/files/'
 NOVEL_SUFFIX = '.json'
 PREPROC_PATH = 'data/preproc/'
