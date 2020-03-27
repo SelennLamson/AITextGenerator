@@ -24,6 +24,6 @@ if __name__ == "__main__":
     model = GPT2LMHeadModel.from_pretrained('gpt2')
     model.resize_token_embeddings(len(vectorize_paragraph.tokenizer))
 
-    output = model(novels_dataset[0])
+    output = model(novels_dataset[4])
     print(output[0].shape)
 
