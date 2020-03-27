@@ -740,7 +740,7 @@ def main():
         # MODIFICATION 3/3
         # USE CUSTOM DATASET
         vectorizer = VectorizeParagraph(tokenizer, block_size=args.block_size)
-        train_dataset = DatasetFromRepo(path=args.args.train_data_file, transform=vectorizer)
+        train_dataset = DatasetFromRepo(path=args.train_data_file, transform=vectorizer)
 
         if args.local_rank == 0:
             torch.distributed.barrier()
