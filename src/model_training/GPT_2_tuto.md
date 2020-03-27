@@ -1,4 +1,4 @@
-#Fonctionnement GPT_2 avec Huggingface
+# Fonctionnement GPT_2 avec Huggingface
 
 Je détaille ici différents modules de huggingface en me basant sur leur 
 example run_language_modelling.py
@@ -106,4 +106,3 @@ La [doc](https://huggingface.co/transformers/main_classes/model.html#transformer
 
 Par contre, dans le cas où on veut utiliser cette fonction il faudra penser à padder à gauche avant d'envoyer le texte.
 Pourquoi ? Car generate fait une beam search à partir du dernier token de la phrase. 
- 
