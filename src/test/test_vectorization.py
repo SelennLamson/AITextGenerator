@@ -1,16 +1,17 @@
-##########################################
-# GAEL's TEST FILE, PLEASE DO NOT MODIFY #
-##########################################
-
-from src.torch_loader import DatasetFromRepo
-from src.torch_loader import VectorizeParagraph
-from transformers import GPT2LMHeadModel
+from torch_loader import DatasetFromRepo, VectorizeParagraph
 from transformers import GPT2Tokenizer
+import random
 
+"""
+Script to test the vectorization module
+The idea is to randomly one example from the dataset and then :
+1/ vectorize the concataned sentence
+2/ print the de-vectorize version and qualitatively check if it is ok
+"""
 
 JSON_FILE_PATH = "data/ent_sum/"
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
     vectorize_paragraph = VectorizeParagraph(tokenizer, block_size=1020)
 
@@ -21,9 +22,8 @@ if __name__ == "__main__":
 
     novels_dataset = DatasetFromRepo(path=JSON_FILE_PATH, transform=vectorize_paragraph)
 
-    model = GPT2LMHeadModel.from_pretrained('gpt2')
-    model.resize_token_embeddings(len(vectorize_paragraph.tokenizer))
+    print(novels_dataset[3])
 
-    output = model(novels_dataset[4])
-    print(output[0].shape)
+    print(tokenizer.decode(novels_dataset[0]))
+
 
