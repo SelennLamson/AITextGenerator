@@ -5,12 +5,12 @@
 ############################################
 
 
-from src.json_generation.ent_sum_preprocessing import perform_ner_on_file
+from src.json_generation.ent_sum_preprocessing import perform_ner_on_all
 from src.flexible_models import FlexibleBERTNER
 from src.utils import *
 
-model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=128, max_length=2000)
-perform_ner_on_file(model)
+model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=256, max_length=128)
+perform_ner_on_all(model)
 
 
 

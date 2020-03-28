@@ -17,19 +17,30 @@ class FlexibleBERTNER(FlexibleModel):
 		self.batch_size = batch_size
 		self.max_length = max_length
 
-	def predict(self, inputs: List[str]) -> List[Dict[str, Tuple[str, float]]]:
+	def predict(self, inputs: List[str], verbose: int = 1) -> List[Dict[str, Tuple[str, float]]]:
 		"""
 		Performs NER on strings of any length.
 		:param inputs: list of strings.
+		:param verbose: 1 to display progress, 0 for silent execution.
 		:return: List[Dict[string: entities, Tuple[string: type, float: confidence]]]
 		"""
-		split_strings, split_information = text_batch_splitter(inputs, self.max_length)
+
+		zipped_tokens = [list(zip(*self.bert_model.tokenize(inp + '.'))) for inp in inputs]
+
+		split_tokens, split_information = token_batch_splitter(zipped_tokens, self.max_length - 2)
 
 		outputs = []
 		start_i = 0
-		while start_i < len(split_strings):
-			inputs = [s + '.' for s in split_strings[start_i:start_i + self.batch_size]]
-			outputs += self.bert_model.predict_batch(inputs)
+		while start_i < len(split_tokens):
+			if verbose >= 1:
+				print("\rNER - {:.2f}%".format(start_i / len(split_tokens) * 100), end="")
+
+			input_tokens = [[s[0] for s in st] for st in split_tokens[start_i:start_i + self.batch_size]]
+			input_valid_positions = [[s[1] for s in st] for st in split_tokens[start_i:start_i + self.batch_size]]
+
+
+			# inputs = [s + '.' for s in split_strings[start_i:start_i + self.batch_size]]
+			outputs += self.bert_model.predict_batch(input_tokens, input_valid_positions)
 			start_i += self.batch_size
 
 		return batch_merger(outputs, split_information, merge_function=self.merge_entities, apply_on_single=True)
