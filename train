@@ -1,0 +1,10 @@
+#!/bin/bash
+
+python src/model_training/custom_run_lm.py \
+    --output_dir=data/output \
+    --model_type=gpt2 \
+    --model_name_or_path=gpt2 \
+    --do_train \
+    --train_data_file=data/ent_sum/ \
+    --per_gpu_train_batch_size=2 \
+    --overwrite_output_dir

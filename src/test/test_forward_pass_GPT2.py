@@ -1,12 +1,9 @@
-##########################################
-# GAEL's TEST FILE, PLEASE DO NOT MODIFY #
-##########################################
+from torch_loader import DatasetFromRepo, VectorizeParagraph
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
-from src.torch_loader import DatasetFromRepo
-from src.torch_loader import VectorizeParagraph
-from transformers import GPT2LMHeadModel
-from transformers import GPT2Tokenizer
-
+"""
+Script to test one forward pass in GPT2 with example from our custom dataset loader 
+"""
 
 JSON_FILE_PATH = "data/ent_sum/"
 

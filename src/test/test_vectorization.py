@@ -1,4 +1,4 @@
-from torch_loader import DatasetFromRepo, VectorizeParagraph
+from torch_loader import VectorizeParagraph, DatasetFromRepo
 from transformers import GPT2Tokenizer
 import random
 
@@ -21,9 +21,7 @@ if __name__ == '__main__':
                                                                 '[L]', '[T]', '[Sum]', '[Ent]']})
 
     novels_dataset = DatasetFromRepo(path=JSON_FILE_PATH, transform=vectorize_paragraph)
-
-    print(novels_dataset[3])
-
-    print(tokenizer.decode(novels_dataset[0]))
+    idx = random.randint(0, len(novels_dataset)-1)
+    print(tokenizer.decode(novels_dataset[idx]))
 
 
