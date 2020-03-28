@@ -8,6 +8,7 @@ Created on Feb 15 2020
 
 import json
 import os
+import time
 from typing import List, Dict, Tuple
 from src.utils import *
 from src.flexible_models import *
@@ -128,7 +129,10 @@ def perform_ner_on_all(model: FlexibleBERTNER, verbose:int = 1):
 			continue
 		if verbose >= 1:
 			print("Processing file:", f)
+
+		now = time.time()
 		perform_ner_on_file(model, d_id, verbose)
+		print("Time elapsed: {}s".format(int(time.time() - now)))
 
 
 def perform_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1):
@@ -148,22 +152,17 @@ def perform_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1
 			print("ERROR - Id", d_id, "not found.")
 
 	# Reading JSON file
-	data = json.load(open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'r'))
+	data = json.load(open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'r', encoding='utf-8'))
 	# novel_data = data['novel']
 	novel_data = data
 	paragraphs = novel_data['paragraphs']
 
-	total_p = len(paragraphs)
-	current_percent = 0
-	for pi, p in enumerate(paragraphs):
-		if verbose >= 1:
-			if int(pi / total_p * 100) > current_percent:
-				current_percent = int(pi / total_p * 100)
-				print("\rNER - {}%".format(current_percent), end="")
+	texts = [p["text"] for p in paragraphs]
+	output = model(texts, verbose)
 
-		print('Before NER')
-		# Performing NER
-		entities = model([p['text']])[0]
+	for pi, entities in enumerate(output):
+		if verbose >= 1:
+			print("\rNER outputs - {:.2f}%".format(pi / len(output) * 100), end="")
 
 		# Registering inferred data to JSON file
 		persons = []
@@ -179,6 +178,8 @@ def perform_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1
 				organisations.append(ent)
 			elif tag == "MISC":
 				misc.append(ent)
+
+		p = paragraphs[pi]
 		p['persons'] = persons
 		p['locations'] = locations
 		p['organisations'] = organisations
@@ -187,5 +188,5 @@ def perform_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1
 	# Saving JSON file
 	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 	if verbose >= 1:
-		print("\rNER - 100%")
+		print("\rNER outputs - 100%")
 

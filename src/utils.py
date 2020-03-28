@@ -8,6 +8,7 @@ Created on Feb 15 2020
 
 from typing import List, Any, Tuple
 import functools
+from math import ceil
 
 # Constants
 NOVEL_PATH = 'data/metadata/files/'
@@ -53,6 +54,54 @@ def text_batch_splitter(strings:List[str], max_length:int) -> Tuple[List[str], L
 
 	return new_strings, split_information
 
+def token_batch_splitter(inputs:List[str], max_length:int) -> Tuple[List[str], List[Tuple[int, int]]]:
+	"""
+	Takes a list of strings and split the ones of them that are longer than a specified length, growing the list
+	where splitting is needed. Split information can then be used to merge the output information back after use.
+	Cuts happen at whitespaces.
+	:param inputs: list of input arrays of any length, each input containing tuples of (token, is valid position to cut)
+	:param max_length: maximum length after which a string must be split into smaller ones
+	:return new list of strings of size <= max_length, with long strings splitted in consecutive indices
+	:return split information: indices of split strings, with number of consecutive elements involved (pass to merger later)
+	"""
+	new_inputs = []
+	split_information = []
+
+	for i, full_input in enumerate(inputs):
+		if len(full_input) <= max_length:
+			new_inputs.append(full_input)
+		else:
+			# Splitting the text in sequences the model can accept
+			wi = 0
+			current_seq = []
+			last_word = 0
+			split_seqs = []
+			while wi < len(full_input):
+
+				inp = full_input[wi]
+				wi += 1
+
+				current_seq.append(inp)
+
+				if len(current_seq) > max_length:
+					if inp[1] == 1:
+						split_seqs.append(current_seq[:-1])
+						current_seq = [inp]
+					else:
+						split_seqs.append(current_seq[:last_word])
+						current_seq = current_seq[last_word:]
+					last_word = 0
+				elif inp[1] == 1:
+					last_word = len(current_seq) - 1
+
+			split_seqs.append(current_seq)
+			split_information.append((len(new_inputs), len(split_seqs)))
+			new_inputs += split_seqs
+
+			assert sum(len(ss) for ss in split_seqs) == len(full_input)
+			assert all(len(ss) <= max_length for ss in split_seqs)
+
+	return new_inputs, split_information
 
 def batch_merger(outputs: List[Any], split_information:List[Tuple[int, int]], merge_function=None, reduce_function=None, apply_on_single=False) -> List[Any]:
 	"""

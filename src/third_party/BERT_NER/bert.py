@@ -112,21 +112,39 @@ class Ner:
         output = [{"word":word,"tag":label,"confidence":confidence} for word,(label,confidence) in zip(words,labels)]
         return output
 
-    def predict_batch(self, inputs: List[str]):
-        input_ids = []
-        input_mask = []
-        segment_ids = []
-        valid_ids = []
-        for inp in inputs:
-            ids, mask, seg, val = self.preprocess(inp)
-            input_ids.append(ids)
-            input_mask.append(mask)
-            segment_ids.append(seg)
-            valid_ids.append(val)
-        input_ids = torch.tensor(input_ids,dtype=torch.long,device=self.device)
-        input_mask = torch.tensor(input_mask,dtype=torch.long,device=self.device)
-        segment_ids = torch.tensor(segment_ids,dtype=torch.long,device=self.device)
-        valid_ids = torch.tensor(valid_ids,dtype=torch.long,device=self.device)
+    def predict_batch(self, input_tokens, input_valid_positions: List[str]):
+
+        all_ids = []
+        all_masks = []
+        all_segments = []
+        all_valids = []
+
+        for tokens, valid_positions in zip(input_tokens, input_valid_positions):
+            tokens.insert(0, "[CLS]")
+            valid_positions.insert(0, 1)
+            tokens.append("[SEP]")
+            valid_positions.append(1)
+
+            segment_ids = [0] * len(tokens)
+            input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
+            input_mask = [1] * len(input_ids)
+
+            while len(input_ids) < self.max_seq_length:
+                input_ids.append(0)
+                input_mask.append(0)
+                segment_ids.append(0)
+                valid_positions.append(0)
+
+            all_ids.append(input_ids)
+            all_masks.append(input_mask)
+            all_segments.append(segment_ids)
+            all_valids.append(valid_positions)
+
+        input_ids = torch.tensor(all_ids,dtype=torch.long,device=self.device)
+        input_mask = torch.tensor(all_masks,dtype=torch.long,device=self.device)
+        segment_ids = torch.tensor(all_segments,dtype=torch.long,device=self.device)
+        valid_ids = torch.tensor(all_valids,dtype=torch.long,device=self.device)
+
         with torch.no_grad():
             logits = self.model(input_ids, segment_ids, input_mask,valid_ids)
         logits = F.softmax(logits,dim=2)
@@ -134,22 +152,33 @@ class Ner:
         logits_label = logits_label.detach().cpu().numpy()
 
         output = []
-        for sample in range(len(inputs)):
+        for sample in range(len(input_tokens)):
             logits_confidence = [values[label].item() for values, label in zip(logits[sample], logits_label[sample])]
-            logits = []
+            logits_lst = []
 
             pos = 0
             for index, mask in enumerate(valid_ids[sample]):
                 if index == 0:
                     continue
                 if mask == 1:
-                    logits.append((logits_label[sample, index - pos], logits_confidence[index - pos]))
+                    logits_lst.append((logits_label[sample, index - pos], logits_confidence[index - pos]))
                 else:
                     pos += 1
-            logits.pop()
+            logits_lst.pop()
 
-            labels = [(self.label_map[label],confidence) for label, confidence in logits]
-            words = word_tokenize(inputs[sample])
+            labels = [(self.label_map[label],confidence) for label, confidence in logits_lst]
+
+            words = []
+            current_word = []
+            for tok, val in zip(input_tokens[sample][1:-1], input_valid_positions[sample][1:-1]):
+                if val == 1:
+                    if len(current_word) > 0:
+                        words.append(''.join(w.replace('#', '') for w in current_word))
+                    current_word = [tok]
+                else:
+                    current_word.append(tok)
+            words.append(''.join(w.replace('#', '') for w in current_word))
+
             assert len(labels) == len(words)
 
             output.append([{"word":word, "tag":label, "confidence":confidence} for word, (label, confidence) in zip(words,labels)])
