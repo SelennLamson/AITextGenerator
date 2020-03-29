@@ -14,9 +14,8 @@ from gutenberg.acquire import load_etext
 from gutenberg.cleanup import strip_headers 
 from gutenberg.query import get_etexts, list_supported_metadatas, get_metadata
 from sortedcontainers import SortedDict
-import zlib # error message
-from gutenberg._domain_model.exceptions import UnknownDownloadUriException # error message
-
+import zlib  # error message
+from gutenberg._domain_model.exceptions import UnknownDownloadUriException  # error message
 
 
 class DataPrepro():
@@ -51,7 +50,6 @@ class DataPrepro():
 		except UnicodeDecodeError:
 			self.data = json.load(open(LOC + self.old_filename, 'r', encoding='utf-8'))
 
-
 	def find_real_genre(self, l, Genres, new_el):
 		"""
 		:param l: list of sentences indicating the theme of the book, gathered form gutenberg
@@ -73,7 +71,6 @@ class DataPrepro():
 		new_el['genre'] = genre
 		return new_el
 
-
 	def create_json(self, b_id):
 		"""
 		:param b_id: id of the book
@@ -82,7 +79,8 @@ class DataPrepro():
 		"""
 		Genres = self.genres
 
-		# Create new element that will be our new json file for the selected book - choose this way to avoid computationnally expensive storage
+		# Create new element that will be our new json file for the selected book -
+		# choose this way to avoid computationnally expensive storage
 		# It will contain all information (text, id, author, title, genre, theme) and strips useless info at beginning
 		new_el = self.data[str(b_id)]
 		if 'en' in new_el['language']: # keep only english files
