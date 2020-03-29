@@ -38,6 +38,7 @@ from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
 
 from torch_loader import DatasetFromRepo, VectorizeParagraph
+from model_training import add_special_tokens
 
 from transformers import (
     MODEL_WITH_LM_HEAD_MAPPING,
@@ -721,15 +722,9 @@ def main():
 
     logger.info("Training/evaluation parameters %s", args)
 
-    # MODIFICATION 1/3
+    # MODIFICATION 1/2
     # ADD SPECIAL TOKENS (IE CONTROL CODES)
-    tokenizer.add_special_tokens({'pad_token': '[PAD]',
-                                  'eos_token': '[EOS]',
-                                  'additional_special_tokens': ['[P1]', '[P3]', '[S]', ' [M]',
-                                                                '[L]', '[T]', '[Sum]', '[Ent]']})
-    # MODIFICATION 2/3
-    # UPDATE MODEL VOCAB SIZE
-    model.resize_token_embeddings(len(tokenizer))
+    add_special_tokens(tokenizer=tokenizer, model=model)
 
     # Training
     if args.do_train:
@@ -737,7 +732,7 @@ def main():
             torch.distributed.barrier()  # Barrier to make sure only the first process in distributed training process the dataset, and the others will use the cache
 
         # train_dataset = load_and_cache_examples(args, tokenizer, evaluate=False)
-        # MODIFICATION 3/3
+        # MODIFICATION 2/2
         # USE CUSTOM DATASET
         vectorizer = VectorizeParagraph(tokenizer, block_size=args.block_size)
         train_dataset = DatasetFromRepo(path=args.train_data_file, transform=vectorizer)

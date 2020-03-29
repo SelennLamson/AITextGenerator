@@ -1,4 +1,5 @@
 from torch_loader import VectorizeParagraph, DatasetFromRepo
+from model_training import add_special_tokens
 from transformers import GPT2Tokenizer
 import random
 
@@ -13,15 +14,12 @@ JSON_FILE_PATH = "data/ent_sum/"
 
 if __name__ == '__main__':
     tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+    add_special_tokens(tokenizer=tokenizer)
+
     vectorize_paragraph = VectorizeParagraph(tokenizer, block_size=1020)
-
-    tokenizer.add_special_tokens({'pad_token': '[PAD]',
-                                  'eos_token': '[EOS]',
-                                  'additional_special_tokens': ['[P1]', '[P3]', '[S]', ' [M]',
-                                                                '[L]', '[T]', '[Sum]', '[Ent]']})
-
     novels_dataset = DatasetFromRepo(path=JSON_FILE_PATH, transform=vectorize_paragraph)
     idx = random.randint(0, len(novels_dataset)-1)
+
     print(tokenizer.decode(novels_dataset[idx]))
 
 
