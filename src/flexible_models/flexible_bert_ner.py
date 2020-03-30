@@ -45,6 +45,72 @@ class FlexibleBERTNER(FlexibleModel):
 
 		return batch_merger(outputs, split_information, merge_function=self.merge_entities, apply_on_single=True)
 
+	def predict_with_index(self, input_text: str, verbose: int = 1) -> List[Tuple[int, str, str]]:
+		"""
+		Performs NER on a text of any length and returns the entities with character index of their begin position.
+		:param input_text: the text to process, can be very long.
+		:param verbose: 1 to display progress, 0 for silent execution.
+		:return: List[Tuple[int: position, str: entity, str: tag]]
+		"""
+		zipped_tokens = [list(zip(*self.bert_model.tokenize(input_text)))]
+
+		split_tokens, _ = token_batch_splitter(zipped_tokens, self.max_length - 2)
+
+		outputs = []
+		all_entities = []
+		start_i = 0
+		while start_i < len(split_tokens):
+			if verbose >= 1:
+				print("\rNER - {:.2f}%".format(start_i / len(split_tokens) * 100), end="")
+
+			input_tokens = [[s[0] for s in st] for st in split_tokens[start_i:start_i + self.batch_size]]
+			input_valid_positions = [[s[1] for s in st] for st in split_tokens[start_i:start_i + self.batch_size]]
+
+			outputs += self.bert_model.predict_batch(input_tokens, input_valid_positions)
+			start_i += self.batch_size
+
+		cursor = 0
+		min_cursor = 0
+		for out in outputs:
+			entities = list()
+			current_entity = None
+			current_tag = None
+
+			if min_cursor is not None:
+				cursor = min_cursor
+			min_cursor = None
+
+			for o in out:
+				tag = o['tag'][2:]
+				begin = o['tag'][0] == 'B'
+				entity = o['word'].replace('.', '').replace(' ', '')
+
+				# If entity finished (empty tag or new entity begins)
+				if current_entity is not None and (begin or tag == ""):
+					entities.append((current_entity, current_tag))
+
+					# We look for the position index of the entity in the original text and register it
+					ent_len = len(current_entity)
+					ent_index = input_text.find(current_entity, cursor, cursor + 5000)
+
+
+					if ent_index != -1:
+						min_cursor = min(min_cursor, ent_index + ent_len) if min_cursor is not None else ent_index + ent_len
+						all_entities.append((ent_index, current_entity, current_tag))
+
+					# After registering, we reset the entity to None
+					current_entity = None
+
+				# Now, we process the current tag
+				if tag != "":  # We have a Named Entity
+					if begin:  # It is a new one
+						current_entity = entity
+						current_tag = tag
+					elif current_entity is not None and not begin:  # It is continuing the current one
+						current_entity += " " + entity
+
+		return all_entities
+
 	def merge_entities(self, outputs):
 		# Merging predictions together, using probability rule: p(A or B) = p(A) + p(B) - p(A)*p(B)
 		entities = dict()
