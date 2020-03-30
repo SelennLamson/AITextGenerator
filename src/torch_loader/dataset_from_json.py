@@ -18,7 +18,7 @@ class DatasetFromJson(Dataset):
         self.path = path
         self.transform = transform
 
-        with open(self.path) as json_file:
+        with open(self.path, 'r', encoding='utf-8') as json_file:
             data = json.load(json_file)
         self.length = len(data['paragraphs']) - 2
 
@@ -32,7 +32,7 @@ class DatasetFromJson(Dataset):
         """
         :return: (vectorized P1, P3 + control code ; vectorized P2 when P2 is the paragraph n°idx+2 of the novel
         """
-        with open(self.path) as json_files:
+        with open(self.path, 'r', encoding='utf-8') as json_files:
             data = json.load(json_files)
         P1, P2, P3 = data['paragraphs'][idx:idx+3]
         metadata = {k: data[k] for k in ('title', 'author', 'genre')}
