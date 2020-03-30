@@ -31,7 +31,7 @@ def prepare_json_templates(overwrite):
 
 			# Reading JSON file
 			print(d_id)
-			data = json.load(open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'r'))
+			data = json.load(open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'r', encoding='utf-8'))
 			# novel_data = data['novel']
 			novel_data = data
 			paragraphs = novel_data['paragraphs']

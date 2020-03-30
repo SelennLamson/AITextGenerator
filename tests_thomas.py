@@ -5,12 +5,21 @@
 ############################################
 
 
-from src.json_generation.ent_sum_preprocessing import perform_ner_on_all
-from src.flexible_models import FlexibleBERTNER
+# from src.json_generation.ent_sum_preprocessing import perform_ner_on_all
+# from src.flexible_models import FlexibleBERTNER
 from src.utils import *
 
-model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=256, max_length=128)
-perform_ner_on_all(model)
+
+# from src.flexible_models.paragraph_parser import ParagraphParser
+# from src.json_generation.paragraph_preprocessing import separate_paragraphs_all_files
+from src.json_generation.ent_sum_preprocessing import prepare_json_templates
+
+# separate_paragraphs_all_files(True, min_length=1400, max_length=1700)
+prepare_json_templates(True)
+
+
+# model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=256, max_length=128)
+# perform_ner_on_all(model)
 
 
 
