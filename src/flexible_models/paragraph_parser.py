@@ -1,9 +1,10 @@
 from typing import List, Any, Dict
 import re
+from collections import OrderedDict
 import matplotlib.pyplot as plt
 
 from .flexible_model import FlexibleModel
-
+from src.utils import *
 
 class ParagraphParser(FlexibleModel):
 	def __init__(self, min_threshold=20, min_length=600, max_length=900):
@@ -19,13 +20,24 @@ class ParagraphParser(FlexibleModel):
 		self.min_length = min_length
 		self.max_length = max_length
 
-	def predict(self, full_text:str, verbose:int = 0) -> List[Dict[str, Any]]:
+	def predict(self, full_text:str, ents_p: Dict[str, str], ents_o: Dict[str, str], ents_l: Dict[str, str], ents_m: Dict[str, str], verbose:int = 0) -> List[Dict[str, Any]]:
 		"""
-		Performs NER on strings of any length.
+		Splits a text into paragraphs.
 		:param full_text: string to summarize.
+		:param ents_p: dictionnary of {position: entity} persons
+		:param ents_o: dictionnary of {position: entity} organisations
+		:param ents_l: dictionnary of {position: entity} locations
+		:param ents_m: dictionnary of {position: entity} miscellaneous
 		:param verbose: 0 for silent execution, 1 for statistics and 2 for statistics and histogram of paragraphs sizes.
 		:return: list of paragraphs
 		"""
+
+		classes = dict()
+		classes['persons'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_p.items()], key=lambda x: x[0])})
+		classes['organisations'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_o.items()], key=lambda x: x[0])})
+		classes['locations'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_l.items()], key=lambda x: x[0])})
+		classes['misc'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_m.items()], key=lambda x: x[0])})
+
 		target_length = (self.min_length + self.max_length) / 2
 		paragraphs = []
 
@@ -39,8 +51,27 @@ class ParagraphParser(FlexibleModel):
 			assert len(c) <= self.max_length
 			paragraphs.append({
 				'size': len(c),
-				'text': c
+				'text': c,
+				'summaries': list()
 			})
+
+			search_content = content.replace(',', ' ')
+
+			for ent_class in ENTITY_CLASSES:
+				paragraphs[-1][ent_class] = []
+				cursor = 0
+				to_rem = []
+				for key, elt in classes[ent_class].items():
+					if cursor >= len(content):
+						break
+					index = content.find(elt + ' ', cursor)
+					if index != -1:
+						paragraphs[-1][ent_class].append(elt)
+						cursor = index + len(elt)
+						to_rem.append(key)
+				for rem in to_rem:
+					del classes[ent_class][rem]
+				paragraphs[-1][ent_class] = list(set(paragraphs[-1][ent_class]))
 
 		# Removing any isolated line-breaks, any multiple whitespaces and separating text into real paragraphs
 		striped_of_linebreaks = ' '.join('\n' if elt == '' else elt for elt in full_text.split('\n'))
