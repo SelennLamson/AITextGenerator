@@ -77,13 +77,13 @@ class VectorizeParagraph:
             return torch.tensor(concat(input_dict))
 
         # Else we truncate the P3
-        size_wo_P3 = vector_size - input_dict['P3'].shape[1]
+        size_wo_P3 = vector_size - len(input_dict['P3'])
         if size_wo_P3 <= self.block_size:
             input_dict['P3'] = input_dict['P3'][:(self.block_size - size_wo_P3)]
             return torch.tensor(concat(input_dict))
 
         # If still not sufficient, we remove P1 and truncate P1 from left but still add the [P1] special token
-        size_wo_P3_and_P1 = vector_size - input_dict['P3'].shape[1] - input_dict['P1'].shape[1]
+        size_wo_P3_and_P1 = vector_size - len(input_dict['P3']) - len(input_dict['P1'])
         if size_wo_P3_and_P1 <= self.block_size:
             input_dict['P3'] = []
             input_dict['P1'] = self.tokenizer.encode('[P1]') + \
