@@ -10,29 +10,25 @@ class Evaluation:
     """
     The Evaluation class will be used to evaluate a GPT2 model
     Roughly, the idea is to take as input :
-        - a fine-tuned GPT2 model
+        - a fine-tuned GPT2 model encapsulate in a FlexibleGPT2 object
         - a path to a folder contained preprocessed novel on which we want to evaluate the GPT2 model
-        - a decoding strategy
 
     Then, the compute_metrics method will compute and return as a panda.dataframe the different metrics
     on each example on the dataset
     """
-    def __init__(self, GPT2_model, BERT_NER_model, path_to_repo, batch_size, decoding_strategy):
+    def __init__(self, GPT2_model, BERT_NER_model, path_to_repo, batch_size):
         """
         :para GPT2_model: FlexibleGPT2 model
         :param BERT_NER_model: FlexibleBERTNER model to detect entities for IOU metrics
         :param path_to_repo: path to repo containing the novel as json file on which we want to evaluate the model
         :param batch_size: batch size that will be use for prediction
-        :param decoding_strategy: dict containing the paramater for the transformers.generate method
         """
         self.GPT2_model = GPT2_model
         self.BERT_ner_model = BERT_NER_model
         self.BERT_sim_model = FlexibleBERTEmbed
-        vectorize_paragraph = VectorizeParagraph(self.GPT2_model.tokenizer, block_size=1020, train_mode=False)
+        vectorize_paragraph = VectorizeParagraph(self.GPT2_model.tokenizer, block_size=1020, mode="eval")
         self.dataset = DatasetFromRepo(path=path_to_repo, transform=vectorize_paragraph)
         self.batch_size = batch_size
-        self.decoding_strategy = decoding_strategy
-        self.max_length = decoding_strategy['max_length']
 
     def pad_left_side(self, sequences):
         """
