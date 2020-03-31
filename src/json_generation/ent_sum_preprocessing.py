@@ -14,52 +14,19 @@ from src.utils import *
 from src.flexible_models import *
 
 
-def prepare_json_templates(overwrite):
-	"""
-	Prepares _entsum.json files from _preproc.json files. It simply adds empty lists to each paragraph: persons, locations, organisations, misc and summaries.
-	:param overwrite: Should already existing files be overwritten?
-	"""
-	files = os.listdir(PREPROC_PATH)
-	treated_files = os.listdir(ENTSUM_PATH)
-	treated_ids = [f[:-len(ENTSUM_SUFFIX)] for f in treated_files]
-
-	for f in files:
-		d_id = f[:-len(PREPROC_SUFFIX)]
-		if not os.path.exists(PREPROC_PATH + d_id + PREPROC_SUFFIX):
-			continue
-		if overwrite or d_id not in treated_ids:
-
-			# Reading JSON file
-			print(d_id)
-			data = json.load(open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'r', encoding='utf-8'))
-			# novel_data = data['novel']
-			novel_data = data
-			paragraphs = novel_data['paragraphs']
-
-			# Adding empty lists
-			for p in paragraphs:
-				p['persons'] = []
-				p['locations'] = []
-				p['organisations'] = []
-				p['misc'] = []
-				p['summaries'] = []
-
-			# Saving JSON file
-			json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w', encoding = 'utf-8'), ensure_ascii = False, indent = 1)
-
-
-def perform_summarization_on_all(models: List[FlexibleSummarizer], replace=False, verbose=1):
+def perform_summarization_on_all(models: List[FlexibleSummarizer], files: List[str] = None, replace=False, verbose=1):
 	"""
 	Applies summarization models to all _ent_sum.json file and their paragraphs.
 	:param models: a list of models to apply, all of them having a predict(text) method.
+	:param files: optional list of files to work on
 	:param replace: True to erase existing summaries and replace them, False (default) to add to existing ones.
 	:param max_length: the maximum text length the model can accept. Paragraphs above that will be split and results will be merged.
 	:param verbose: 0 for silent execution, 1 to display progress.
 	"""
-	files = os.listdir(ENTSUM_PATH)
+	files = os.listdir(PREPROC_PATH) if files is None else [f + PREPROC_SUFFIX for f in files]
 	for f in files:
-		d_id = f[:-len(ENTSUM_SUFFIX)]
-		if not os.path.exists(ENTSUM_PATH + d_id + ENTSUM_SUFFIX):
+		d_id = f[:-len(PREPROC_SUFFIX)]
+		if not os.path.exists(PREPROC_PATH + d_id + PREPROC_SUFFIX):
 			continue
 		if verbose >= 1:
 			print("Processing file:", f)
@@ -72,7 +39,6 @@ def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, ve
 	:param models: a list of models to apply, all of them having a predict(text) method.
 	:param replace: True to erase existing summaries and replace them, False (default) to add to existing ones.
 	:param d_id: prefix to the _entsum.json file.
-	:param max_length: the maximum text length the models can accept. Paragraphs above that will be split and results will be merged.
 	:param verbose: 0 for silent execution, 1 to display progress.
 	"""
 
@@ -80,12 +46,12 @@ def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, ve
 	if d_id is None:
 		while True:
 			d_id = input("Select a novel id: ")
-			if os.path.exists(ENTSUM_PATH + d_id + ENTSUM_SUFFIX):
+			if os.path.exists(PREPROC_PATH + d_id + PREPROC_SUFFIX):
 				break
 			print("ERROR - Id", d_id, "not found.")
 
 	# Reading JSON file
-	data = json.load(open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'r'))
+	data = json.load(open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'r'))
 	# novel_data = data['novel']
 	novel_data = data
 	paragraphs = novel_data['paragraphs']
@@ -111,35 +77,36 @@ def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, ve
 				p['summaries'].append(summary)
 
 	# Saving JSON file
-	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+	json.dump(data, open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 	if verbose >= 1:
 		print("\rSUMMARIZATION - 100%")
 
 
-def perform_ner_on_all(model: FlexibleBERTNER, verbose:int = 1):
+def perform_global_ner_on_all(model: FlexibleBERTNER, files: List[str] = None, verbose:int = 1):
 	"""
-	Applies NER model to all _entsum.json and their paragraphs, replacing already existing entities in the way.
+	Applies NER model on all metadata/file/id.json files, replacing already existing entities in the way.
 	:param model: the FlexibleBERTNER model to apply, should have a predict(text) method.
+	:param files: optional list of files to work on
 	:param verbose: 0 for silent execution, 1 to display progress.
 	"""
-	files = os.listdir(ENTSUM_PATH)
+	files = os.listdir(METADATA_PATH) if files is None else [f + METADATA_SUFFIX for f in files]
 	for f in files:
-		d_id = f[:-len(ENTSUM_SUFFIX)]
-		if not os.path.exists(ENTSUM_PATH + d_id + ENTSUM_SUFFIX):
+		d_id = f[:-len(METADATA_SUFFIX)]
+		if not os.path.exists(METADATA_PATH + d_id + METADATA_SUFFIX):
 			continue
 		if verbose >= 1:
 			print("Processing file:", f)
 
 		now = time.time()
-		perform_ner_on_file(model, d_id, verbose)
+		perform_global_ner_on_file(model, d_id, verbose)
 		print("Time elapsed: {}s".format(int(time.time() - now)))
 
 
-def perform_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1):
+def perform_global_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1):
 	"""
-	Applies NER model to a _entsum.json file for each paragraph, replacing already existing entities in the way.
+	Applies NER model on all a metadata/file/id.json file, replacing already existing entities in the way.
 	:param model: the FlexibleBERTNER model to apply, should have a predict(text) method.
-	:param d_id: prefix to the _entsum.json file.
+	:param d_id: file id.
 	:param verbose: 0 for silent execution, 1 to display progress.
 	"""
 
@@ -147,46 +114,40 @@ def perform_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:int = 1
 	if d_id is None:
 		while True:
 			d_id = input("Select a novel id: ")
-			if os.path.exists(ENTSUM_PATH + d_id + ENTSUM_SUFFIX):
+			if os.path.exists(METADATA_PATH + d_id + METADATA_SUFFIX):
 				break
 			print("ERROR - Id", d_id, "not found.")
 
 	# Reading JSON file
-	data = json.load(open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'r', encoding='utf-8'))
-	# novel_data = data['novel']
-	novel_data = data
-	paragraphs = novel_data['paragraphs']
+	novel_data = json.load(open(METADATA_PATH + d_id + METADATA_SUFFIX, 'r', encoding='utf-8'))
+	text = novel_data['text'].replace('\n', ' ')
 
-	texts = [p["text"] for p in paragraphs]
-	output = model(texts, verbose)
+	output = model.predict_with_index(text, verbose)
 
-	for pi, entities in enumerate(output):
+	persons = dict()
+	locations = dict()
+	organisations = dict()
+	misc = dict()
+	for pi, (index, entity, tag) in enumerate(output):
 		if verbose >= 1:
 			print("\rNER outputs - {:.2f}%".format(pi / len(output) * 100), end="")
 
-		# Registering inferred data to JSON file
-		persons = []
-		locations = []
-		organisations = []
-		misc = []
-		for ent, (tag, confidence) in entities.items():
-			if tag == "PER":
-				persons.append(ent)
-			elif tag == "LOC":
-				locations.append(ent)
-			elif tag == "ORG":
-				organisations.append(ent)
-			elif tag == "MISC":
-				misc.append(ent)
+		if tag == "PER":
+			persons[index] = entity
+		elif tag == "LOC":
+			locations[index] = entity
+		elif tag == "ORG":
+			organisations[index] = entity
+		elif tag == "MISC":
+			misc[index] = entity
 
-		p = paragraphs[pi]
-		p['persons'] = persons
-		p['locations'] = locations
-		p['organisations'] = organisations
-		p['misc'] = misc
+	novel_data['persons'] = persons
+	novel_data['locations'] = locations
+	novel_data['organisations'] = organisations
+	novel_data['misc'] = misc
 
 	# Saving JSON file
-	json.dump(data, open(ENTSUM_PATH + d_id + ENTSUM_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+	json.dump(novel_data, open(NOVEL_PATH + d_id + NOVEL_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 	if verbose >= 1:
 		print("\rNER outputs - 100%")
 
