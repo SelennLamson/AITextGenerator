@@ -7,7 +7,7 @@
 
 from src.json_generation.prepare_data import prepare_data
 
-prepare_data(files=None, do_ner=False, do_split=True, verbose=0)
+prepare_data(files=None, do_ner=True, do_split=True, verbose=0)
 
 # model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=256, max_length=128)
 # perform_ner_on_all(model)
