@@ -20,6 +20,7 @@ METADATA_SUFFIX = '.json'
 METADATA_ROOT = 'data/metadata/'
 
 ENTITY_CLASSES = ("persons", "organisations", "locations", "misc")
+ENTITY_TAGS = ("PER", "ORG", "LOC", "MISC")
 
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
 
