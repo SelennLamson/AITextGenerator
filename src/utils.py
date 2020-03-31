@@ -11,14 +11,15 @@ import functools
 from math import ceil
 
 # Constants
-LOC = 'data/metadata/'
-NEW_LOC = 'data/metadata/files/'
-NOVEL_PATH = 'data/metadata/files/'
-NOVEL_SUFFIX = '.json'
+NOVEL_PATH = 'data/novel/'
+NOVEL_SUFFIX = '_novel.json'
 PREPROC_PATH = 'data/preproc/'
 PREPROC_SUFFIX = '_preproc.json'
-ENTSUM_PATH = 'data/ent_sum/'
-ENTSUM_SUFFIX = '_entsum.json'
+METADATA_PATH = 'data/metadata/files/'
+METADATA_SUFFIX = '.json'
+METADATA_ROOT = 'data/metadata/'
+
+ENTITY_CLASSES = ("persons", "organisations", "locations", "misc")
 
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
 
