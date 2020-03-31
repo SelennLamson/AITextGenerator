@@ -7,8 +7,8 @@ def entities_iou(true_paragraphs, pred_paragraphs, ner_model: FlexibleBERTNER, c
 			for each example in a batch
 			for each class of entity in classes
 
-	:param true_paragraph: list of true paragraph as a string
-	:param pred_paragraph: list of generated paragraph as a string.
+	:param true_paragraphs: list of true paragraph as a string
+	:param pred_paragraphs: list of generated paragraph as a string.
 	:param ner_model: FlexibleBERTNER model to detect entities in output P2
 	:param class_tags: sublist of  ["PER", "LOC", "ORG, "MISC"], if None compute for all classes
 
