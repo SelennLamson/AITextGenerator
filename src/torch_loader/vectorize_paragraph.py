@@ -62,17 +62,16 @@ class VectorizeParagraph:
           if eval_mode : the tokenize list as a torch tensor + the target P2 as a string
         """
         metadata, P1, P3, P2 = sample
-
         input_dict = {'P1': self.tokenizer.encode('[P1] ' + P1['text']),
                       'P3': self.tokenizer.encode('[P3] ' + P3['text']),
                       'Sum': self.tokenizer.encode('[Sum] ' + ""),
                       'metadata': self.tokenizer.encode('[T] ' + " - ".join(metadata['genre']) +
                                                         '[Ent] ' + " - ".join(P2["persons"]) +
                                                         self.bin_size(P2['size'])),
-                      'P2': self.tokenizer.encode('[P2] ' + P2['text'] + '[EOS]')}
+                      'P2': self.tokenizer.encode('[P2] ')}
 
         if self.train_mode:
-            input_dict['P2'] += P2['text'] + '[EOS]'
+            input_dict['P2'] += self.tokenizer.encode(P2['text'] + '[EOS]')
 
         def concat(input_d):
             return input_d['P1'] + input_d['P3'] + input_d['Sum'] + input_d['metadata'] + input_d['P2']
@@ -81,13 +80,13 @@ class VectorizeParagraph:
 
         # If the vector size is not too long, we return it directly
         if vector_size <= self.block_size:
-            return torch.tensor(concat(input_dict)) if self.train_mode else (torch.tensor(concat(input_dict)), P2)
+            return torch.tensor(concat(input_dict)) if self.train_mode else (torch.tensor(concat(input_dict)), P2["text"])
 
         # Else we truncate the P3
         size_wo_P3 = vector_size - len(input_dict['P3'])
         if size_wo_P3 <= self.block_size:
             input_dict['P3'] = input_dict['P3'][:(self.block_size - size_wo_P3)]
-            return torch.tensor(concat(input_dict)) if self.train_mode else (torch.tensor(concat(input_dict)), P2)
+            return torch.tensor(concat(input_dict)) if self.train_mode else (torch.tensor(concat(input_dict)), P2["text"])
 
         # If still not sufficient, we remove P1 and truncate P1 from left but still add the [P1] special token
         size_wo_P3_and_P1 = vector_size - len(input_dict['P3']) - len(input_dict['P1'])
@@ -95,7 +94,7 @@ class VectorizeParagraph:
             input_dict['P3'] = []
             input_dict['P1'] = self.tokenizer.encode('[P1]') + \
                                input_dict['P1'][self.block_size - size_wo_P3_and_P1 + 1:]
-            return torch.tensor(concat(input_dict)) if self.train_mode else (torch.tensor(concat(input_dict)), P2)
+            return torch.tensor(concat(input_dict)) if self.train_mode else (torch.tensor(concat(input_dict)), P2["text"])
 
         # It still to big we simply return truncated P2
         else:
