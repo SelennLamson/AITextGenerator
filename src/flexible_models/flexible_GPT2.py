@@ -1,11 +1,15 @@
 from .flexible_model import FlexibleModel
 
 class FlexibleGPT2(FlexibleModel):
+    """
+    A FlexibleGPT2 model is simply the combination of a huggingface gpt2 transformers model and
+    a decoding strategy
+    """
     def __init__(self, model, tokenizer, decoding_strategy):
         """
         Initializes a GPT2 model.
-        :param gpt2_model: huggingface gpt2 transformers
-        :param gpt2_tokenizer: huggingface gpt2 tokenizers
+        :param model: huggingface gpt2 transformers
+        :param tokenizer: huggingface gpt2 tokenizers
         :param decoding_strategy: dict of parameters for huggingface transformers.generate methods
         """
         super().__init__()
