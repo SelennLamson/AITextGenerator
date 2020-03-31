@@ -17,45 +17,22 @@ class Evaluation:
     Then, the compute_metrics method will compute and return as a panda.dataframe the different metrics
     on each example on the dataset
     """
-    def __init__(self, GPT_model, GPT_tokenizer, BERT_NER_model, path_to_repo, batch_size, decoding_strategy):
+    def __init__(self, GPT2_model, BERT_NER_model, path_to_repo, batch_size, decoding_strategy):
         """
-        :param GPT_model: fine-tune GPT2 model to evaluate
-        :param GPT_tokenizer: GPT2 tokenizer used from training time
+        :para GPT2_model: FlexibleGPT2 model
         :param BERT_NER_model: FlexibleBERTNER model to detect entities for IOU metrics
         :param path_to_repo: path to repo containing the novel as json file on which we want to evaluate the model
         :param batch_size: batch size that will be use for prediction
         :param decoding_strategy: dict containing the paramater for the transformers.generate method
         """
-        self.GPT_model = GPT_model
+        self.GPT2_model = GPT2_model
         self.BERT_ner_model = BERT_NER_model
-        self.GPT_tokenizer = GPT_tokenizer
         self.BERT_sim_model = FlexibleBERTEmbed
-        vectorize_paragraph = VectorizeParagraph(GPT_tokenizer, block_size=1020, train_mode=False)
+        vectorize_paragraph = VectorizeParagraph(self.GPT2_model.tokenizer, block_size=1020, train_mode=False)
         self.dataset = DatasetFromRepo(path=path_to_repo, transform=vectorize_paragraph)
         self.batch_size = batch_size
         self.decoding_strategy = decoding_strategy
         self.max_length = decoding_strategy['max_length']
-
-    def prediction(self, input_ids):
-        """
-        :param input_ids: torch.tensors of shape (batch_size, max_length)
-        :return: list[str] : list of generated text for each input
-            IMPORTANT : It return the text generated after the input
-        """
-        mask = (input_ids != self.GPT_tokenizer.pad_token_id).long()
-        self.decoding_strategy['max_length'] = self.max_length + input_ids.shape[1]
-        print(self.decoding_strategy)
-        outputs_id = self.GPT_model.generate(input_ids=input_ids,
-                                             pad_token_id=self.GPT_tokenizer.eos_token_id,
-                                             attention_mask=mask,
-                                             **self.decoding_strategy)
-
-        # only keep the token corresponding to the generation part
-        # this is because transformers.generate methods also return the input part
-        truncated_outputs_id = outputs_id[:, input_ids.shape[1]:]
-
-        return [self.GPT_tokenizer.decode(truncated_outputs_id[i], skip_special_tokens=True)
-                for i in range(outputs_id.shape[0])]
 
     def pad_left_side(self, sequences):
         """
@@ -66,7 +43,7 @@ class Evaluation:
         """
         max_len = max([s.size(0) for s in sequences])
         out_dims = (len(sequences), max_len)
-        out_tensor = sequences[0].data.new(*out_dims).fill_(self.GPT_tokenizer.pad_token_id)
+        out_tensor = sequences[0].data.new(*out_dims).fill_(self.GPT2_model.tokenizer.pad_token_id)
         for i, tensor in enumerate(sequences):
             length = tensor.size(0)
             out_tensor[i, max_len - length:] = tensor
@@ -103,10 +80,9 @@ class Evaluation:
 
         metrics = pd.DataFrame(columns=["True_P2", "Pred_P2", "PER_iou", "ORG_iou", "LOC_iou", "MISC_iou"])
 
-        self.GPT_model.eval()
         idx = 0
         for input_ids, true_P2 in dataloader:
-            pred_P2 = self.prediction(input_ids)
+            pred_P2 = self.GPT2_model.predict(input_ids)
 
             iou = entities_iou(true_paragraphs=true_P2,
                                pred_paragraphs=pred_P2,
