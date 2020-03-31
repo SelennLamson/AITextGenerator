@@ -734,7 +734,7 @@ def main():
         # train_dataset = load_and_cache_examples(args, tokenizer, evaluate=False)
         # MODIFICATION 2/2
         # USE CUSTOM DATASET
-        vectorizer = VectorizeParagraph(tokenizer, block_size=args.block_size)
+        vectorizer = VectorizeParagraph(tokenizer, block_size=args.block_size, mode='train')
         train_dataset = DatasetFromRepo(path=args.train_data_file, transform=vectorizer)
 
         if args.local_rank == 0:
