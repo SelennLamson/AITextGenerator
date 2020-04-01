@@ -24,6 +24,14 @@ ENTITY_TAGS = ("PER", "ORG", "LOC", "MISC")
 
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
 
+DEFAULT_DECODING_STRATEGY = {
+    'do_sample': True,
+    'max_length': 50,
+    'top_k': 50,
+    'top_p': 0.95
+}
+
+
 def text_batch_splitter(strings:List[str], max_length:int) -> Tuple[List[str], List[Tuple[int, int]]]:
 	"""
 	Takes a list of strings and split the ones of them that are longer than a specified length, growing the list
