@@ -44,7 +44,7 @@ class VectorizeParagraph:
         :return: [torch.tensor] tokenize version of the string
                     [P1] P1 [P3] P3 [Sum] Sum_P2 [T] Theme [ENT] list_of_person [Size] [P2] P2 [EOS]
         """
-        input_dict['P2'] += self.tokenizer.encode(P2['text'] + '[EOS]')
+        input_dict['P2'] += self.tokenizer.encode(' ' + P2 + '[EOS]')
 
         vector_size = sum(map(len, input_dict.values()))
 
@@ -102,7 +102,7 @@ class VectorizeParagraph:
             input_dict['P3'] = []
             input_dict['P1'] = self.tokenizer.encode('[P1]') + \
                                input_dict['P1'][self.block_size - size_wo_P3_and_P1 + 1:]
-            return torch.tensor(self.concat(input_dict)), P2["text"]
+            return torch.tensor(self.concat(input_dict)), P2
 
         # By default we return nothing
         return torch.tensor(0), ""
@@ -130,7 +130,7 @@ class VectorizeParagraph:
                       'metadata': self.tokenizer.encode('[T] ' + " - ".join(metadata['genre']) +
                                                         '[Ent] ' + " - ".join(P2["persons"]) +
                                                         self.bin_size(P2['size'])),
-                      'P2': self.tokenizer.encode('[P2] ')}
+                      'P2': self.tokenizer.encode('[P2]')}
 
         if self.mode == "train":
             return self.train_mode(input_dict, P2['text'])
