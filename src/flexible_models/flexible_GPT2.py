@@ -28,6 +28,10 @@ class FlexibleGPT2(FlexibleModel):
         :return: list of strings of len batch_size * nb_samples
         """
 
+        # If inputs_ids consist of a single example, we create from it a batch of 1 example
+        if len(input_ids.shape) == 1:
+            input_ids = input_ids.view(1, -1)
+
         # We use a mask so that GPT2 does not take into account the PAD token during generation time
         mask = (input_ids != self.tokenizer.pad_token_id).long()
 
