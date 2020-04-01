@@ -15,6 +15,8 @@ class FlexibleGPT2(FlexibleModel):
         super().__init__()
         self.model = model
         self.tokenizer = tokenizer
+        tokenizer.pad_token = tokenizer.eos_token
+
         self.decoding_strategy = decoding_strategy
         self.max_length = decoding_strategy['max_length']
 
