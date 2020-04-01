@@ -22,10 +22,9 @@ class GenerationInput:
         """
         :return: tupple representing self so that can directly be sent to a Vectorizer object
         """
-        return ({'genre': self.genre,
+        return ({'genre': self.genre}, # METADATA
+                {'text':self.P1},  # P1
+                {'text': self.P3},  # P3
+                {'size': self.size,  # P2
                  'persons': self.entities,
-                 'size': self.size,
-                 'sum': self.context},
-                self.P1,
-                "",
-                self.P3)
+                 'summaries': [self.context]})
