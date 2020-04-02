@@ -11,7 +11,8 @@ import os
 import time
 from typing import List, Dict, Tuple
 from src.utils import *
-from src.flexible_models import *
+from src.flexible_models.flexible_bert_sum import FlexibleSummarizer
+from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
 
 
 def perform_summarization_on_all(models: List[FlexibleSummarizer], files: List[str] = None, replace=False, verbose=1):
