@@ -37,13 +37,13 @@ class VectorizeParagraph:
     def train_mode(self, input_dict, P2):
         """
         Concatanate all the information from sample as a global string in the following order
-            [P1] P1 [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2] P2 [EOS]
+           [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2] P2 [EOS]
         If needed will truncate P3 then P1 so that the tokenize version of the string is smaller that self.block_size
 
         :param input_dict [dict] representing the context (see VectorizeParagraph.__call__ for further details)
         :param  P2 [str]
         :return: [torch.tensor] tokenize version of the string
-                    [P1] P1 [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2] P2 [EOS]
+                    [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2] P2 [EOS]
         """
         input_dict['P2'] += self.tokenizer.encode(' ' + P2 + '[EOS]')
 
