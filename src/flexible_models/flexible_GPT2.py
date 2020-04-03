@@ -22,7 +22,7 @@ class FlexibleGPT2(FlexibleModel):
 
     def predict(self, input_ids, nb_samples=1):
         """
-        Performs NER on strings of any length.
+        Performs GPT-2 generation on strings of any length.
         :param input_ids: torch.tensor of shape (batch_size, max_length)
         :param nb_samples: nb_sample to generate for each input example
         :return: list of strings of len batch_size * nb_samples
