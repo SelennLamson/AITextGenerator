@@ -2,7 +2,7 @@ from src.flexible_models.flexible_bert_embed import FlexibleBERTEmbed
 import numpy as np
 
 def bert_similarity(input_p2, output_p2, ner_model: FlexibleBERTEmbed):
-	"""Evaluates the intersection-over-union of entities in input and output P2.
+	"""
 	:param input_p2: the input paragraph, as a string, or an array of strings.
 	:param output_p2: the generated paragraph, as a string, or an array of strings of same length as input.
 	:param ner_model: FlexibleBERTEmbed model to embed the two paragraphs
