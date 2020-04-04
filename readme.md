@@ -22,6 +22,12 @@ A detailed description of the project can be found in the *report* folder. Rough
 - **web_server** contains the back_end interface of our web service. The web service front-end has been pushed to a separate repo and can been found at : https://github.com/WeazelDev/AITextGeneratorFront
 - **third_party** folder contains several framework that has been cloned directly into our project 
 
+## Download the data
+
+To download the training data, download and extract the following archive in the ```data``` folder:
+
+https://drive.google.com/open?id=1wfWNo4p91OPHUSBYJ9Bv-oMNawxv_tAH
+
 ## Run fine-tuning script 
 
 To fine-tune the GPT2 model : 
