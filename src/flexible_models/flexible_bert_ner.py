@@ -27,6 +27,16 @@ class FlexibleBERTNER(FlexibleModel):
 
 		zipped_tokens = [list(zip(*self.bert_model.tokenize(inp + '.'))) for inp in inputs]
 
+		for entry in zipped_tokens:
+			n_unk = sum([1 for tok, val in entry if tok == '[UNK]'])
+			if n_unk > 20:
+				i = 0
+				while i < len(entry):
+					if entry[i][0] == '[UNK]':
+						del entry[i]
+					else:
+						i += 1
+
 		split_tokens, split_information = token_batch_splitter(zipped_tokens, self.max_length - 2)
 
 		outputs = []

@@ -173,6 +173,8 @@ class GPT2BenchmarkScript:
 			bert_ner_model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=self.batch_size)
 			ent_ious = entities_iou(originals, generated, bert_ner_model)
 
+			ent_ious = np.sum([ent_ious[key] for key in ENTITY_TAGS], axis=0) / len(ENTITY_TAGS)
+
 			# Freeing space
 			del bert_ner_model
 
@@ -204,12 +206,17 @@ class GPT2BenchmarkScript:
 			register_stats(gpt2_perplexities, 'gpt2_perplexity')
 
 		if compute_residual_tokens:
-			pass
+			res_toks = residual_tokens(generated)
+			if verbose:
+				print("\rRegistering Residual Tokens results...", end="")
+			for i, res in enumerate(res_toks):
+				per_paragraph[i]['residual_tokens'] = res
+			register_stats(res_toks, 'residual_tokens')
 
 		json.dump(results, open(results_path, 'w'))
 
 		if verbose:
-			print("Metrics computed successfully.")
+			print("\rMetrics computed successfully.")
 
 
 

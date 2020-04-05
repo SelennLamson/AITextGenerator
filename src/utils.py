@@ -113,7 +113,12 @@ def token_batch_splitter(inputs: List[str], max_length: int) -> Tuple[List[str],
 
 			assert sum(len(ss) for ss in split_seqs) == len(full_input)
 
-	assert all(len(ss) <= max_length for ss in new_inputs)
+			try:
+				assert all(len(ss) <= max_length for ss in split_seqs)
+			except AssertionError:
+				for ss in split_seqs:
+					if len(ss) > max_length:
+						print(ss)
 
 	return new_inputs, split_information
 
