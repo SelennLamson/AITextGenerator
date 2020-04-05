@@ -25,14 +25,14 @@ ENTITY_TAGS = ("PER", "ORG", "LOC", "MISC")
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
 
 DEFAULT_DECODING_STRATEGY = {
-    'do_sample': True,
-    'max_length': 50,
-    'top_k': 50,
-    'top_p': 0.95
+	'do_sample': True,
+	'max_length': 50,
+	'top_k': 50,
+	'top_p': 0.95
 }
 
 
-def text_batch_splitter(strings:List[str], max_length:int) -> Tuple[List[str], List[Tuple[int, int]]]:
+def text_batch_splitter(strings: List[str], max_length: int) -> Tuple[List[str], List[Tuple[int, int]]]:
 	"""
 	Takes a list of strings and split the ones of them that are longer than a specified length, growing the list
 	where splitting is needed. Split information can then be used to merge the output information back after use.
@@ -56,7 +56,7 @@ def text_batch_splitter(strings:List[str], max_length:int) -> Tuple[List[str], L
 			wi = 0
 			for i in range(n_seqs):
 				current = ""
-				while wi < len(words) and len(current) + len(words[wi]) < len(full_str) / n_seqs :
+				while wi < len(words) and len(current) + len(words[wi]) < len(full_str) / n_seqs:
 					current += words[wi] + " "
 					wi += 1
 				seqs.append(current[:-1])
@@ -66,7 +66,8 @@ def text_batch_splitter(strings:List[str], max_length:int) -> Tuple[List[str], L
 
 	return new_strings, split_information
 
-def token_batch_splitter(inputs:List[str], max_length:int) -> Tuple[List[str], List[Tuple[int, int]]]:
+
+def token_batch_splitter(inputs: List[str], max_length: int) -> Tuple[List[str], List[Tuple[int, int]]]:
 	"""
 	Takes a list of strings and split the ones of them that are longer than a specified length, growing the list
 	where splitting is needed. Split information can then be used to merge the output information back after use.
@@ -111,11 +112,14 @@ def token_batch_splitter(inputs:List[str], max_length:int) -> Tuple[List[str], L
 			new_inputs += split_seqs
 
 			assert sum(len(ss) for ss in split_seqs) == len(full_input)
-			assert all(len(ss) <= max_length for ss in split_seqs)
+
+	assert all(len(ss) <= max_length for ss in new_inputs)
 
 	return new_inputs, split_information
 
-def batch_merger(outputs: List[Any], split_information:List[Tuple[int, int]], merge_function=None, reduce_function=None, apply_on_single=False) -> List[Any]:
+
+def batch_merger(outputs: List[Any], split_information: List[Tuple[int, int]], merge_function=None,
+				 reduce_function=None, apply_on_single=False) -> List[Any]:
 	"""
 	Merges consecutive outputs related to previously split inputs. Taking a list of outputs, it builds a shorter
 	list of outputs with some of them merged based on split information.
@@ -144,7 +148,7 @@ def batch_merger(outputs: List[Any], split_information:List[Tuple[int, int]], me
 			i += 1
 		else:
 			length = split_lengths[i]
-			outs = outputs[i : i + length]
+			outs = outputs[i: i + length]
 
 			if merge_function is None:
 				new_outputs.append(functools.reduce(reduce_function, outs))

@@ -35,10 +35,11 @@ class FlexibleBERTEmbed(FlexibleModel):
 		if self.cuda_device != -1:
 			self.bert_model.to('cuda:' + str(self.cuda_device))
 
-	def predict(self, inputs: List[str]) -> np.ndarray:
+	def predict(self, inputs: List[str], verbose=1) -> np.ndarray:
 		"""
 		Performs embedding on strings of any length.
 		:param inputs: list of N strings.
+		:param verbose: 0 for silent, 1 to display progress
 		:return: array of shape (N, 768) containing embedding vectors for each input.
 		"""
 
@@ -57,6 +58,9 @@ class FlexibleBERTEmbed(FlexibleModel):
 		start_i = 0
 		batch_i = 0
 		while start_i < len(padded):
+			if verbose:
+				print("\rEmbedding {:.2f}%".format(start_i / len(padded) * 100), end="")
+
 			input_ids = torch.LongTensor(padded[start_i:start_i + self.batch_size])
 			attention_mask = torch.tensor(attention_mask_np[start_i:start_i + self.batch_size])
 

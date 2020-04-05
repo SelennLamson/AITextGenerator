@@ -9,4 +9,6 @@ Contains the text files splitted into paragraphs, where entities and summaries a
 
 **raw/id.txt** contains raw text files that are not used in the main framework.
 
+**outputs** contains the output files of different models (texts, statistics...), in corresponding folders.
+
 See main ```readme.md``` file for the download link of the data archive.

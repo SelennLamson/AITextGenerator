@@ -20,6 +20,10 @@ class FlexibleGPT2(FlexibleModel):
         self.decoding_strategy = decoding_strategy
         self.max_length = decoding_strategy['max_length']
 
+    def set_decoding_strategy(self, decoding_strategy):
+        self.decoding_strategy = decoding_strategy
+        self.max_length = decoding_strategy['max_length']
+
     def predict(self, input_ids, nb_samples=1):
         """
         Performs GPT-2 generation on strings of any length.
@@ -41,7 +45,7 @@ class FlexibleGPT2(FlexibleModel):
                                          pad_token_id=self.tokenizer.eos_token_id,
                                          attention_mask=mask,
                                          num_return_sequences=nb_samples,
-                                         **self.decoding_strategy)
+                                         **self.decoding_strategy).detach().cpu()
 
         # only keep the token corresponding to the generation part
         # this is because transformers.generate methods also return the input part
