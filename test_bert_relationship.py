@@ -9,8 +9,10 @@ if __name__ == '__main__':
     sentence_2_v1 = "The Eiffel Tower is in Paris"
     sentence_2_v2 = "I am 193 years old"
 
-    prob_of_succession_v1 = bert_relationship(sentence_1, sentence_2_v1, model, tokenizer)
-    prob_of_succession_v2 = bert_relationship(sentence_1, sentence_2_v2, model, tokenizer)
+    output = bert_relationship([sentence_1, sentence_1], [sentence_2_v1, sentence_2_v2], model, tokenizer)
+
+    prob_of_succession_v1 = output[0]
+    prob_of_succession_v2 = output[1]
 
     print("Probality of [", sentence_2_v1,"] succeeding to [", sentence_1, "] = %0.2f"%prob_of_succession_v1)
     print("Probality of [", sentence_2_v2,"] succeeding to [", sentence_1, "] = %0.2f"%prob_of_succession_v2)
