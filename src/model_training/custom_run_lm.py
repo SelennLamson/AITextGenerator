@@ -37,8 +37,9 @@ from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampl
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
 
-from src.torch_loader import DatasetFromRepo, VectorizeParagraph
+from src.torch_loader import DatasetFromRepo, VectorizeParagraph, VectorizeMode
 from src.model_training import add_special_tokens
+from src.utils import GPT2_BLOCK_SIZE
 
 from transformers import (
     MODEL_WITH_LM_HEAD_MAPPING,
@@ -734,7 +735,11 @@ def main():
         # train_dataset = load_and_cache_examples(args, tokenizer, evaluate=False)
         # MODIFICATION 2/2
         # USE CUSTOM DATASET
-        vectorizer = VectorizeParagraph(tokenizer, block_size=args.block_size, mode='train')
+        vectorizer = VectorizeParagraph(tokenizer=tokenizer,
+                                        block_size=GPT2_BLOCK_SIZE,
+                                        mode=VectorizeMode.TRAIN,
+                                        use_context=True)
+
         train_dataset = DatasetFromRepo(path=args.train_data_file, transform=vectorizer)
 
         if args.local_rank == 0:
