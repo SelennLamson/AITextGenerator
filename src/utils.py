@@ -25,9 +25,11 @@ ENTITY_CLASSES = ("persons", "organisations", "locations", "misc")
 ENTITY_TAGS = ("PER", "ORG", "LOC", "MISC")
 
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
+BERT_NER_BASE = 'models/entity_recognition/BERT_NER_Base/'
 
 DEFAULT_DECODING_STRATEGY = {
 	'do_sample': True,
+	'min_length': 0,
 	'max_length': 50,
 	'top_k': 50,
 	'top_p': 0.95

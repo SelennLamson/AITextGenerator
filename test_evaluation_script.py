@@ -4,7 +4,7 @@ from src.utils import DEFAULT_DECODING_STRATEGY
 
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
-script = GPT2EvaluationScript(file_ids=["36", "370"], batch_size=8)
+script = GPT2EvaluationScript(file_ids=["36", "370"], batch_size=1)
 
 
 gpt_2 = FlexibleGPT2(model=GPT2LMHeadModel.from_pretrained('gpt2'),

@@ -11,7 +11,7 @@ import numpy as np
 from torch.utils.data import DataLoader
 
 from src.utils import *
-from src.torch_loader import DatasetFromRepo, VectorizeParagraph
+from src.torch_loader import DatasetFromRepo, VectorizeParagraph, VectorizeMode
 from src.flexible_models.flexible_bert_embed import FlexibleBERTEmbed
 from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
 from src.flexible_models.flexible_GPT2 import FlexibleGPT2
@@ -24,14 +24,15 @@ from src.model_evaluation.metrics.bert_relationship import bert_relationship
 
 class GPT2EvaluationScript:
     def __init__(self, file_ids: List[str], batch_size: int = 1, use_context=True):
-        """Initializes a GPT-2 Benchmark script that will perform text generation on the paragraphs of given files.
+        """
+        Initializes a GPT-2 Benchmark script that will perform text generation on the paragraphs of given files.
         Call the script using parentheses to launch it.
         :param file_ids: list of book ids, the part of the preproc file before "_preproc.json".
         :param batch_size: number of simultaneous text generations + text evalution
                     will be used by all flexible model + metrics
         :param use_context: if True, will create special context sentences for model input :
                     [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2]
-                            else, will juste use P1
+                            else, will juste use P1 without any special tokens
                 --> put use_context = False to compute GPT_2 baseline
         """
         # Filtering file ids on files that really exist in the preproc folder
@@ -48,8 +49,9 @@ class GPT2EvaluationScript:
                  compute_entites_iou=False,
                  compute_gpt2_perplexity=False,
                  compute_residual_tokens=False,
-                 verbose = 1):
-        """Generates texts at generation_path and computes given metrics on them.
+                 verbose=1):
+        """
+        Generates texts at generation_path and computes given metrics on them.
         :param generations_path: The path where text generations can be found.
         :param results_path: The path where results should be saved.
         :param GPT2_model: FlexibneGPT2 model that need to be evaluated and will be used to generate text
@@ -98,12 +100,13 @@ class GPT2EvaluationScript:
     def generate_texts(self, generations_path: str, GPT2_model:FlexibleGPT2, verbose: int = 1):
         """Starts the text generation on all paragraphs.
         :param generations_path: The path where text generations should be saved.
-        :param GPT2_model: FlexibneGPT2 model that need to be evaluated and will be used to generate text
+        :param GPT2_model: FlexibleGPT2 model that need to be evaluated and will be used to generate text
         :param verbose: 0 for silent execution, 1 for progress.
         """
+        vectorizer = VectorizeParagraph(tokenizer=GPT2_model.tokenizer,
+                                        mode=VectorizeMode.EVAL,
+                                        use_context=self.use_context)
 
-        mode = 'eval' if self.use_context else 'eval_wo_context'
-        vectorizer = VectorizeParagraph(tokenizer=GPT2_model.tokenizer, mode=mode)
         dataset = DatasetFromRepo(path=PREPROC_PATH, sublist=self.list_of_fid, transform=vectorizer)
         dataloader = DataLoader(dataset=dataset, batch_size=self.batch_size,
                                 collate_fn=lambda x: self.custom_collate(x, GPT2_model.tokenizer.pad_token_id))
@@ -119,6 +122,7 @@ class GPT2EvaluationScript:
             generations += GPT2_model(input_ids)
             originals += true_P2
             P3_list += P3
+            break  # TODO : !! REMOVE IT JUST TO TEST QUICKLY !!
 
         if verbose:
             print("\rSaving generated texts...", end="")
@@ -168,10 +172,10 @@ class GPT2EvaluationScript:
         per_paragraph = results['per_paragraph']
 
         def register_stats(_array, _name):
-            results[_name] = {'mean': np.mean(_array),
-                              'max': np.max(_array),
-                              'min': np.min(_array),
-                              'median': np.median(_array)}
+            results[_name] = {'mean': str(np.mean(_array)),
+                              'max': str(np.max(_array)),
+                              'min': str(np.min(_array)),
+                              'median': str(np.median(_array))}
 
         if compute_bert_similarity:
             bert_embed_model = FlexibleBERTEmbed(2000, self.batch_size)
@@ -187,7 +191,8 @@ class GPT2EvaluationScript:
             register_stats(bert_similarities, 'bert_similarity')
 
         if compute_entites_iou:
-            bert_ner_model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=self.batch_size)
+            #bert_ner_model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=self.batch_size)
+            bert_ner_model = FlexibleBERTNER(BERT_NER_BASE, batch_size=self.batch_size)  # TODO : REMOVE IT AFTER TEST
             ent_ious = entities_iou(originals, generated, bert_ner_model)
 
             ent_ious = np.sum([ent_ious[key] for key in ENTITY_TAGS], axis=0) / len(ENTITY_TAGS)
@@ -227,7 +232,7 @@ class GPT2EvaluationScript:
             if verbose:
                 print("\rRegistering Residual Tokens results...", end="")
             for i, res in enumerate(res_toks):
-                per_paragraph[i]['residual_tokens'] = res
+                per_paragraph[i]['residual_tokens'] = float(res)
             register_stats(res_toks, 'residual_tokens')
 
         json.dump(results, open(results_path, 'w'))
@@ -247,9 +252,11 @@ class GPT2EvaluationScript:
             if verbose:
                 print("\rRegistering BERT relationship results...", end="")
             for i, relationship in enumerate(gen_relationships):
-                per_paragraph[i]['bert_relationship'] = relationship
-            register_stats(bert_relationship, 'bert_relationship')
+                per_paragraph[i]['bert_relationship'] = str(relationship)
+            register_stats(gen_relationships, 'bert_relationship')
 
+        print("RESULTS:")
+        print(results)
         json.dump(results, open(results_path, 'w'))
 
         if verbose:
