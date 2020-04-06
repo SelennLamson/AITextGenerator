@@ -15,27 +15,36 @@ class FlexibleGPT2(FlexibleModel):
         super().__init__()
         self.model = model
         self.tokenizer = tokenizer
+        tokenizer.pad_token = tokenizer.eos_token
+
+        self.decoding_strategy = decoding_strategy
+        self.max_length = decoding_strategy['max_length']
+
+    def set_decoding_strategy(self, decoding_strategy):
         self.decoding_strategy = decoding_strategy
         self.max_length = decoding_strategy['max_length']
 
     def predict(self, input_ids, nb_samples=1):
         """
-        Performs NER on strings of any length.
+        Performs GPT-2 generation on strings of any length.
         :param input_ids: torch.tensor of shape (batch_size, max_length)
         :param nb_samples: nb_sample to generate for each input example
         :return: list of strings of len batch_size * nb_samples
         """
 
+        # If inputs_ids consist of a single example, we create from it a batch of 1 example
+        if len(input_ids.shape) == 1:
+            input_ids = input_ids.view(1, -1)
+
         # We use a mask so that GPT2 does not take into account the PAD token during generation time
         mask = (input_ids != self.tokenizer.pad_token_id).long()
 
-        # TODO : investigate the way transformers.generate take into account max_length
         self.decoding_strategy['max_length'] = self.max_length + input_ids.shape[1]
         outputs_id = self.model.generate(input_ids=input_ids,
                                          pad_token_id=self.tokenizer.eos_token_id,
                                          attention_mask=mask,
                                          num_return_sequences=nb_samples,
-                                         **self.decoding_strategy)
+                                         **self.decoding_strategy).detach().cpu()
 
         # only keep the token corresponding to the generation part
         # this is because transformers.generate methods also return the input part

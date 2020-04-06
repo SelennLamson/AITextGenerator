@@ -31,20 +31,21 @@ class VectorizeParagraph:
 
     @staticmethod
     def concat(input_d):
-        return input_d['P1'] + input_d['P3'] + input_d['Sum'] + input_d['metadata'] + input_d['P2']
+        return input_d['P3'] + input_d['Sum'] + input_d['T'] + input_d['Ent'] + \
+               input_d['Size'] + input_d['P1'] + input_d['P2']
 
     def train_mode(self, input_dict, P2):
         """
         Concatanate all the information from sample as a global string in the following order
-            [P1] P1 [P3] P3 [Sum] Sum_P2 [T] Theme [ENT] list_of_person [Size] [P2] P2 [EOS]
+           [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2] P2 [EOS]
         If needed will truncate P3 then P1 so that the tokenize version of the string is smaller that self.block_size
 
         :param input_dict [dict] representing the context (see VectorizeParagraph.__call__ for further details)
         :param  P2 [str]
         :return: [torch.tensor] tokenize version of the string
-                    [P1] P1 [P3] P3 [Sum] Sum_P2 [T] Theme [ENT] list_of_person [Size] [P2] P2 [EOS]
+                    [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2] P2 [EOS]
         """
-        input_dict['P2'] += self.tokenizer.encode(P2['text'] + '[EOS]')
+        input_dict['P2'] += self.tokenizer.encode(' ' + P2 + '[EOS]')
 
         vector_size = sum(map(len, input_dict.values()))
 
@@ -76,13 +77,13 @@ class VectorizeParagraph:
     def eval_mode(self, input_dict, P2):
         """
         Concatanate all the information from sample as a global string in the following order
-            [P1] P1 [P3] P3 [Sum] Sum_P2 [T] Theme [ENT] list_of_person [Size] [P2]
+            [P3] P3 [Sum] Sum_P2 [T] Theme [ENT] list_of_person [Size] [P1] P1 [P2]
         If needed will truncate P3 then P1 so that the tokenize version of the string is smaller that self.block_size
         :param [dict] input_dict representing the context (see VectorizeParagraph.__call__ for further details)
         :param [str] P2
         :return: tupple :
-                    [torch.tensor] tokenize version of the string
-                        P1] P1 [P3] P3 [Sum] Sum_P2 [T] Theme [ENT] list_of_person [Size] [P2],
+                    [torch.tensor] tokenize version of the following string ->
+                        [P3] P3 [Sum] Sum_P2 [T] Theme [ENT] list_of_person [Size] [P1] P1 [P2]
                     [str] P2
         """
         # TODO CHECK THE FOLLOWING EQUATION
@@ -102,13 +103,36 @@ class VectorizeParagraph:
             input_dict['P3'] = []
             input_dict['P1'] = self.tokenizer.encode('[P1]') + \
                                input_dict['P1'][self.block_size - size_wo_P3_and_P1 + 1:]
-            return torch.tensor(self.concat(input_dict)), P2["text"]
+            return torch.tensor(self.concat(input_dict)), P2
 
         # By default we return nothing
         return torch.tensor(0), ""
 
     def generation_mode(self, input_dict):
-        pass
+        """
+        Concatanate all the information from sample as a global string in the following order
+            [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2]
+        :param input_dict
+        :param size to know how much we let space for P2 generation
+        :return:[torch.tensor] tokenize version of the following string
+                    [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2]
+        """
+        # TODO: plan a call with everybody to brainstorm about best way to truncate and save space for P2
+
+        # TODO : make this dependant of size parameters (input_dict['Size'])
+        nb_tokens_left_for_P2 = 100
+        vector_size = sum(map(len, input_dict.values())) + nb_tokens_left_for_P2
+        if vector_size <= self.block_size:
+            return torch.tensor(self.concat(input_dict))
+
+        # Else, we let 2/3 of the space for P1 and 1/3 for P3
+        initial_vector_size = len(input_dict['Sum'] + input_dict['metadata']) + nb_tokens_left_for_P2
+        nb_tokens_left_for_P1 = int((self.block_size - initial_vector_size) * 2/3 - 1)
+        nb_tokens_left_for_P3 = int((self.block_size - initial_vector_size) * 1/3 - 1)
+        input_dict['P1'] = self.tokenizer.encode('[P1] ') + \
+                           input_dict['P1'][nb_tokens_left_for_P1:]
+        input_dict['P3'] = input_dict['P3'][:nb_tokens_left_for_P3]
+        return torch.tensor(self.concat(input_dict))
 
     def __call__(self, sample):
         """
@@ -124,13 +148,17 @@ class VectorizeParagraph:
                 'persons': list[str]
         """
         metadata, P1, P3, P2 = sample
-        input_dict = {'P1': self.tokenizer.encode('[P1] ' + P1['text']),
-                      'P3': self.tokenizer.encode('[P3] ' + P3['text']),
-                      'Sum': self.tokenizer.encode('[Sum] ' + ""),
-                      'metadata': self.tokenizer.encode('[T] ' + " - ".join(metadata['genre']) +
-                                                        '[Ent] ' + " - ".join(P2["persons"]) +
-                                                        self.bin_size(P2['size'])),
-                      'P2': self.tokenizer.encode('[P2] ')}
+        input_dict = dict()
+        input_dict['P1'] = ' [P1] ' + P1['text'] if P1['text'] != "" else ""
+        input_dict['P3'] = ' [P3] ' + P3['text'] if P3['text'] != "" else ""
+        input_dict['P2'] = ' [P2] '  # TODO : probably useless, think about it
+        input_dict['Sum'] = ' [Sum] ' + ". ".join(P2["summaries"]) if P2["summaries"] != [] else ""
+        input_dict['T'] = ' [T] ' + " - ".join(metadata['genre']) if metadata['genre'] != [] else ""
+        input_dict['Ent'] = ' [Ent] ' + " - ".join(P2['persons']) if P2['persons'] != [] else ""
+        input_dict['Size'] = ' [M] '  # TODO : change that
+
+        for key, value in input_dict.items():
+            input_dict[key] = self.tokenizer.encode(value)
 
         if self.mode == "train":
             return self.train_mode(input_dict, P2['text'])

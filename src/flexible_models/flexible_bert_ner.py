@@ -5,12 +5,12 @@ from src.utils import *
 
 
 class FlexibleBERTNER(FlexibleModel):
-	def __init__(self, bert_path: str, batch_size:int, max_length: int):
+	def __init__(self, bert_path: str, batch_size:int, max_length: int = 128):
 		"""
 		Initializes a BERT-NER model.
 		:param bert_path: Path to BERT-NER weights
 		:param batch_size: Batch-size to use when predicting.
-		:param max_length: The maximum length (in char) the model can handle
+		:param max_length: The maximum length (in tokens) the model can handle, including BERT special tokens
 		"""
 		super().__init__()
 		self.bert_model = Ner(bert_path)
@@ -26,6 +26,16 @@ class FlexibleBERTNER(FlexibleModel):
 		"""
 
 		zipped_tokens = [list(zip(*self.bert_model.tokenize(inp + '.'))) for inp in inputs]
+
+		for entry in zipped_tokens:
+			n_unk = sum([1 for tok, val in entry if tok == '[UNK]'])
+			if n_unk > 20:
+				i = 0
+				while i < len(entry):
+					if entry[i][0] == '[UNK]':
+						del entry[i]
+					else:
+						i += 1
 
 		split_tokens, split_information = token_batch_splitter(zipped_tokens, self.max_length - 2)
 
