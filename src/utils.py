@@ -9,6 +9,8 @@ Created on Feb 15 2020
 from typing import List, Any, Tuple
 import functools
 from math import ceil
+from enum import Enum
+from collections import namedtuple
 
 # Constants
 NOVEL_PATH = 'data/novel/'
@@ -31,6 +33,28 @@ DEFAULT_DECODING_STRATEGY = {
 	'top_p': 0.95
 }
 
+
+SizeInfo = namedtuple('Size', 'inf_chars sup_chars mean_tokens')
+SMALL = SizeInfo(inf_chars=400, sup_chars=800, mean_tokens=200)
+MEDIUM = SizeInfo(inf_chars=800, sup_chars=1400, mean_tokens=400)
+LARGE = SizeInfo(inf_chars=1400, sup_chars=1700, mean_tokens=700)
+SIZES = [SMALL, MEDIUM, LARGE]
+
+GPT2_BLOCK_SIZE = 1020
+
+def get_size_from_chars(length_in_chars):
+	size = SMALL
+	for s in SIZES[1:]:
+		if length_in_chars >= s.inf_chars:
+			size = s
+	return size
+
+def get_size_from_tokens(length_in_tokens):
+	dists = [abs(s.mean_tokens - length_in_tokens) for s in SIZES]
+	min_dist = min(dists)
+	for i, s in enumerate(SIZES):
+		if dists[i] == min_dist:
+			return s
 
 def text_batch_splitter(strings: List[str], max_length: int) -> Tuple[List[str], List[Tuple[int, int]]]:
 	"""
