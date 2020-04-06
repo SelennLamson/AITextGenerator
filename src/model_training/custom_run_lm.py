@@ -37,8 +37,8 @@ from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampl
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
 
-from torch_loader import DatasetFromRepo, VectorizeParagraph
-from model_training import add_special_tokens
+from src.torch_loader import DatasetFromRepo, VectorizeParagraph
+from src.model_training import add_special_tokens
 
 from transformers import (
     MODEL_WITH_LM_HEAD_MAPPING,
