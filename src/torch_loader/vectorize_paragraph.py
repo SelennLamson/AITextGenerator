@@ -1,4 +1,5 @@
 import torch
+from src.utils import get_size_from_chars, SMALL, MEDIUM, LARGE
 
 class VectorizeParagraph:
     """
@@ -22,11 +23,26 @@ class VectorizeParagraph:
     @staticmethod
     def bin_size(size):
         """
-        :param size: int <-> size of a paragraph
+        :param size: int <-> size of a paragraph (in number of chars) or SMALL, MEDIUM, LARGE
         :return: special token [S], [M], [L] <-> corresponding binned size
         for now only return [M]
         """
-        return ' [M] '
+        if type(size) == int:
+            size = get_size_from_chars(size)
+        if size == SMALL:
+            return ' [S] '
+        if size == MEDIUM:
+            return ' [M] '
+        if size == LARGE:
+            return ' [L] '
+
+    @staticmethod
+    def nb_tokens_to_save_for_P2(size):
+        """
+        :param size: SMALL, MEDIUM OR LARGE
+        :return: int number token that will be save for P2 in input block
+        """
+        return size.mean_tokens + 50
 
     @staticmethod
     def concat(input_d):
@@ -87,7 +103,6 @@ class VectorizeParagraph:
                     [str] P2
                     [str] P3
         """
-        # TODO CHECK THE FOLLOWING EQUATION
         vector_size = sum(map(len, input_dict.values())) + len(self.tokenizer.encode(P2))
         if vector_size <= self.block_size:
             return torch.tensor(self.concat(input_dict)), P2, P3
@@ -126,25 +141,21 @@ class VectorizeParagraph:
             remaining_space = self.block_size - len(P2_encoded)
             return torch.tensor(P1_encoded[len(P1_encoded) - remaining_space:]), P2, P3
 
-    def generation_mode(self, input_dict):
+    def generation_mode(self, input_dict, nb_tokens_saved_for_P2=(MEDIUM.mean_tokens+50)):
         """
         Concatanate all the information from sample as a global string in the following order
             [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2]
         :param input_dict
-        :param size to know how much we let space for P2 generation
+        :param nb_tokens_saved_for_P2 :  to know how much we let space for P2 generation
         :return:[torch.tensor] tokenize version of the following string
                     [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2]
         """
-        # TODO: plan a call with everybody to brainstorm about best way to truncate and save space for P2
-
-        # TODO : make this dependant of size parameters (input_dict['Size'])
-        nb_tokens_left_for_P2 = 100
-        vector_size = sum(map(len, input_dict.values())) + nb_tokens_left_for_P2
+        vector_size = sum(map(len, input_dict.values())) + nb_tokens_saved_for_P2
         if vector_size <= self.block_size:
             return torch.tensor(self.concat(input_dict))
 
         # Else, we let 2/3 of the space for P1 and 1/3 for P3
-        initial_vector_size = len(input_dict['Sum'] + input_dict['metadata']) + nb_tokens_left_for_P2
+        initial_vector_size = len(input_dict['Sum'] + input_dict['metadata']) + nb_tokens_saved_for_P2
         nb_tokens_left_for_P1 = int((self.block_size - initial_vector_size) * 2/3 - 1)
         nb_tokens_left_for_P3 = int((self.block_size - initial_vector_size) * 1/3 - 1)
         input_dict['P1'] = self.tokenizer.encode('[P1] ') + \
@@ -169,11 +180,12 @@ class VectorizeParagraph:
         input_dict = dict()
         input_dict['P1'] = ' [P1] ' + P1['text'] if P1['text'] != "" else ""
         input_dict['P3'] = ' [P3] ' + P3['text'] if P3['text'] != "" else ""
-        input_dict['P2'] = ' [P2] '  # TODO : probably useless, think about it
+        input_dict['P2'] = ' [P2] '
         input_dict['Sum'] = ' [Sum] ' + ". ".join(P2["summaries"]) if P2["summaries"] != [] else ""
         input_dict['T'] = ' [T] ' + " - ".join(metadata['genre']) if metadata['genre'] != [] else ""
         input_dict['Ent'] = ' [Ent] ' + " - ".join(P2['persons']) if P2['persons'] != [] else ""
-        input_dict['Size'] = ' [M] '  # TODO : change that
+        input_dict['Size'] = self.bin_size(P2['size'])
+
 
         for key, value in input_dict.items():
             input_dict[key] = self.tokenizer.encode(value)
@@ -185,4 +197,4 @@ class VectorizeParagraph:
         elif self.mode == "eval_wo_context":
             return self.eval_mode_wo_context(P1['text'], P2['text'], P3['text'])
         elif self.mode == "generation":
-            return self.generation_mode(input_dict)
+            return self.generation_mode(input_dict, P2['text'].mean_tokens + 50)
