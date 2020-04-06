@@ -186,7 +186,6 @@ class VectorizeParagraph:
         input_dict['Ent'] = ' [Ent] ' + " - ".join(P2['persons']) if P2['persons'] != [] else ""
         input_dict['Size'] = self.bin_size(P2['size'])
 
-
         for key, value in input_dict.items():
             input_dict[key] = self.tokenizer.encode(value)
 
@@ -197,4 +196,6 @@ class VectorizeParagraph:
         elif self.mode == "eval_wo_context":
             return self.eval_mode_wo_context(P1['text'], P2['text'], P3['text'])
         elif self.mode == "generation":
-            return self.generation_mode(input_dict, P2['text'].mean_tokens + 50)
+            return self.generation_mode(input_dict, P2['size'].mean_tokens + 50)
+        elif self.mode == "generation_wo_context":
+            return self.eval_mode_wo_context(P1['text'], "", "")
