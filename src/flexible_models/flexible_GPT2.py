@@ -38,6 +38,7 @@ class FlexibleGPT2(FlexibleModel):
 
         # We use a mask so that GPT2 does not take into account the PAD token during generation time
         mask = (input_ids != self.tokenizer.pad_token_id).long()
+        self.model.eval()
 
         self.decoding_strategy['max_length'] = self.max_length + input_ids.shape[1]
         outputs_id = self.model.generate(input_ids=input_ids,
