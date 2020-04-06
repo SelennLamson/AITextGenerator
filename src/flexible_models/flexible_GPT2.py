@@ -39,7 +39,6 @@ class FlexibleGPT2(FlexibleModel):
         # We use a mask so that GPT2 does not take into account the PAD token during generation time
         mask = (input_ids != self.tokenizer.pad_token_id).long()
 
-        # TODO : investigate the way transformers.generate take into account max_length
         self.decoding_strategy['max_length'] = self.max_length + input_ids.shape[1]
         outputs_id = self.model.generate(input_ids=input_ids,
                                          pad_token_id=self.tokenizer.eos_token_id,
