@@ -27,6 +27,6 @@ if __name__ == '__main__':
     # TEST VECTORIZER IN EVAL MODE
     vectorize_paragraph = VectorizeParagraph(tokenizer, block_size=1020, mode='eval')
     novels_dataset = DatasetFromRepo(path=JSON_FILE_PATH, transform=vectorize_paragraph)
-    tokenize_context, P2 = novels_dataset[idx]
+    tokenize_context, P2, _ = novels_dataset[idx]
     print(tokenizer.decode(tokenize_context), " , ", P2)
 
