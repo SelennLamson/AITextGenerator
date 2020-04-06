@@ -87,7 +87,7 @@ class GPT2EvaluationScript:
             each sample is a tupple ([torch.tensor] input_ids, [str] true_P2)
         :param padding_value : tokenizer.pad_token_id
         :return: a tupple: (concatenation on batch axis using left padding of the input_ids,
-                            list of true_P2)
+                            list of true_P2, P3)
         """
         input_ids = self.pad_left_side([sample[0] for sample in data_samples], padding_value)
         target_P2 = [sample[1] for sample in data_samples]
