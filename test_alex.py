@@ -1,13 +1,13 @@
-big_text = """Harry Potter is the most miserable, lonely boy you can imagine. " \
-           "He’s shunned by his relatives, the Dursley’s, that have raised him since he was an infant. " \
-           "He’s forced to live in the cupboard under the stairs, forced to wear his cousin Dudley’s " \
-           "hand-me-down clothes, and forced to go to his neighbour’s house when the rest of the family " \
-           "is doing something fun. Yes, he’s just about as miserable as you can get." \
-           "Harry’s world gets turned upside down on his 11th birthday, however. A giant, Hagrid, informs Harry that he’s really " \
-           "a wizard, and will soon be attending Hogwarts School of Witchcraft and Wizardry. Harry also learns that, "\
-           "in the wizarding world, he’s a hero. When he was an infant, the evil Lord Voldemort killed his parents and "\ 
-           "then tried to kill Harry too. What’s so amazing to everyone is that Harry survived, and allegedly destroyed Voldemort " \
-           "in the process."""
+big_text = """Harry Potter is the most miserable, lonely boy you can imagine. 
+           He’s shunned by his relatives, the Dursley’s, that have raised him since he was an infant. 
+           He’s forced to live in the cupboard under the stairs, forced to wear his cousin Dudley’s 
+           hand-me-down clothes, and forced to go to his neighbour’s house when the rest of the family 
+           is doing something fun. Yes, he’s just about as miserable as you can get.
+           Harry’s world gets turned upside down on his 11th birthday, however. A giant, Hagrid, informs Harry that he’s really 
+           a wizard, and will soon be attending Hogwarts School of Witchcraft and Wizardry. Harry also learns that, 
+           in the wizarding world, he’s a hero. When he was an infant, the evil Lord Voldemort killed his parents and 
+           then tried to kill Harry too. What’s so amazing to everyone is that Harry survived, and allegedly destroyed Voldemort 
+           in the process."""
 
 # BART
 from transformers import pipeline
@@ -34,12 +34,25 @@ print([tokenizer.decode(g, skip_special_tokens=True, clean_up_tokenization_space
 from eazymind.nlp.eazysum import Summarizer
 key = 'a6bd47ccfdc8f0ffc5b904cd7d90f840'
 sum = Summarizer(key)
-print(sum.run(sentence))
+print(sum.run(big_text))
 
-summary = sum.run('MY name is Alex Duval')
 
-# ---sentence to be summarized---
-sentence = "Harry Potter is the most miserable, lonely boy you can imagine. He's shunned by his relatives, the Dursley's, that have raised him since he was an infant. He's forced to live in the cupboard under the stairs, forced to wear his cousin Dudley's hand-me-down clothes, and forced to go to his neighbour's house when the rest of the family is doing something fun. Yes, he's just about as miserable as you can get. Harry's world gets turned upside down on his 11th birthday, however. A giant, Hagrid, informs Harry that he's really a wizard, and will soon be attending Hogwarts School of Witchcraft and Wizardry. Harry also learns that, in the wizarding world, he's a hero. When he was an infant, the evil Lord Voldemort killed his parents and then tried to kill Harry too. What's so amazing to everyone is that Harry survived, and allegedly destroyed Voldemort in the process."
 
-summarizer = Summarizer(key)
-print(summarizer.run(sentence))
+
+# Import libraries
+from pysummarization.nlpbase.auto_abstractor import AutoAbstractor
+from pysummarization.tokenizabledoc.simple_tokenizer import SimpleTokenizer
+from pysummarization.abstractabledoc.top_n_rank_abstractor import TopNRankAbstractor
+
+# Text
+document = big_text
+
+# Init
+auto_abstractor = AutoAbstractor() # Object of automatic summarization.
+auto_abstractor.tokenizable_doc = SimpleTokenizer()  # Set tokenizer.
+auto_abstractor.delimiter_list = [".", "\n"]  # Set delimiter for making a list of sentence.
+abstractable_doc = TopNRankAbstractor()  # Object of abstracting and filtering document.
+
+# Summarize document.
+result_dict = auto_abstractor.summarize(document, abstractable_doc)
+summary = result_dict['summarize_result'][max(result_dict['scoring_data'], key=lambda x:x[1])[0]]

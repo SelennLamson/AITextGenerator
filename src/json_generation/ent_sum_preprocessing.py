@@ -70,10 +70,11 @@ def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, ve
 			p['summaries'] = []
 
 		# Applying the different summarization models to the paragraph
-		for model in models:
-			summary = model(text)
-
-			summary = summary.replace('\n', ' ').strip()
+		print('text', text)
+		summaries = models[0](text)
+		print('sum', summaries)
+		for summary in summaries:
+			summary = summary[0].replace('\n', ' ').strip()
 			if summary not in p['summaries'] and summary != '':
 				p['summaries'].append(summary)
 
