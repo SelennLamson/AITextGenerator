@@ -35,9 +35,9 @@ DEFAULT_DECODING_STRATEGY = {
 
 
 SizeInfo = namedtuple('Size', 'inf_chars sup_chars mean_tokens token')
-SMALL = SizeInfo(inf_chars=400, sup_chars=800, mean_tokens=200, token='[S]')
-MEDIUM = SizeInfo(inf_chars=800, sup_chars=1400, mean_tokens=400, token='[M]')
-LARGE = SizeInfo(inf_chars=1400, sup_chars=1700, mean_tokens=700, token='[L]')
+SMALL = SizeInfo(inf_chars=1, sup_chars=700, mean_tokens=100, token='[S]')
+MEDIUM = SizeInfo(inf_chars=701, sup_chars=1200, mean_tokens=250, token='[M]')
+LARGE = SizeInfo(inf_chars=1201, sup_chars=1700, mean_tokens=350, token='[L]')
 SIZES = [SMALL, MEDIUM, LARGE]
 
 GPT2_BLOCK_SIZE = 1020
