@@ -13,8 +13,7 @@ class VectorizeParagraph:
         """
         Initialize GPT2Tokenizer and add specific token
         :param block_size : int, max sequence_token_len for GPT_2 input
-            all our tokenized sentenced will be padded to have a block_size len
-        :param mode: one value in ['train', 'eval', 'generation']
+        :param mode: one value in ['train', 'eval', 'eval_wo_context', 'generation']
         """
         self.tokenizer = tokenizer
         self.block_size = block_size
@@ -74,28 +73,30 @@ class VectorizeParagraph:
             if self.train_mode:
                 return torch.tensor(input_id)
 
-    def eval_mode(self, input_dict, P2):
+    def eval_mode(self, input_dict, P2, P3):
         """
         Concatanate all the information from sample as a global string in the following order
             [P3] P3 [Sum] Sum_P2 [T] Theme [ENT] list_of_person [Size] [P1] P1 [P2]
         If needed will truncate P3 then P1 so that the tokenize version of the string is smaller that self.block_size
         :param [dict] input_dict representing the context (see VectorizeParagraph.__call__ for further details)
         :param [str] P2
+        :param [str] P3
         :return: tupple :
                     [torch.tensor] tokenize version of the following string ->
                         [P3] P3 [Sum] Sum_P2 [T] Theme [ENT] list_of_person [Size] [P1] P1 [P2]
                     [str] P2
+                    [str] P3
         """
         # TODO CHECK THE FOLLOWING EQUATION
         vector_size = sum(map(len, input_dict.values())) + len(self.tokenizer.encode(P2))
         if vector_size <= self.block_size:
-            return torch.tensor(self.concat(input_dict)), P2
+            return torch.tensor(self.concat(input_dict)), P2, P3
 
         # Else we truncate as in train_mode (first P3, then P1)
         size_wo_P3 = vector_size - len(input_dict['P3'])
         if size_wo_P3 <= self.block_size:
             input_dict['P3'] = input_dict['P3'][:(self.block_size - size_wo_P3)]
-            return torch.tensor(self.concat(input_dict)), P2
+            return torch.tensor(self.concat(input_dict)), P2, P3
 
         # If still not sufficient, we remove P1 and truncate P1 from left but still add the [P1] special token
         size_wo_P3_and_P1 = vector_size - len(input_dict['P3']) - len(input_dict['P1'])
@@ -103,10 +104,27 @@ class VectorizeParagraph:
             input_dict['P3'] = []
             input_dict['P1'] = self.tokenizer.encode('[P1]') + \
                                input_dict['P1'][self.block_size - size_wo_P3_and_P1 + 1:]
-            return torch.tensor(self.concat(input_dict)), P2
+            return torch.tensor(self.concat(input_dict)), P2, P3
 
         # By default we return nothing
-        return torch.tensor(0), ""
+        return torch.tensor(0), "", P3
+
+    def eval_mode_wo_context(self, P1, P2, P3):
+        """
+        :param P1 [str]
+        :param P2 [str]
+        :param P3 [str]
+        :return: tokenize version of P1, P2 as a string, P3 as string
+        if tokenize of P1 + P2 is to big, we truncate P1 at left side
+        """
+        P1_encoded = self.tokenizer.encode(P1)
+        P2_encoded = self.tokenizer.encode(P2)
+
+        if len(P1_encoded) + len(P2_encoded) <= self.block_size:
+            return torch.tensor(P1_encoded), P2, P3
+        else:
+            remaining_space = self.block_size - len(P2_encoded)
+            return torch.tensor(P1_encoded[len(P1_encoded) - remaining_space:]), P2, P3
 
     def generation_mode(self, input_dict):
         """
@@ -163,6 +181,8 @@ class VectorizeParagraph:
         if self.mode == "train":
             return self.train_mode(input_dict, P2['text'])
         elif self.mode == "eval":
-            return self.eval_mode(input_dict, P2['text'])
+            return self.eval_mode(input_dict, P2['text'], P3['text'])
+        elif self.mode == "eval_wo_context":
+            return self.eval_mode_wo_context(P1['text'], P2['text'], P3['text'])
         elif self.mode == "generation":
             return self.generation_mode(input_dict)
