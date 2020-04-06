@@ -10,8 +10,7 @@ def add_special_tokens(model=None, tokenizer=None):
     """
 
     if tokenizer:
-        tokenizer.add_special_tokens({'pad_token': '[PAD]',
-                                      'eos_token': '[EOS]',
+        tokenizer.add_special_tokens({'bos_token': '[P2]',
                                       'additional_special_tokens': ['[P1]',
                                                                     '[P3]',
                                                                     '[S]',
