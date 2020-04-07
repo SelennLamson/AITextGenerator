@@ -29,5 +29,5 @@ from src.utils import *
 # Summarise
 model_sum = FlexibleBERTSum()
 # bert_sum, bart = model_sum.predict()
-ent_sum_preprocessing.add_summaries([model_sum], replace=True, d_id='135')
+ent_sum_preprocessing.add_summaries([model_sum], replace=True, d_id='120')
 
