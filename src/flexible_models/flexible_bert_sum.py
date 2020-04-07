@@ -53,9 +53,10 @@ class FlexibleBERTSum(FlexibleSummarizer):
 
 		# Point Generator Network
 		start = time.time()
-		inputs = inputs.replace('“', '')
-		inputs = inputs.replace('”', '')
-		pgn_result = self.pgn.run(inputs)
+		# inputs = inputs.replace('“', '').replace('”', '').replace('’', '')
+		inputs = inputs.encode('Latin-1', 'ignore')
+		inputs = inputs.decode('utf-8', 'ignore')
+		pgn_result = [self.pgn.run(inputs)]
 		end = time.time()
 		print('PGN', end - start)
 
@@ -63,7 +64,14 @@ class FlexibleBERTSum(FlexibleSummarizer):
 		start = time.time()
 		result_dict = self.auto_abstractor.summarize(inputs, self.abstractable_doc)
 		# Pb index here. Wrong index in tuple in front of score. use enumerate.
-		pysum_result = result_dict['summarize_result'][max(result_dict['scoring_data'], key=lambda x: x[1])[0]]
+		max = 0
+		id = []
+		for i, item in enumerate(result_dict['scoring_data']):
+			if item[1] > max:
+				id.append(i)
+				max = item[1]
+		pysum_result = ' '.join([result_dict['summarize_result'][j] for j in id])
+		pysum_result= [pysum_result.replace('\n','')]
 		end = time.time()
 		print('pysum', end - start)
 
