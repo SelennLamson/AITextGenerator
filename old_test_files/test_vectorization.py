@@ -23,13 +23,17 @@ if __name__ == '__main__':
     print("--- TEST VECTORIZER IN TRAIN MODE WITH FULL CONTEXT ---")
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.TRAIN, use_context=True)
     novels_dataset = DatasetFromRepo(path=JSON_FILE_PATH, transform=vectorize_paragraph)
-    print(tokenizer.decode(novels_dataset[idx]))
+    tokenize_context = novels_dataset[idx]
+    print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
+    print(tokenizer.decode(tokenize_context))
 
     print("--- TEST VECTORIZER IN TRAIN MODE WITHOUT FULL CONTEXT ---")
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.TRAIN, use_context=False)
     novels_dataset = DatasetFromRepo(path=JSON_FILE_PATH, transform=vectorize_paragraph)
     idx = random.randint(0, len(novels_dataset)-1)
-    print(tokenizer.decode(novels_dataset[idx]))
+    tokenize_context = novels_dataset[idx]
+    print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
+    print(tokenizer.decode(tokenize_context))
 
     print("\n", '-' * 100, "\n")
     print("--- TEST VECTORIZER IN EVAL MODE WITH FULL CONTEXT ---")
@@ -37,6 +41,7 @@ if __name__ == '__main__':
     novels_dataset = DatasetFromRepo(path=JSON_FILE_PATH, transform=vectorize_paragraph)
     idx = random.randint(0, len(novels_dataset)-1)
     tokenize_context, P2, P3 = novels_dataset[idx]
+    print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
     print(tokenizer.decode(tokenize_context))
 
     print("\n", '-'*100,"\n")
@@ -44,6 +49,7 @@ if __name__ == '__main__':
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.EVAL, use_context=False)
     novels_dataset = DatasetFromRepo(path=JSON_FILE_PATH, transform=vectorize_paragraph)
     tokenize_context, P2, P3 = novels_dataset[idx]
+    print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
     print(tokenizer.decode(tokenize_context))
 
     context_input = GenerationInput(P1="Ceci est le début de phrase, ",
@@ -57,10 +63,44 @@ if __name__ == '__main__':
     print("--- TEST VECTORIZER IN GENERATE MODE WITH FULL CONTEXT ---")
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.GENERATE, use_context=True)
     tokenize_context = vectorize_paragraph(context_input.vectorizer_input_format())
+    print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
     print(tokenizer.decode(tokenize_context))
 
     print("\n", '-'*100,"\n")
     print("--- TEST VECTORIZER IN GENERATE MODE WITHOUT FULL CONTEXT ---")
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.GENERATE, use_context=False)
     tokenize_context = vectorize_paragraph(context_input.vectorizer_input_format())
+    print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
+    print(tokenizer.decode(tokenize_context))
+
+    print("\n", '-'*100,"\n")
+    print("--- TEST VECTORIZER TRUNCATURE IN GENERATE MODE ---")
+    big_paragraph = " ".join(list(map(str, range(1,1000))))
+    context_input = GenerationInput(P1=big_paragraph,
+                                    P3=big_paragraph,
+                                    genre=["horror"],
+                                    entities=["Gael", "Alex", "Thomas"],
+                                    size=MEDIUM,
+                                    context="Je voudrai parler de ceci")
+    vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.GENERATE, use_context=True)
+    tokenize_context = vectorize_paragraph(context_input.vectorizer_input_format())
+    print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
+    print(tokenizer.decode(tokenize_context))
+
+    print("\n", '-'*100,"\n")
+    print("--- TEST VECTORIZER TRUNCATURE IN TRAIN MODE ---")
+    big_paragraph = " ".join(list(map(str, range(1,1000))))
+    input_for_vectorize = (
+        {'genre': ["horror"]},
+        {'text':big_paragraph},
+        {'text': big_paragraph},
+        {'text':"CECI EST UN TEST DE PARAGRAPHE P2",
+                'persons':["gael", "alex"],
+                "summaries": ["bla bla bla "],
+                'size': len('CECI EST UN TEST DE PARAGRAPHE P2')}
+    )
+
+    vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.TRAIN, use_context=True)
+    tokenize_context = vectorize_paragraph(input_for_vectorize)
+    print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
     print(tokenizer.decode(tokenize_context))

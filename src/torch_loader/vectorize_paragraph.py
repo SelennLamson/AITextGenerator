@@ -53,33 +53,29 @@ class VectorizeParagraph:
         :param nb_tokens_for_P2: nb of tokens in true P2 or nb of tokens to saved for P2 in generation mode
         :return: vectorize version of the dict
         """
-        nb_tokens_for_context = sum(map(len, context.values()))  # Context = everything except P2
 
-        if self.mode == VectorizeMode.GENERATE:
-            # If the context + input space we must left for P2 is too big
-            # We let 2/3 of the remaining space for P1 and 1/3 for P3
-            if nb_tokens_for_context + nb_tokens_for_P2 >= self.block_size:
-                initial_vector_size = len(context['Sum'] + context['metadata']) + nb_tokens_for_P2
-                nb_tokens_left_for_P1 = int((self.block_size - initial_vector_size) * 2 / 3 - 1)
-                nb_tokens_left_for_P3 = int((self.block_size - initial_vector_size) * 1 / 3 - 1)
-                context['P1'] = self.tokenizer.encode('[P1] ') + context['P1'][nb_tokens_left_for_P1:]  # TRUNCATE P1
-                context['P3'] = context['P3'][:nb_tokens_left_for_P3]  # TRUNCATE P3
+        nb_tokens_for_context = sum(map(len, context.values()))  # Context = everything except P2
 
         if self.mode == VectorizeMode.TRAIN:
             # In train mode, P2 is added to the context and the sentence to predict is simplify the full context
-            context['P2'] += self.tokenizer.encode(' ' + P2 + ' [EOS]')
+            context['P2'] += self.tokenizer.encode(P2 + ' [EOS]') if self.use_context else self.tokenizer.encode(P2)
 
-        if self.mode == VectorizeMode.EVAL or self.mode == VectorizeMode.TRAIN:
-            # If the context +  P2 is too big, we first truncate P3 then P1
-            size_wo_P3 = nb_tokens_for_context + nb_tokens_for_P2 - len(context['P3'])
-            if size_wo_P3 > self.block_size: # TODO CHANGE THAT IT IS FALSE !!!! !
-                context['P3'] = context['P3'][:(self.block_size - size_wo_P3)]  # TRUNCATE P3
+        # If the context + input space we must left for P2 is too big
+        # We let 2/3 of the remaining space for P1 and 1/3 for P3
+        if (nb_tokens_for_context + nb_tokens_for_P2 >= self.block_size) and self.use_context:
+            initial_vector_size = len(context['Sum'] + context['T'] + context['Ent'] + context['Size']) \
+                                  + nb_tokens_for_P2
 
-            size_wo_P3_and_P1 = nb_tokens_for_context + nb_tokens_for_P2 - len(context['P3']) - len(context['P1'])
-            # If still not sufficient, we remove P1 and truncate P1 from left but still add the [P1] special token
-            if size_wo_P3_and_P1 > self.block_size:
-                context['P3'] = []
-                context['P1'] = self.tokenizer.encode('[P1]') + context['P1'][self.block_size - size_wo_P3_and_P1 + 1:]
+            nb_tokens_left_for_P1 = int((self.block_size - initial_vector_size) * 2 / 3 - 1)
+            nb_tokens_left_for_P3 = int((self.block_size - initial_vector_size) * 1 / 3 - 1)
+            context['P1'] = self.tokenizer.encode('[P1] ') + \
+                            context['P1'][len(context['P1']) - nb_tokens_left_for_P1:]  # TRUNCATE P1
+            context['P3'] = context['P3'][:nb_tokens_left_for_P3]  # TRUNCATE P3
+
+        # if context is desactived we simply have to truncate P1 from left
+        if (nb_tokens_for_context + nb_tokens_for_P2 >= self.block_size) and not self.use_context:
+            nb_tokens_left_for_P1 = self.block_size - nb_tokens_for_P2
+            context['P1'] = context['P1'][len(context['P1']) - nb_tokens_left_for_P1:]
 
         return torch.tensor(self.concat_context(context))
 
@@ -135,7 +131,7 @@ class VectorizeParagraph:
         if self.mode == VectorizeMode.GENERATE:
             nb_tokens_for_P2 = P2['size'].mean_tokens + 50
         else:
-            nb_tokens_for_P2 = len(self.tokenizer.encode(P2_text))
+            nb_tokens_for_P2 = len(self.tokenizer.encode(P2_text)) + 2  # +1 for [P2] and +1 for [EOS]
 
         input_ids = self.vectorize(context, P2_text, nb_tokens_for_P2)
 
