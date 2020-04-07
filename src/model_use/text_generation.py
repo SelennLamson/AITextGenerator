@@ -1,18 +1,23 @@
-from src.torch_loader import VectorizeParagraph
-
+from src.torch_loader import VectorizeParagraph, VectorizeMode
+from src.utils import GPT2_BLOCK_SIZE
 class TextGeneration:
     """
     TextGeneration will be used to generate text from input given by webserver
     It combines a FlexibleGPT2 model and a specific vectorizer that will transform
     the data from webserver into the correct inputs id
     """
-    def __init__(self, GPT2_model):
+    def __init__(self, GPT2_model, use_context):
         """
         TextGeneration is initialized with a fine-tuned GPT2 model and a decoding_strategy
         :param GPT2_model: FlexibleGPT2
+        :param use_context: [boolean] True to use full context with special tokens
+                                      False to only use P1 without any special tokens
         """
         self.GPT2_model = GPT2_model
-        self.vectorizer = VectorizeParagraph(tokenizer=self.GPT2_model.tokenizer, block_size=1020, mode="generation")
+        self.vectorizer = VectorizeParagraph(tokenizer=self.GPT2_model.tokenizer,
+                                             block_size=GPT2_BLOCK_SIZE,
+                                             mode=VectorizeMode.GENERATE,
+                                             use_context=use_context)
 
     def __call__(self, context_input, nb_samples=1, verbose=1):
         """

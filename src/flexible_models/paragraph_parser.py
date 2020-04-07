@@ -1,5 +1,6 @@
 from typing import List, Any, Dict
 import re
+import random
 from collections import OrderedDict
 import matplotlib.pyplot as plt
 
@@ -17,8 +18,31 @@ class ParagraphParser(FlexibleModel):
 		"""
 		super().__init__()
 		self.min_threshold = min_threshold
-		self.min_length = min_length
-		self.max_length = max_length
+		# self.min_length = min_length
+		# self.max_length = max_length
+
+		self.size_index = 0
+		self.prev_size_index = 0
+
+	def rand_size(self):
+		self.prev_size_index = self.size_index
+		self.size_index = random.randint(0, len(SIZES) - 1)
+
+	@property
+	def prev_min_length(self):
+		return (SIZES[self.prev_size_index].inf_chars + SIZES[self.prev_size_index].sup_chars) // 2
+
+	@property
+	def prev_max_length(self):
+		return SIZES[self.prev_size_index].sup_chars
+
+	@property
+	def min_length(self):
+		return (SIZES[self.size_index].inf_chars + SIZES[self.size_index].sup_chars) // 2
+
+	@property
+	def max_length(self):
+		return SIZES[self.size_index].sup_chars
 
 	def predict(self, full_text:str, ents_p: Dict[str, str], ents_o: Dict[str, str], ents_l: Dict[str, str], ents_m: Dict[str, str], verbose:int = 0) -> List[Dict[str, Any]]:
 		"""
@@ -38,7 +62,6 @@ class ParagraphParser(FlexibleModel):
 		classes['locations'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_l.items()], key=lambda x: x[0])})
 		classes['misc'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_m.items()], key=lambda x: x[0])})
 
-		target_length = (self.min_length + self.max_length) / 2
 		paragraphs = []
 
 		# Display some information about the novel
@@ -48,7 +71,6 @@ class ParagraphParser(FlexibleModel):
 		# Parsing paragraphs
 		def add_paragraph(content):
 			c = content.strip()
-			assert len(c) <= self.max_length
 			paragraphs.append({
 				'size': len(c),
 				'text': c,
@@ -156,17 +178,19 @@ class ParagraphParser(FlexibleModel):
 						final_point = current_split[-1] in ['.', '!', '?', '\'', '"']
 						if self.min_length <= len(current_split) <= self.max_length and final_point:
 							to_add.append(current_split)
+							self.rand_size()
 							current_split = ""
 							saved_split = ""
 						elif self.max_length <= len(current_split):
 							to_add.append(saved_split.strip())
+							self.rand_size()
 							current_split = current_split[len(saved_split):].strip()
 							saved_split = ""
-						elif target_length <= len(current_split) and saved_split == "":
+						elif (self.min_length + self.max_length) / 2 <= len(current_split) and saved_split == "":
 							saved_split = current_split
 						elif wi == len(words) - 1:  # current_split is too small, and it's the end of the paragraph
 							# We check if we can put it back to the previous paragraph
-							if len(to_add) > 0 and len(to_add[-1]) + len(current_split) + 1 <= self.max_length:
+							if len(to_add) > 0 and len(to_add[-1]) + len(current_split) + 1 <= self.prev_max_length:
 								to_add[-1] += ' ' + current_split
 							# Otherwise, we check if there is a paragraph after the current one
 							elif pi < len(part) - 1:
@@ -174,6 +198,7 @@ class ParagraphParser(FlexibleModel):
 							# Finally, we cannot add it back to previous or to next one, so we add it as is
 							else:
 								to_add.append(current_split.strip())
+								self.rand_size()
 					for p in to_add:
 						add_paragraph(p)
 
@@ -193,7 +218,7 @@ class ParagraphParser(FlexibleModel):
 			print('\n-- First paragraph:\n"' + paragraphs[0]['text'][:100] + '..."')
 
 			if verbose >= 2:
-				plt.hist(sizes)
+				plt.hist(sizes, bins=50)
 				plt.xlabel("Paragraph sizes")
 				plt.ylabel("# paragraphs")
 				plt.show()
