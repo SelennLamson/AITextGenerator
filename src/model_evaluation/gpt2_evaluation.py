@@ -242,7 +242,7 @@ class GPT2EvaluationScript:
             tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
             model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased').to(device)
 
-            gen_relationships = bert_relationship(generated, P3, model, tokenizer, self.batch_size)
+            gen_relationships = bert_relationship(generated, P3, model, tokenizer, self.batch_size).astype(float)
             #ori_relationships = bert_relationship(originals, P3, model, tokenizer, self.batch_size)
             #normalized_relationships = gen_relationships / ori_relationships #TODO will do shit if ori == 0
 
@@ -252,7 +252,7 @@ class GPT2EvaluationScript:
             if verbose:
                 print("\rRegistering BERT relationship results...", end="")
             for i, relationship in enumerate(gen_relationships):
-                per_paragraph[i]['bert_relationship'] = str(relationship)
+                per_paragraph[i]['bert_relationship'] = relationship
             register_stats(gen_relationships, 'bert_relationship')
 
         print("RESULTS:")
