@@ -16,7 +16,8 @@ class FlexibleGPT2(FlexibleModel):
         super().__init__()
         self.model = model
         self.tokenizer = tokenizer
-        tokenizer.pad_token = tokenizer.eos_token
+        if not self.tokenizer._pad_token:
+            tokenizer.pad_token = tokenizer.eos_token
         self.decoding_strategy = decoding_strategy
         self.max_length = GPT2_BLOCK_SIZE
         self.min_length = 0
@@ -47,7 +48,8 @@ class FlexibleGPT2(FlexibleModel):
         self.decoding_strategy['min_length'] = self.min_length + input_ids.shape[1]
 
         outputs_id = self.model.generate(input_ids=input_ids,
-                                         pad_token_id=self.tokenizer.eos_token_id,
+                                         pad_token_id=self.tokenizer.pad_token_id,
+                                         eos_token_id=self.tokenizer.eos_token_id,
                                          attention_mask=mask,
                                          num_return_sequences=nb_samples,
                                          **self.decoding_strategy).detach().cpu()
@@ -56,5 +58,5 @@ class FlexibleGPT2(FlexibleModel):
         # this is because transformers.generate methods also return the input part
         truncated_outputs_id = outputs_id[:, input_ids.shape[1]:]
 
-        return [self.tokenizer.decode(truncated_outputs_id[i], skip_special_tokens=True)
+        return [self.tokenizer.decode(truncated_outputs_id[i], skip_special_tokens=False)
                 for i in range(outputs_id.shape[0])]

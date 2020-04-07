@@ -10,14 +10,10 @@ def add_special_tokens(model=None, tokenizer=None):
     """
 
     if tokenizer:
-        tokenizer.add_special_tokens({'bos_token': '[P2]',
-                                      'additional_special_tokens': ['[P1]',
-                                                                    '[P3]',
-                                                                    '[S]',
-                                                                    '[M]',
-                                                                    '[L]',
-                                                                    '[T]',
-                                                                    '[Sum]',
-                                                                    '[Ent]']})
+        tokenizer.add_special_tokens(
+            {'eos_token': '[EOS]',
+             'pad_token': '[PAD]',
+             'additional_special_tokens': ['[P1]', '[P2]', '[P3]', '[S]', '[M]', '[L]', '[T]', '[Sum]', '[Ent]']}
+        )
     if model:
         model.resize_token_embeddings(len(tokenizer))
