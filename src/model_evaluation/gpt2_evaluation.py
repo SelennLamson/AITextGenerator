@@ -122,7 +122,6 @@ class GPT2EvaluationScript:
             generations += GPT2_model(input_ids)
             originals += true_P2
             P3_list += P3
-            break  # TODO : !! REMOVE IT JUST TO TEST QUICKLY !!
 
         if verbose:
             print("\rSaving generated texts...", end="")
@@ -191,8 +190,7 @@ class GPT2EvaluationScript:
             register_stats(bert_similarities, 'bert_similarity')
 
         if compute_entites_iou:
-            #bert_ner_model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=self.batch_size)
-            bert_ner_model = FlexibleBERTNER(BERT_NER_BASE, batch_size=self.batch_size)  # TODO : REMOVE IT AFTER TEST
+            bert_ner_model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=self.batch_size)
             ent_ious = entities_iou(originals, generated, bert_ner_model)
 
             ent_ious = np.sum([ent_ious[key] for key in ENTITY_TAGS], axis=0) / len(ENTITY_TAGS)
