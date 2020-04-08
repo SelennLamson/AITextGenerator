@@ -68,7 +68,7 @@ class FlexibleSum(FlexibleModel):
         if self.summarizer == SummarizerModel.BERT_SUM:
             return [''.join(self.model(paragraph, ratio=0.15, max_length=300)) for paragraph in paragraphs]
 
-        if self.summarizer == SummarizerModel.T5 or self.summarizer == SummarizerModel.BERT_SUM:
+        if self.summarizer == SummarizerModel.T5 or self.summarizer == SummarizerModel.BART:
             def predict_on_single_batch(batch):
                 # batch must be a list of batch_size paragrah (str)
                 inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='pt', max_length=1024)
