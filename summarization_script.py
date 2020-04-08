@@ -26,9 +26,11 @@ def apply_summarization(folder_path, summarizer_model, batch_size=1):
 
         summaries = summarizer(paragraphs)
         for i, summary in enumerate(summaries):
+            if type(data['paragraphs'][i]) == list:
+                data['paragraphs'][i] = dict()
             data['paragraphs'][i]['summaries'][str(summarizer_model)] = summary
 
-        json.dump(data, open(json_file, 'w', encoding='utf-8'))
+        json.dump(data, open(str(summarizer_model)+'_'+json_file, 'w', encoding='utf-8'))
 
 
 if __name__ == '__main__':
