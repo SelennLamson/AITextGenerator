@@ -49,7 +49,7 @@ class FlexibleSum(FlexibleModel):
         if self.summarizer == SummarizerModel.T5:
             self.tokenizer = T5Tokenizer.from_pretrained('t5-small')
             self.model = TFT5ForConditionalGeneration.from_pretrained('t5-small')
-            self.decoding_strategy = {}
+            self.decoding_strategy = {'top_p':0.7, 'min_length':10, 'max_length':30, 'repetition_penalty':4}
             if torch.cuda.is_available():
                 print("Put T5 on cuda")
                 self.model.cuda()
