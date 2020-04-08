@@ -21,7 +21,7 @@ def apply_summarization(input_folder_path, output_folder_path, summarizer_model,
 
     # Compute summary on each novel
     for json_file_name in tqdm(json_files):
-        with open(json_file_name, 'r', encoding='utf-8') as f:
+        with open(input_folder_path+json_file_name, 'r', encoding='utf-8') as f:
             data = json.load(f)
         paragraphs = list(map(lambda x: x['text'], data['paragraphs']))
 
@@ -36,10 +36,15 @@ def apply_summarization(input_folder_path, output_folder_path, summarizer_model,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_folder",
+    parser.add_argument("--input_data_folder",
                         type=str,
                         required=True,
                         help="The directory where the preprocess json files are stored")
+
+    parser.add_argument("--output_data_forder",
+                        type=str,
+                        required=True,
+                        help="The directory where the preprocess json with summary will be stored")
 
     parser.add_argument("--T5", action="store_true", help="Use T5 summarizer")
     parser.add_argument("--BART", action="store_true", help="Use BART summarizer")
@@ -50,13 +55,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.T5:
-        apply_summarization(args.data_folder, SummarizerModel.T5, args.batch_size)
+        apply_summarization(args.input_data_folder, args.output_data_folder, SummarizerModel.T5, args.batch_size)
 
     if args.BART:
-        apply_summarization(args.data_folder, SummarizerModel.BART, args.batch_size)
+        apply_summarization(args.input_data_folder, args.output_data_folder, SummarizerModel.BART, args.batch_size)
 
     if args.BERT_SUM:
-        apply_summarization(args.data_folder, SummarizerModel.BERT_SUM)
+        apply_summarization(args.input_data_folder, args.output_data_folder, SummarizerModel.BERT_SUM)
 
     if args.PYSUM:
-        apply_summarization(args.data_folder, SummarizerModel.PYSUM)
+        apply_summarization(args.input_data_folder, args.output_data_folder, SummarizerModel.PYSUM)
