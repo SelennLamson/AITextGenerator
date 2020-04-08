@@ -53,6 +53,8 @@ class FlexibleSum(FlexibleModel):
             if torch.cuda.is_available():
                 print("Put T5 on cuda")
                 self.model.cuda()
+            else:
+                print("Warning ! Using T5 wo cuda available")
 
         if self.summarizer == SummarizerModel.BART:
             self.tokenizer = BartTokenizer.from_pretrained('bart-large-cnn')
@@ -61,6 +63,8 @@ class FlexibleSum(FlexibleModel):
             if torch.cuda.is_available():
                 print("Put BART on cuda")
                 self.model.cuda()
+            else:
+                print("Warning ! Using BART wo cuda available")
 
         if self.summarizer == SummarizerModel.PYSUM:
             self.model = AutoAbstractor()
@@ -88,7 +92,7 @@ class FlexibleSum(FlexibleModel):
                                                                   max_length=1024, pad_to_max_length=True)
 
                 inputs_ids = inputs_ids['input_ids'].cuda() if torch.cuda.is_available() else inputs_ids['input_ids']
-                outputs = self.model.generate(inputs_ids['input_ids'], **self.decoding_strategy)
+                outputs = self.model.generate(inputs_ids, **self.decoding_strategy)
                 return [self.tokenizer.decode(output, skip_special_tokens=True, clean_up_tokenization_spaces=False)
                         for output in outputs]
 
