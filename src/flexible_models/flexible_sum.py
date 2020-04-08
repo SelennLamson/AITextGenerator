@@ -59,7 +59,7 @@ class FlexibleSum(FlexibleModel):
         if self.summarizer == SummarizerModel.BART:
             self.tokenizer = BartTokenizer.from_pretrained('bart-large-cnn')
             self.model = BartForConditionalGeneration.from_pretrained('bart-large-cnn')
-            self.decoding_strategy = {'num_beams':2, 'max_length':40, 'early_stopping':True}
+            self.decoding_strategy = {'temperature':1.4, 'num_beams':5, 'min_length':25, 'max_length':65}
             if torch.cuda.is_available():
                 print("Put BART on cuda")
                 self.model.cuda()
