@@ -1,5 +1,5 @@
 from src.flexible_models.flexible_sum import FlexibleSum, SummarizerModel
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 import os
 import json
 import argparse
@@ -8,19 +8,20 @@ import argparse
 Script to apply summarization on the preproccess paragraph 
 """
 
-def apply_summarization(folder_path, summarizer_model, batch_size=1):
+def apply_summarization(input_folder_path, output_folder_path, summarizer_model, batch_size=1):
     """
     apply summarization on all json file of a given path
-    :param folder_path: path to the model containing the preprocess json file
+    :param input_folder_path: path to the folder containing the preprocess json file
+    :param output_folder_path: path to the folder in which the new json will be dumped
     :param summarizer_model: SummarizerModel value
     :param batch_size: batch size for T5 and BART
     """
     summarizer = FlexibleSum(summarizer_model, batch_size)
-    json_files = [json_file for json_file in os.listdir(folder_path) if json_file[-4:] == "json"]
+    json_files = [json_file for json_file in os.listdir(input_folder_path) if json_file[-4:] == "json"]
 
     # Compute summary on each novel
-    for json_file in tqdm(json_files):
-        with open(json_file, 'r', encoding='utf-8') as f:
+    for json_file_name in tqdm(json_files):
+        with open(json_file_name, 'r', encoding='utf-8') as f:
             data = json.load(f)
         paragraphs = list(map(lambda x: x['text'], data['paragraphs']))
 
@@ -30,7 +31,7 @@ def apply_summarization(folder_path, summarizer_model, batch_size=1):
                 data['paragraphs'][i] = dict()
             data['paragraphs'][i]['summaries'][str(summarizer_model)] = summary
 
-        json.dump(data, open(str(summarizer_model)+'_'+json_file, 'w', encoding='utf-8'))
+        json.dump(data, open(output_folder_path+str(summarizer_model)+'_'+json_file_name, 'w', encoding='utf-8'))
 
 
 if __name__ == '__main__':
