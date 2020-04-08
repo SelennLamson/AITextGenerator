@@ -16,7 +16,8 @@ def apply_summarization(input_folder_path, output_folder_path, summarizer_model,
     :param summarizer_model: SummarizerModel value
     :param batch_size: batch size for T5 and BART
     """
-    summarizer = FlexibleSum(summarizer_model, batch_size)
+    if False:
+        summarizer = FlexibleSum(summarizer_model, batch_size)
     json_files = [json_file for json_file in os.listdir(input_folder_path) if json_file[-4:] == "json"]
 
     # Compute summary on each novel
@@ -25,11 +26,13 @@ def apply_summarization(input_folder_path, output_folder_path, summarizer_model,
             data = json.load(f)
         print("Summarizing book : ", json_file_name)
         paragraphs = list(map(lambda x: x['text'], data['paragraphs']))
-
-        summaries = summarizer(paragraphs)
+        if False:
+            summaries = summarizer(paragraphs)
+        else:
+            summaries = paragraphs
         for i, summary in enumerate(summaries):
-            if type(data['paragraphs'][i]) == list:
-                data['paragraphs'][i] = dict()
+            if type(data['paragraphs'][i]['summaries']) == list:
+                data['paragraphs'][i]['summaries'] = dict()
             data['paragraphs'][i]['summaries'][str(summarizer_model)] = summary
 
         json.dump(data, open(output_folder_path+str(summarizer_model)+'_'+json_file_name, 'w', encoding='utf-8'))
