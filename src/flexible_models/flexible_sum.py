@@ -55,7 +55,7 @@ class FlexibleSum(FlexibleModel):
 
         if self.summarizer == SummarizerModel.PYSUM:
             self.model = AutoAbstractor()
-            self.model.tokenizer = SimpleTokenizer()
+            self.model.tokenizable_doc = SimpleTokenizer()
             self.model.delimiter_list = ['.','\n']
             self.doc_filtering = TopNRankAbstractor()
 
