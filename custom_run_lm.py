@@ -35,7 +35,8 @@ import torch
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampler
 from torch.utils.data.distributed import DistributedSampler
-from tqdm import tqdm, trange
+#from tqdm import tqdm, trange
+from tqdm.notebook import tqdm, trange  #USE THIS FOR COLLAB FINE TUNING
 
 from src.torch_loader import DatasetFromRepo, VectorizeParagraph, VectorizeMode
 from src.model_training import add_special_tokens
