@@ -7,6 +7,7 @@ from pysummarization.nlpbase.auto_abstractor import AutoAbstractor
 from pysummarization.tokenizabledoc.simple_tokenizer import SimpleTokenizer
 from pysummarization.abstractabledoc.top_n_rank_abstractor import TopNRankAbstractor
 from tqdm.notebook import tqdm
+import torch
 
 class SummarizerModel(Enum):
     T5 = 0
@@ -49,11 +50,17 @@ class FlexibleSum(FlexibleModel):
             self.tokenizer = T5Tokenizer.from_pretrained('t5-small')
             self.model = TFT5ForConditionalGeneration.from_pretrained('t5-small')
             self.decoding_strategy = {}
+            if torch.cuda.is_available():
+                print("Put T5 on cuda")
+                self.model.cuda()
 
         if self.summarizer == SummarizerModel.BART:
             self.tokenizer = BartTokenizer.from_pretrained('bart-large-cnn')
             self.model = BartForConditionalGeneration.from_pretrained('bart-large-cnn')
             self.decoding_strategy = {'num_beams':2, 'max_length':40, 'early_stopping':True}
+            if torch.cuda.is_available():
+                print("Put BART on cuda")
+                self.model.cuda()
 
         if self.summarizer == SummarizerModel.PYSUM:
             self.model = AutoAbstractor()
@@ -80,6 +87,7 @@ class FlexibleSum(FlexibleModel):
                     inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='pt',
                                                                   max_length=1024, pad_to_max_length=True)
 
+                inputs_ids = inputs_ids['input_ids'].cuda() if torch.cuda.is_available() else inputs_ids['input_ids']
                 outputs = self.model.generate(inputs_ids['input_ids'], **self.decoding_strategy)
                 return [self.tokenizer.decode(output, skip_special_tokens=True, clean_up_tokenization_spaces=False)
                         for output in outputs]
