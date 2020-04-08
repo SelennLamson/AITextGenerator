@@ -63,7 +63,8 @@ class FlexibleSum(FlexibleModel):
                 # batch must be a list of batch_size paragrah (str)
                 inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='pt', max_length=1024)
                 outputs = self.model.generate(inputs_ids['input_ids'], **self.decoding_strategy)
-                return [self.tokenizer.decode(output) for output in outputs]
+                return [self.tokenizer.decode(output, skip_special_tokens=True, clean_up_tokenization_spaces=False)
+                        for output in outputs]
 
             summaries = []
             i = 0
