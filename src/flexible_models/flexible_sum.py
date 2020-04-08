@@ -56,7 +56,7 @@ class FlexibleSum(FlexibleModel):
         :return: list[str] : summary for each input
         """
         if self.summarizer == SummarizerModel.BERT_SUM:
-            return [self.model(paragraph, ratio=0.15, max_length=300) for paragraph in paragraphs]
+            return [''.join(self.model(paragraph, ratio=0.15, max_length=300)) for paragraph in paragraphs]
 
         if self.summarizer == SummarizerModel.T5 or self.summarizer == SummarizerModel.BERT_SUM:
             def predict_on_single_batch(batch):
