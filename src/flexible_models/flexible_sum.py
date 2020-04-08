@@ -14,6 +14,16 @@ class SummarizerModel(Enum):
     BERT_SUM = 2
     PYSUM = 3
 
+    def __str__(self):
+        if self == SummarizerModel.T5:
+            return 'T5'
+        if self == SummarizerModel.BART:
+            return 'BART'
+        if self == SummarizerModel.BERT_SUM:
+            return 'BERT_SUM'
+        if self == SummarizerModel.PYSUM:
+            return 'PYSUM'
+
 class FlexibleSum(FlexibleModel):
     """
     FlexibleSum class allows the use of 4 differents type of summarizers
