@@ -6,7 +6,7 @@ from transformers import BartTokenizer, BartForConditionalGeneration, T5Tokenize
 from pysummarization.nlpbase.auto_abstractor import AutoAbstractor
 from pysummarization.tokenizabledoc.simple_tokenizer import SimpleTokenizer
 from pysummarization.abstractabledoc.top_n_rank_abstractor import TopNRankAbstractor
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 
 class SummarizerModel(Enum):
     T5 = 0
@@ -40,6 +40,8 @@ class FlexibleSum(FlexibleModel):
         super().__init__()
         self.summarizer = summarizer
         self.batch_size = batch_size
+
+        print("Loading model : ", str(summarizer))
         if self.summarizer == SummarizerModel.BERT_SUM:
             self.model = Summarizer()
 
@@ -66,24 +68,28 @@ class FlexibleSum(FlexibleModel):
         :return: list[str] : summary for each input
         """
         if self.summarizer == SummarizerModel.BERT_SUM:
-            return [''.join(self.model(paragraph, ratio=0.15, max_length=300)) for paragraph in paragraphs]
+            return [''.join(self.model(paragraph, ratio=0.15, max_length=300)) for paragraph in tqdm(paragraphs)]
 
         if self.summarizer == SummarizerModel.T5 or self.summarizer == SummarizerModel.BART:
             def predict_on_single_batch(batch):
                 # batch must be a list of batch_size paragrah (str)
                 if self.summarizer == SummarizerModel.T5:
-                    inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='tf', max_length=1024)
+                    inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='tf',
+                                                                  max_length=1024, pad_to_max_length=True)
                 else:
-                    inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='pt', max_length=1024)
+                    inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='pt',
+                                                                  max_length=1024, pad_to_max_length=True)
+
                 outputs = self.model.generate(inputs_ids['input_ids'], **self.decoding_strategy)
                 return [self.tokenizer.decode(output, skip_special_tokens=True, clean_up_tokenization_spaces=False)
                         for output in outputs]
 
             summaries = []
-            i = 0
-            while i + self.batch_size < len(paragraphs):
-                summaries += predict_on_single_batch(paragraphs[i:i+self.batch_size])
-            summaries += predict_on_single_batch(paragraphs[i:])
+            for i in tqdm(range(len(paragraphs)//self.batch_size)):
+                summaries += predict_on_single_batch(paragraphs[i * self.batch_size: (i+1) * self.batch_size])
+            if len(paragraphs) % self.batch_size != 0:
+                summaries += predict_on_single_batch(paragraphs[len(paragraphs)//self.batch_size * self.batch_size:])
+
             return summaries
 
         if self.summarizer == SummarizerModel.PYSUM:
@@ -97,7 +103,7 @@ class FlexibleSum(FlexibleModel):
                 pysum_result = ''.join(result_dict['summarize_result'][id])
                 return pysum_result.replace('\n', '')
 
-            return [one_paragraph_summarization(paragraph) for paragraph in paragraphs]
+            return [one_paragraph_summarization(paragraph) for paragraph in tqdm(paragraphs)]
 
 
 

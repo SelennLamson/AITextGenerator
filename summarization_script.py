@@ -23,6 +23,7 @@ def apply_summarization(input_folder_path, output_folder_path, summarizer_model,
     for json_file_name in tqdm(json_files):
         with open(input_folder_path+json_file_name, 'r', encoding='utf-8') as f:
             data = json.load(f)
+        print("Summarizing book : ", json_file_name)
         paragraphs = list(map(lambda x: x['text'], data['paragraphs']))
 
         summaries = summarizer(paragraphs)
