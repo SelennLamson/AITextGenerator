@@ -725,7 +725,10 @@ def main():
 
     # MODIFICATION 1/2
     # ADD SPECIAL TOKENS (IE CONTROL CODES)
-    add_special_tokens(tokenizer=tokenizer, model=model)
+    # FOR THE FIRST TIME
+    # BUT NO WHEN WE RELOAD AN ALREADY FINE-TUNED MODEL
+    if not args.should_continue:
+        add_special_tokens(tokenizer=tokenizer, model=model)
 
     # Training
     if args.do_train:
