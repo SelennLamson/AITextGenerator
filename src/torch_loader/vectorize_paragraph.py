@@ -58,7 +58,7 @@ class VectorizeParagraph:
 
         if self.mode == VectorizeMode.TRAIN:
             # In train mode, P2 is added to the context and the sentence to predict is simplify the full context
-            context['P2'] += self.tokenizer.encode(P2 + ' [EOS]') if self.use_context else self.tokenizer.encode(P2)
+            context['P2'] += self.tokenizer.encode(P2 + ' <|endoftext|>') if self.use_context else self.tokenizer.encode(P2)
 
         # If the context + input space we must left for P2 is too big
         # We let 2/3 of the remaining space for P1 and 1/3 for P3
@@ -93,7 +93,7 @@ class VectorizeParagraph:
 
         :return:
             for train mode:
-                with context : [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2] P2 [EOS]
+                with context : [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2] P2 <|endoftext|>
                 without context : P1 P2
 
             for eval mode:
@@ -131,7 +131,7 @@ class VectorizeParagraph:
         if self.mode == VectorizeMode.GENERATE:
             nb_tokens_for_P2 = P2['size'].mean_tokens + 50
         else:
-            nb_tokens_for_P2 = len(self.tokenizer.encode(P2_text)) + 2  # +1 for [P2] and +1 for [EOS]
+            nb_tokens_for_P2 = len(self.tokenizer.encode(P2_text)) + 2  # +1 for [P2] and +1 for <|endoftext|>
 
         input_ids = self.vectorize(context, P2_text, nb_tokens_for_P2)
 

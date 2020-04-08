@@ -16,8 +16,7 @@ class FlexibleGPT2(FlexibleModel):
         super().__init__()
         self.model = model
         self.tokenizer = tokenizer
-        if not self.tokenizer._pad_token:
-            tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.pad_token = tokenizer.eos_token
         self.decoding_strategy = decoding_strategy
         self.max_length = GPT2_BLOCK_SIZE
         self.min_length = 0
