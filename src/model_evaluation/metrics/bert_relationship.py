@@ -25,7 +25,7 @@ def bert_relationship_single_batch(list_seq_1, list_seq_2, BERT_model, BERT_toke
     mask = mask.to(device)
 
     ouptput_bert = BERT_model(input_ids=input_ids, attention_mask=mask, token_type_ids=token_type_ids)
-    return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach().numpy()
+    return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach().cpu().numpy()
 
 def bert_relationship(list_seq_1, list_seq_2, BERT_model, BERT_tokenizer, batch_size=1):
     """
