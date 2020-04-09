@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     moment = str(datetime.now().strftime("%m_%d-%H_%M"))
     script(generations_path=args.output + 'generation' + moment + '.json',
-           results_path=args.output + 'metrics.json' + moment + '.json',
+           results_path=args.output + 'metrics' + moment + '.json',
            GPT2_model=gpt_2,
            compute_bert_similarity=True,
            compute_entites_iou=True,

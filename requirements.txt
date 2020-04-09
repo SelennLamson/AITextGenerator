@@ -2,9 +2,18 @@ sortedcontainers
 numpy
 transformers==2.6.0
 torch==1.4.0
-tensorboardX==2.0
 tqdm
+
+# for fine tuning
+tensorboardX==2.0
+
+# for summarization and key vector
 gensim
 pysummarization
-transformers
 bert-extractive-summarizer
+
+# for bert_ner
+pytorch-transformers==1.2.0
+nltk==3.4.5
+Flask==1.1.1
+Flask-Cors==3.0.8
