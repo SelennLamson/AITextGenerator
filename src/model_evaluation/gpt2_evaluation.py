@@ -23,11 +23,17 @@ from src.model_evaluation.metrics.bert_relationship import bert_relationship
 
 
 class GPT2EvaluationScript:
-    def __init__(self, file_ids: List[str], batch_size: int = 1, use_context=True, path_to_bert_ner=BERT_NER_LARGE):
+    def __init__(self,
+                 file_ids: List[str],
+                 path_to_data_folder=PREPROC_PATH,
+                 batch_size: int = 1,
+                 use_context=True,
+                 path_to_bert_ner=BERT_NER_LARGE):
         """
         Initializes a GPT-2 Benchmark script that will perform text generation on the paragraphs of given files.
         Call the script using parentheses to launch it.
-        :param file_ids: list of book ids, the part of the preproc file before "_preproc.json".
+        :param file_ids: list of book ids from data_folder that will be evaluated
+        :param path_to_data_folder : path to the datafolder (by default src.utils.PREPOC_PATH)
         :param batch_size: number of simultaneous text generations + text evalution
                     will be used by all flexible model + metrics
         :param use_context: if True, will create special context sentences for model input :
@@ -38,7 +44,7 @@ class GPT2EvaluationScript:
         """
 
         # Filtering file ids on files that really exist in the preproc folder
-        self.list_of_fid = [f for f in file_ids if os.path.exists(PREPROC_PATH + f + PREPROC_SUFFIX)]
+        self.list_of_fid = [f for f in file_ids if os.path.exists(path_to_data_folder + f + PREPROC_SUFFIX)]
 
         self.batch_size = batch_size
         self.use_context = use_context
