@@ -217,13 +217,12 @@ class GPT2EvaluationScript:
             register_stats(ent_ious, 'entities_iou')
 
         if compute_gpt2_perplexity:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
-            model = GPT2LMHeadModel.from_pretrained('gpt2').to(device)
+            model = GPT2LMHeadModel.from_pretrained('gpt2')
             tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
             flexible_model = FlexibleGPT2(model, tokenizer, DEFAULT_DECODING_STRATEGY)
 
-            gpt2_gen_perplexities = gpt2_perplexity(generated, flexible_model, device)
-            gpt2_ori_perplexities = gpt2_perplexity(originals, flexible_model, device)
+            gpt2_gen_perplexities = gpt2_perplexity(generated, flexible_model)
+            gpt2_ori_perplexities = gpt2_perplexity(originals, flexible_model)
             gpt2_perplexities = gpt2_gen_perplexities / gpt2_ori_perplexities
 
             # Freeing space
@@ -248,9 +247,11 @@ class GPT2EvaluationScript:
         json.dump(results, open(results_path, 'w'))
 
         if compute_bert_relationship:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
             tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-            model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased').to(device)
+            model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased')
+            model.eval()
+            if torch.cuda.is_available():
+                model.cuda()
 
             gen_relationships = bert_relationship(generated, P3, model, tokenizer, self.batch_size).astype(float)
             #ori_relationships = bert_relationship(originals, P3, model, tokenizer, self.batch_size)

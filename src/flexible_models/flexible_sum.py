@@ -53,24 +53,21 @@ class FlexibleSum(FlexibleModel):
         if self.summarizer == SummarizerModel.T5:
             self.tokenizer = T5Tokenizer.from_pretrained('t5-small')
             self.model = T5ForConditionalGeneration.from_pretrained('t5-small')
+            self.model.eval()
+            if torch.cuda.is_available():
+                self.model.cuda()
             self.decoding_strategy = {'top_p':0.7, 'min_length':10, 'max_length':30, 'repetition_penalty':4}
             print("Use for decoding strategy :", self.decoding_strategy)
-            if torch.cuda.is_available():
-                print("Put T5 on cuda")
-                self.model.cuda()
-            else:
-                print("Warning ! Using T5 wo cuda available")
 
         if self.summarizer == SummarizerModel.BART:
             self.tokenizer = BartTokenizer.from_pretrained('bart-large-cnn')
             self.model = BartForConditionalGeneration.from_pretrained('bart-large-cnn')
+            self.model.eval()
+            if torch.cuda.is_available():
+                self.model.cuda()
+
             self.decoding_strategy = {'temperature':1.4, 'num_beams':5, 'min_length':25, 'max_length':65}
             print("Use for decoding strategy :", self.decoding_strategy)
-            if torch.cuda.is_available():
-                print("Put BART on cuda")
-                self.model.cuda()
-            else:
-                print("Warning ! Using BART wo cuda available")
 
         if self.summarizer == SummarizerModel.PYSUM:
             self.model = AutoAbstractor()
