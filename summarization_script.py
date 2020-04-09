@@ -1,29 +1,32 @@
 from src.flexible_models.flexible_sum import FlexibleSum, SummarizerModel
+from src.utils import PREPROC_SUFFIX
 from tqdm.notebook import tqdm
 import os
 import json
 import argparse
+import re
 
 """
 Script to apply summarization on the preproccess paragraph 
 """
 
-def apply_summarization(input_folder_path, output_folder_path, summarizer_model, batch_size=1):
+def apply_summarization(input_folder_path, output_folder_path, list_of_book_id, summarizer_model, batch_size=1):
     """
     apply summarization on all json file of a given path
     :param input_folder_path: path to the folder containing the preprocess json file
     :param output_folder_path: path to the folder in which the new json will be dumped
+    :param list_of_book_id: list[str] : list of book id to summaries
     :param summarizer_model: SummarizerModel value
     :param batch_size: batch size for T5 and BART
     """
     summarizer = FlexibleSum(summarizer_model, batch_size)
-    json_files = [json_file for json_file in os.listdir(input_folder_path) if json_file[-4:] == "json"]
+    #json_files = [json_file for json_file in os.listdir(input_folder_path) if json_file[-4:] == "json"]
 
     # Compute summary on each novel
-    for json_file_name in tqdm(json_files):
-        with open(input_folder_path+json_file_name, 'r', encoding='utf-8') as f:
+    for book_id in tqdm(list_of_book_id):
+        with open(input_folder_path+book_id+PREPROC_SUFFIX, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        print("Summarizing book : ", json_file_name)
+        print("Summarizing book : ", book_id)
         paragraphs = list(map(lambda x: x['text'], data['paragraphs']))
         summaries = summarizer(paragraphs)
 
@@ -32,8 +35,29 @@ def apply_summarization(input_folder_path, output_folder_path, summarizer_model,
                 data['paragraphs'][i]['summaries'] = dict()
             data['paragraphs'][i]['summaries'][str(summarizer_model)] = summary
 
-        json.dump(data, open(output_folder_path+str(summarizer_model)+'_'+json_file_name, 'w', encoding='utf-8'))
+        json.dump(data, open(output_folder_path + str(summarizer_model) + '_' + book_id+PREPROC_SUFFIX,
+                             'w', encoding='utf-8'))
 
+def retrieve_list_of_books_to_summarize(input_folder_path, output_folder_path, summarizer_model):
+    """
+    Compare json files in input_folder and output_folder to spot files that has not been summarize yet by the
+    summarizer 'summarizer_model'
+    :param input_folder_path: path to the folder containing the preprocess json file
+    :param output_folder_path: path to the folder in which the new json will be dumped
+    :param summarizer_model: SummarizerModel value
+    :return: list[str] list of book id not summarize yet
+    """
+    input_book_ids = set(re.search("(.*)" + PREPROC_SUFFIX, file).group(1) for file in os.listdir(input_folder_path))
+    PREFIX_SUM = str(summarizer_model) + "_"
+    summarized_book_ids = set(re.search(PREFIX_SUM+"(.*)"+PREPROC_SUFFIX, file).group(1)
+                              for file in os.listdir(output_folder_path)
+                              if re.search(PREFIX_SUM+"(.*)"+PREPROC_SUFFIX, file) is not None)
+
+    print("Number of books already summarized with ", str(summarizer_model), " : ", len(summarized_book_ids))
+    print("Number of books that still need to be summarized with ", str(summarizer_model), " : ",
+          len(input_book_ids - summarized_book_ids))
+
+    return list(input_book_ids - summarized_book_ids)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
