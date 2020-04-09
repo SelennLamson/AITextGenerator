@@ -1,4 +1,4 @@
-from src.flexible_models import FlexibleGPT2
+from src.flexible_models.flexible_GPT2 import FlexibleGPT2
 import numpy as np
 import math
 import torch
