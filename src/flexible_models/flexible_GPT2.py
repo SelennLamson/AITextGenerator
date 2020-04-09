@@ -41,9 +41,9 @@ class FlexibleGPT2(FlexibleModel):
             input_ids = input_ids.view(1, -1)
 
         self.model.eval()
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model.to(device)
-        input_ids.to(device)
+        if torch.cuda.is_available():
+            self.model.cuda()
+            input_ids.cuda()
 
         # We use a mask so that GPT2 does not take into account the PAD token during generation time
         mask = (input_ids != self.tokenizer.pad_token_id).long()
@@ -56,7 +56,9 @@ class FlexibleGPT2(FlexibleModel):
                                          eos_token_id=self.tokenizer.eos_token_id,
                                          attention_mask=mask,
                                          num_return_sequences=nb_samples,
-                                         **self.decoding_strategy).detach().cpu()
+                                         **self.decoding_strategy)
+
+        outputs_id = outputs_id.detach().cpu()
 
         # only keep the token corresponding to the generation part
         # this is because transformers.generate methods also return the input part
