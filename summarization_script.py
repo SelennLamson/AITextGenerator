@@ -46,7 +46,10 @@ def retrieve_list_of_books_to_summarize(input_folder_path, output_folder_path, s
     :param summarizer_model: SummarizerModel value
     :return: list[str] list of book id not summarize yet
     """
-    input_book_ids = set(re.search("(.*)" + PREPROC_SUFFIX, file).group(1) for file in os.listdir(input_folder_path))
+    # input_book_ids = set(re.search("(.*)" + PREPROC_SUFFIX, file).group(1) for file in os.listdir(input_folder_path))
+    input_book_ids = set(re.search("(.*)" + PREPROC_SUFFIX, file).group(1)
+                         for file in os.listdir(input_folder_path)
+                         if re.search("(.*)" + PREPROC_SUFFIX, file) is not None)
     PREFIX_SUM = str(summarizer_model) + "_"
     summarized_book_ids = set(re.search(PREFIX_SUM+"(.*)"+PREPROC_SUFFIX, file).group(1)
                               for file in os.listdir(output_folder_path)
@@ -74,6 +77,7 @@ if __name__ == '__main__':
     parser.add_argument("--BART", action="store_true", help="Use BART summarizer")
     parser.add_argument("--PYSUM", action="store_true", help="Use pysummarizer")
     parser.add_argument("--BERT_SUM", action="store_true", help="Use BERT summarizer")
+    parser.add_argument("--KW", action="store_true", help='Use keywords summarization')
     parser.add_argument("--batch_size", type=int, default=1, help="Batch size for T5 and BART")
 
     args = parser.parse_args()
@@ -93,3 +97,7 @@ if __name__ == '__main__':
     if args.PYSUM:
         book_ids = retrieve_list_of_books_to_summarize(args.input_data_folder, args.output_data_folder, SummarizerModel.PYSUM)
         apply_summarization(args.input_data_folder, args.output_data_folder, book_ids, SummarizerModel.PYSUM)
+
+    if args.KW:
+        book_ids = retrieve_list_of_books_to_summarize(args.input_data_folder, args.output_data_folder, SummarizerModel.PYSUM)
+        apply_summarization(args.input_data_folder, args.output_data_folder, book_ids, SummarizerModel.KW)

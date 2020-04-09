@@ -6,6 +6,7 @@ from transformers import BartTokenizer, BartForConditionalGeneration, T5Tokenize
 from pysummarization.nlpbase.auto_abstractor import AutoAbstractor
 from pysummarization.tokenizabledoc.simple_tokenizer import SimpleTokenizer
 from pysummarization.abstractabledoc.top_n_rank_abstractor import TopNRankAbstractor
+from gensim.summarization import keywords
 from tqdm.notebook import tqdm
 import torch
 
@@ -14,6 +15,7 @@ class SummarizerModel(Enum):
     BART = 1
     BERT_SUM = 2
     PYSUM = 3
+    KW = 4
 
     def __str__(self):
         if self == SummarizerModel.T5:
@@ -24,6 +26,8 @@ class SummarizerModel(Enum):
             return 'BERT_SUM'
         if self == SummarizerModel.PYSUM:
             return 'PYSUM'
+        if self == SummarizerModel.KW:
+            return 'KW'
 
 class FlexibleSum(FlexibleModel):
     """
@@ -50,6 +54,7 @@ class FlexibleSum(FlexibleModel):
             self.tokenizer = T5Tokenizer.from_pretrained('t5-small')
             self.model = T5ForConditionalGeneration.from_pretrained('t5-small')
             self.decoding_strategy = {'top_p':0.7, 'min_length':10, 'max_length':30, 'repetition_penalty':4}
+            print("Use for decoding strategy :", self.decoding_strategy)
             if torch.cuda.is_available():
                 print("Put T5 on cuda")
                 self.model.cuda()
@@ -72,6 +77,9 @@ class FlexibleSum(FlexibleModel):
             self.model.tokenizable_doc = SimpleTokenizer()
             self.model.delimiter_list = ['.','\n']
             self.doc_filtering = TopNRankAbstractor()
+
+        if self.summarizer == SummarizerModel.KW:
+            self.model = keywords
 
     def predict(self, paragraphs: List[str]) -> List[str]:
         """
@@ -113,6 +121,11 @@ class FlexibleSum(FlexibleModel):
                 return pysum_result.replace('\n', '')
 
             return [one_paragraph_summarization(paragraph) for paragraph in tqdm(paragraphs)]
+
+        if self.summarizer == SummarizerModel.KW:
+            kw_sum = [' - '.join(self.model(paragraph, lemmatize=False, pos_filter=('NN', 'JJ', 'VB')).split('\n'))
+                      for paragraph in paragraphs]
+            return kw_sum
 
 
 
