@@ -93,12 +93,8 @@ class FlexibleSum(FlexibleModel):
         if self.summarizer == SummarizerModel.T5 or self.summarizer == SummarizerModel.BART:
             def predict_on_single_batch(batch):
                 # batch must be a list of batch_size paragrah (str)
-                if self.summarizer == SummarizerModel.T5:
-                    inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='tf',
-                                                                  max_length=1024, pad_to_max_length=True)
-                else:
-                    inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='pt',
-                                                                  max_length=1024, pad_to_max_length=True)
+                inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='pt',
+                                                              max_length=1024, pad_to_max_length=True)
 
                 inputs_ids = inputs_ids['input_ids'].cuda() if torch.cuda.is_available() else inputs_ids['input_ids']
                 outputs = self.model.generate(inputs_ids, **self.decoding_strategy)
