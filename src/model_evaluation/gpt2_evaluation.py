@@ -123,9 +123,6 @@ class GPT2EvaluationScript:
         dataloader = DataLoader(dataset=dataset, batch_size=self.batch_size,
                                 collate_fn=lambda x: self.custom_collate(x, GPT2_model.tokenizer.pad_token_id))
 
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        GPT2_model.model.to(device)
-
         if verbose:
             print("\rGenerating texts...", end="")
 
