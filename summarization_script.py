@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     if args.T5:
         book_ids = retrieve_list_of_books_to_summarize(args.input_data_folder, args.output_data_folder, SummarizerModel.T5)
-        apply_summarization(args.input_data_folder, args.output_data_folder, SummarizerModel.T5, args.batch_size)
+        apply_summarization(args.input_data_folder, args.output_data_folder, book_ids, SummarizerModel.T5, args.batch_size)
 
     if args.BART:
         book_ids = retrieve_list_of_books_to_summarize(args.input_data_folder, args.output_data_folder, SummarizerModel.BART)
