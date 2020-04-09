@@ -20,9 +20,9 @@ def bert_relationship_single_batch(list_seq_1, list_seq_2, BERT_model, BERT_toke
     mask = (input_ids != BERT_tokenizer.pad_token_id).long()
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    input_ids.to(device)
-    token_type_ids.to(device)
-    mask.to(device)
+    input_ids = input_ids.to(device)
+    token_type_ids = token_type_ids.to(device)
+    mask = mask.to(device)
 
     ouptput_bert = BERT_model(input_ids=input_ids, attention_mask=mask, token_type_ids=token_type_ids)
     return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach().numpy()
