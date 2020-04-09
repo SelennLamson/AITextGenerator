@@ -26,7 +26,7 @@ if __name__ == '__main__':
     parser.add_argument("--ner",  required=True,
                         help="Path to the folder containing the weights of BERT NER model")
 
-    parser.add_argument("--batch_size", default=8,
+    parser.add_argument("--batch_size", type=int, default=8,
                         help="Batch size that will be used by all models, by default 8")
 
     args = parser.parse_args()
