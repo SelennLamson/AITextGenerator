@@ -9,8 +9,27 @@ big_text = """Harry Potter’ is the most miserable, lonely boy you can imagine.
            then tried to kill Harry too. What’s so amazing to everyone is that Harry survived, and allegedly destroyed Voldemort 
            in the process."""
 
-text = ' I have seen him wringing his hands after such a rebuff, and I am sure the annoyance and the terror he lived in must have greatly hastened his early and unhappy death. All the time he lived with us the captain made no change whatever in his dress but to buy some stockings from a hawker. One of the cocks of his hat having fallen down, he let it hang from that day forth, though it was a great annoyance when it blew. I remember the appearance of his coat, which he patched himself upstairs in his room, and which, before the end, was nothing but patches. He never wrote or received a letter, and he never spoke with any but the neighbours, and with these, for the most part, only when drunk on rum. The great sea-chest none of us had ever seen open. He was only once crossed, and that was towards the end, when my poor father was far gone in a decline that took him off. Dr. Livesey came late one afternoon to see the patient, took a bit of dinner from my mother, and went into the parlour to smoke a pipe until his horse should come down from the hamlet, for we had no stabling at the old Benbow. I followed him in, and I remember observing the contrast the neat, bright doctor, with his powder as white as snow and his bright, black eyes and pleasant manners, made with the coltish country folk, and above all, with that filthy, heavy, bleared scarecrow of a pirate of ours, sitting, far gone in rum, with his arms on the table.'
+novel_text = ' I have seen him wringing his hands after such a rebuff, and I am sure the annoyance and the terror he lived in must have greatly hastened his early and unhappy death. All the time he lived with us the captain made no change whatever in his dress but to buy some stockings from a hawker. One of the cocks of his hat having fallen down, he let it hang from that day forth, though it was a great annoyance when it blew. I remember the appearance of his coat, which he patched himself upstairs in his room, and which, before the end, was nothing but patches. He never wrote or received a letter, and he never spoke with any but the neighbours, and with these, for the most part, only when drunk on rum. The great sea-chest none of us had ever seen open. He was only once crossed, and that was towards the end, when my poor father was far gone in a decline that took him off. Dr. Livesey came late one afternoon to see the patient, took a bit of dinner from my mother, and went into the parlour to smoke a pipe until his horse should come down from the hamlet, for we had no stabling at the old Benbow. I followed him in, and I remember observing the contrast the neat, bright doctor, with his powder as white as snow and his bright, black eyes and pleasant manners, made with the coltish country folk, and above all, with that filthy, heavy, bleared scarecrow of a pirate of ours, sitting, far gone in rum, with his arms on the table.'
 
+sentence = """Facebook CEO Mark Zuckerberg, left, makes the keynote speech at F8, the Facebook's developer conference, Tuesday, April 30, 2019, in San Jose, Calif. (AP Photo/Tony Avelar )
+Facebook says that, unlike its past, its future is privacy
+A trader works ahead of the closing bell on the floor of the New York Stock Exchange (NYSE) on April 12, 2019 in New York City. (Photo by Johannes EISELE / AFP)        (Photo credit should read JOHANNES EISELE/AFP/Getty Images)
+Resilience is still the word for stocks"""
+
+
+
+# KEYWORDS EXTRACTION
+from gensim.summarization import keywords
+model = keywords
+' - '.join(model(big_text, lemmatize=False, pos_filter=('NN', 'JJ', 'VB')).split('\n'))
+
+start = time.time()
+keywords_sum = model(big_text, lemmatize=True, pos_filter=('NN', 'JJ', 'VB')).split('\n')
+keywords_sum = [' - '.join(keywords_sum)]
+end = time.time()
+print(end-start)
+
+model(big_text, lemmatize=True, pos_filter=('NN', 'JJ', 'VB'))
 
 # BART
 from transformers import pipeline
@@ -60,9 +79,6 @@ summary = [''.join(result_dict['summarize_result'][id])]
 
 
 
-
-
-text = """Suddenly he--the captain, that is--began to pipe up his eternal song: “Fifteen men on the dead man's chest-- Yo-ho-ho, and a bottle of rum! Drink and the devil had done for the rest-- Yo-ho-ho, and a bottle of rum!” At first I had supposed “the dead man's chest” to be that identical big box of his upstairs in the front room, and the thought had been mingled in my nightmares with that of the one-legged seafaring man. But by this time we had all long ceased to pay any particular notice to the song; it was new, that night, to nobody but Dr. Livesey, and on him I observed it did not produce an agreeable effect, for he looked up for a moment quite angrily before he went on with his talk to old Taylor, the gardener, on a new cure for the rheumatics. In the meantime, the captain gradually brightened up at his own music, and at last flapped his hand upon the table before him in a way we all knew to mean silence. The voices stopped at once, all but Dr. Livesey's; he went on as before speaking clear and kind and drawing briskly at his pipe between every word or two. The captain glared at him for a while, flapped his hand again, glared still harder, and at last broke out with a villainous, low oath, “Silence, there, between decks!” “Were you addressing me, sir?” says the doctor; and when the ruffian had told him, with another oath, that this was so, “I have only one thing to say to you, sir,” replies the doctor, “that if you keep on drinking rum, the world will soon be quit of a very dirty scoundrel!” The old fellow's fury was awful."""
 
 # Pointer Generator Network
 from eazymind.nlp.eazysum import Summarizer
