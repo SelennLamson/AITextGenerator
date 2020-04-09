@@ -20,7 +20,6 @@ def apply_summarization(input_folder_path, output_folder_path, list_of_book_id, 
     :param batch_size: batch size for T5 and BART
     """
     summarizer = FlexibleSum(summarizer_model, batch_size)
-    #json_files = [json_file for json_file in os.listdir(input_folder_path) if json_file[-4:] == "json"]
 
     # Compute summary on each novel
     for book_id in tqdm(list_of_book_id):
