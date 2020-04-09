@@ -80,13 +80,17 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.T5:
+        book_ids = retrieve_list_of_books_to_summarize(args.input_data_folder, args.output_data_folder, SummarizerModel.T5)
         apply_summarization(args.input_data_folder, args.output_data_folder, SummarizerModel.T5, args.batch_size)
 
     if args.BART:
-        apply_summarization(args.input_data_folder, args.output_data_folder, SummarizerModel.BART, args.batch_size)
+        book_ids = retrieve_list_of_books_to_summarize(args.input_data_folder, args.output_data_folder, SummarizerModel.BART)
+        apply_summarization(args.input_data_folder, args.output_data_folder, book_ids, SummarizerModel.BART, args.batch_size)
 
     if args.BERT_SUM:
-        apply_summarization(args.input_data_folder, args.output_data_folder, SummarizerModel.BERT_SUM)
+        book_ids = retrieve_list_of_books_to_summarize(args.input_data_folder, args.output_data_folder, SummarizerModel.BERT_SUM)
+        apply_summarization(args.input_data_folder, args.output_data_folder, book_ids, SummarizerModel.BERT_SUM)
 
     if args.PYSUM:
-        apply_summarization(args.input_data_folder, args.output_data_folder, SummarizerModel.PYSUM)
+        book_ids = retrieve_list_of_books_to_summarize(args.input_data_folder, args.output_data_folder, SummarizerModel.PYSUM)
+        apply_summarization(args.input_data_folder, args.output_data_folder, book_ids, SummarizerModel.PYSUM)
