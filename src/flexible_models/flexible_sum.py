@@ -85,11 +85,6 @@ class FlexibleSum(FlexibleModel):
 
         if self.summarizer == SummarizerModel.KW:
             self.model = keywords
-            if torch.cuda.is_available():
-                print("Put T5 on cuda")
-                self.model.cuda()
-            else:
-                print("Warning ! Using T5 wo cuda available")
 
     def predict(self, paragraphs: List[str]) -> List[str]:
         """
