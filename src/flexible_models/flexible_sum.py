@@ -2,7 +2,7 @@ from .flexible_model import FlexibleModel
 from typing import List
 from enum import Enum
 from summarizer import Summarizer
-from transformers import BartTokenizer, BartForConditionalGeneration, T5Tokenizer, TFT5ForConditionalGeneration
+from transformers import BartTokenizer, BartForConditionalGeneration, T5Tokenizer, T5ForConditionalGeneration
 from pysummarization.nlpbase.auto_abstractor import AutoAbstractor
 from pysummarization.tokenizabledoc.simple_tokenizer import SimpleTokenizer
 from pysummarization.abstractabledoc.top_n_rank_abstractor import TopNRankAbstractor
@@ -48,7 +48,7 @@ class FlexibleSum(FlexibleModel):
 
         if self.summarizer == SummarizerModel.T5:
             self.tokenizer = T5Tokenizer.from_pretrained('t5-small')
-            self.model = TFT5ForConditionalGeneration.from_pretrained('t5-small')
+            self.model = T5ForConditionalGeneration.from_pretrained('t5-small')
             self.decoding_strategy = {'top_p':0.7, 'min_length':10, 'max_length':30, 'repetition_penalty':4}
             if torch.cuda.is_available():
                 print("Put T5 on cuda")
@@ -85,12 +85,8 @@ class FlexibleSum(FlexibleModel):
         if self.summarizer == SummarizerModel.T5 or self.summarizer == SummarizerModel.BART:
             def predict_on_single_batch(batch):
                 # batch must be a list of batch_size paragrah (str)
-                if self.summarizer == SummarizerModel.T5:
-                    inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='tf',
-                                                                  max_length=1024, pad_to_max_length=True)
-                else:
-                    inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='pt',
-                                                                  max_length=1024, pad_to_max_length=True)
+                inputs_ids = self.tokenizer.batch_encode_plus(batch, return_tensors='pt',
+                                                              max_length=1024, pad_to_max_length=True)
 
                 inputs_ids = inputs_ids['input_ids'].cuda() if torch.cuda.is_available() else inputs_ids['input_ids']
                 outputs = self.model.generate(inputs_ids, **self.decoding_strategy)
