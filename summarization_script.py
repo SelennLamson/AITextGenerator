@@ -66,7 +66,7 @@ if __name__ == '__main__':
                         required=True,
                         help="The directory where the preprocess json files are stored")
 
-    parser.add_argument("--output_data_forder",
+    parser.add_argument("--output_data_folder",
                         type=str,
                         required=True,
                         help="The directory where the preprocess json with summary will be stored")
