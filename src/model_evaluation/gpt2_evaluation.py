@@ -45,6 +45,7 @@ class GPT2EvaluationScript:
         """
 
         self.data_folder = path_to_data_folder
+        self.list_of_fid = list_of_fid
 
         if self.list_of_fid:
             # Filtering file ids on files that really exist in the preproc folder
