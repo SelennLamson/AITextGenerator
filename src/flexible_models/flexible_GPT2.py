@@ -40,12 +40,13 @@ class FlexibleGPT2(FlexibleModel):
         if len(input_ids.shape) == 1:
             input_ids = input_ids.view(1, -1)
 
-        # We use a mask so that GPT2 does not take into account the PAD token during generation time
-        mask = (input_ids != self.tokenizer.pad_token_id).long()
-
         self.model.eval()
         device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model.to(device)
+        input_ids.to(device)
+
+        # We use a mask so that GPT2 does not take into account the PAD token during generation time
+        mask = (input_ids != self.tokenizer.pad_token_id).long()
 
         self.decoding_strategy['max_length'] = self.max_length + input_ids.shape[1]
         self.decoding_strategy['min_length'] = self.min_length + input_ids.shape[1]
