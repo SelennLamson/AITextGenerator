@@ -23,7 +23,7 @@ from src.model_evaluation.metrics.bert_relationship import bert_relationship
 
 
 class GPT2EvaluationScript:
-    def __init__(self, file_ids: List[str], batch_size: int = 1, use_context=True):
+    def __init__(self, file_ids: List[str], batch_size: int = 1, use_context=True, path_to_bert_ner=BERT_NER_LARGE):
         """
         Initializes a GPT-2 Benchmark script that will perform text generation on the paragraphs of given files.
         Call the script using parentheses to launch it.
@@ -34,12 +34,15 @@ class GPT2EvaluationScript:
                     [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2]
                             else, will juste use P1 without any special tokens
                 --> put use_context = False to compute GPT_2 baseline
+        :param path_to_bert_ner: path to bert ner model (needed if to use GPT2EvalutionScript to compute entities iou)
         """
+
         # Filtering file ids on files that really exist in the preproc folder
         self.list_of_fid = [f for f in file_ids if os.path.exists(PREPROC_PATH + f + PREPROC_SUFFIX)]
 
         self.batch_size = batch_size
         self.use_context = use_context
+        self.path_to_bert_ner = path_to_bert_ner
 
     def __call__(self,
                  generations_path:str,
@@ -190,7 +193,7 @@ class GPT2EvaluationScript:
             register_stats(bert_similarities, 'bert_similarity')
 
         if compute_entites_iou:
-            bert_ner_model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=self.batch_size)
+            bert_ner_model = FlexibleBERTNER(self.path_to_bert_ner, batch_size=self.batch_size)
 
             ent_ious = entities_iou(originals, generated, bert_ner_model)
 
