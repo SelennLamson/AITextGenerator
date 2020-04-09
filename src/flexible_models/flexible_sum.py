@@ -49,11 +49,6 @@ class FlexibleSum(FlexibleModel):
         print("Loading model : ", str(summarizer))
         if self.summarizer == SummarizerModel.BERT_SUM:
             self.model = Summarizer()
-            if torch.cuda.is_available():
-                print("Put T5 on cuda")
-                self.model.cuda()
-            else:
-                print("Warning ! Using T5 wo cuda available")
 
         if self.summarizer == SummarizerModel.T5:
             self.tokenizer = T5Tokenizer.from_pretrained('t5-small')

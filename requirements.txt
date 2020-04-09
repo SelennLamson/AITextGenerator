@@ -4,3 +4,7 @@ transformers==2.6.0
 torch==1.4.0
 tensorboardX==2.0
 tqdm
+gensim
+pysummarization
+transformers
+bert-extractive-summarizer

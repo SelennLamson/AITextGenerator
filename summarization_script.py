@@ -46,7 +46,10 @@ def retrieve_list_of_books_to_summarize(input_folder_path, output_folder_path, s
     :param summarizer_model: SummarizerModel value
     :return: list[str] list of book id not summarize yet
     """
-    input_book_ids = set(re.search("(.*)" + PREPROC_SUFFIX, file).group(1) for file in os.listdir(input_folder_path))
+    # input_book_ids = set(re.search("(.*)" + PREPROC_SUFFIX, file).group(1) for file in os.listdir(input_folder_path))
+    input_book_ids = set(re.search("(.*)" + PREPROC_SUFFIX, file).group(1)
+                         for file in os.listdir(input_folder_path)
+                         if re.search("(.*)" + PREPROC_SUFFIX, file) is not None)
     PREFIX_SUM = str(summarizer_model) + "_"
     summarized_book_ids = set(re.search(PREFIX_SUM+"(.*)"+PREPROC_SUFFIX, file).group(1)
                               for file in os.listdir(output_folder_path)
