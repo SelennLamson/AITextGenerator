@@ -43,8 +43,11 @@ class GPT2EvaluationScript:
         :param path_to_bert_ner: path to bert ner model (needed if to use GPT2EvalutionScript to compute entities iou)
         """
 
+        self.data_folder = path_to_data_folder
+
         # Filtering file ids on files that really exist in the preproc folder
-        self.list_of_fid = [f for f in file_ids if os.path.exists(path_to_data_folder + f + PREPROC_SUFFIX)]
+        self.list_of_fid = [f for f in file_ids if os.path.exists(self.data_folder + f + PREPROC_SUFFIX)]
+
 
         self.batch_size = batch_size
         self.use_context = use_context
@@ -116,7 +119,7 @@ class GPT2EvaluationScript:
                                         mode=VectorizeMode.EVAL,
                                         use_context=self.use_context)
 
-        dataset = DatasetFromRepo(path=PREPROC_PATH, sublist=self.list_of_fid, transform=vectorizer)
+        dataset = DatasetFromRepo(path=self.data_folder, sublist=self.list_of_fid, transform=vectorizer)
         dataloader = DataLoader(dataset=dataset, batch_size=self.batch_size,
                                 collate_fn=lambda x: self.custom_collate(x, GPT2_model.tokenizer.pad_token_id))
 
