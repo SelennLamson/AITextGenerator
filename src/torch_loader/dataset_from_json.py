@@ -1,5 +1,8 @@
 from torch.utils.data import Dataset
+from src.torch_loader.vectorize_input import TrainInput
 import json
+
+# TODO : MAKE THE DATASET USE A VECTORIZER INPUT
 
 class DatasetFromJson(Dataset):
     """
@@ -35,7 +38,15 @@ class DatasetFromJson(Dataset):
         with open(self.path, 'r', encoding='utf-8') as json_files:
             data = json.load(json_files)
         P1, P2, P3 = data['paragraphs'][idx:idx+3]
-        metadata = {k: data[k] for k in ('title', 'author', 'genre')}
-        sample = (metadata, P1, P3, P2)
 
-        return self.transform(sample)
+        training_example = TrainInput(
+            P1=P1['text'],
+            P2=P2['text'],
+            P3=P3['text'],
+            summaries=P2['summaries'],
+            size=P2['size'],
+            genre=data['genre'],
+            entities=P2['entities']
+        )
+
+        return self.transform(training_example)
