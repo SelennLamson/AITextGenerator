@@ -4,8 +4,9 @@ from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import math
 import torch
 import numpy as np
+import pandas as pd
 
-class Perplexity(Metrics):
+class GPT2Perplexity(Metrics):
     """
     Perplexity metrics
     Score the sentences by GPT2 model :
@@ -24,11 +25,11 @@ class Perplexity(Metrics):
         """
         :param predicted_sentences: list[str] batch of sentences
         :param original_contexts: list[TrainInput] correspoing original training example
-        :return: np.array of normalized perplexity score
+        :return: pd.DataFrame [perplexity]
         """
         predicted_perplexity = self.perplexity(predicted_sentences)
         original_perplexity = self.perplexity([original_context.P2 for original_context in original_contexts])
-        return predicted_perplexity / original_perplexity
+        return pd.DataFrame(columns=['perplexity'], data=predicted_perplexity / original_perplexity)
 
     def perplexity(self, sentences):
         """

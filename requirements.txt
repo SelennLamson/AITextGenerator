@@ -1,3 +1,4 @@
+pandas
 sortedcontainers
 numpy
 transformers==2.6.0

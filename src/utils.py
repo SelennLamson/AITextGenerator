@@ -209,3 +209,19 @@ def summary_selector(summary_models=None):
 
     summary_model = random.choice(summary_models)
     return lambda summaries_dict: summaries_dict[summary_model]
+
+def pad_left_side(sequences, padding_value):
+    """
+    Modification of torch.nn.utils.rnn.pad_sequence so that we pad left side and not right side
+    :param sequences : list of tensors
+    :param padding_value : tokenizer.pad_token_id
+    :return tensor of shape (len(sequences), max_length of sequence in sequences)
+            the tensor are padded on the left side using pad_token_id from GPT2 tokenizer
+    """
+    max_len = max([s.size(0) for s in sequences])
+    out_dims = (len(sequences), max_len)
+    out_tensor = sequences[0].data.new(*out_dims).fill_(padding_value)
+    for i, tensor in enumerate(sequences):
+        length = tensor.size(0)
+        out_tensor[i, max_len - length:] = tensor
+    return out_tensor

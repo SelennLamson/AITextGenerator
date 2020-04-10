@@ -2,6 +2,7 @@ from src.flexible_models.flexible_bert_embed import FlexibleBERTEmbed
 from src.model_evaluation.metrics import Metrics
 
 import numpy as np
+import pandas as pd
 
 class BertSimilarity(Metrics):
 	"""
@@ -20,7 +21,7 @@ class BertSimilarity(Metrics):
 		"""
 		:param predicted_sentences: list[str] batch of sentences
 		:param original_contexts: list[TrainInput] correspoing original training example
-		:return: np.array of  bert similarity scores
+		:return: pd.DataFrame['similarity']
 		"""
 		# Change notation to match with Thomas old codes
 		arr_output = predicted_sentences
@@ -38,4 +39,4 @@ class BertSimilarity(Metrics):
 
 		cosine_similarities = np.sum(in_vecs * out_vecs, axis=1) / in_norms / out_norms
 
-		return cosine_similarities
+		return pd.DataFrame(columns=['similarity'], data=cosine_similarities)

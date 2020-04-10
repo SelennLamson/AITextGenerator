@@ -29,6 +29,35 @@ class TrainInput:
         self.locations = locations
         self.misc = misc
 
+    def to_dict(self):
+        return {
+            'P1':self.P1,
+            'P2':self.P2,
+            'P3':self.P3,
+            'summaries':self.summaries,
+            'genre':self.genre,
+            'size':self.size,
+            'persons':self.persons,
+            'organisations':self.organisations,
+            'locations':self.locations,
+            'misc':self.misc
+        }
+
+    @classmethod
+    def from_dict(cls, dict):
+        return cls(
+            P1=dict['P1'],
+            P2=dict['P2'],
+            P3=dict['P3'],
+            summaries=dict['summaries'],
+            genre=dict['genre'],
+            size=dict['size'],
+            persons=dict['persons'],
+            organisations=dict['organisations'],
+            locations=dict['locations'],
+            misc=dict['misc']
+        )
+
 class GenerationInput:
     """
     Use this class to vectorize a context input in Generation context

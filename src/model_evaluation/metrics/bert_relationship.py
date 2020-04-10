@@ -1,8 +1,10 @@
 import torch
 from torch.nn.utils.rnn import pad_sequence
 import numpy as np
-from src.model_evaluation.metrics import Metrics
+import pandas as pd
 from transformers import BertTokenizer, BertForNextSentencePrediction
+
+from src.model_evaluation.metrics import Metrics
 
 
 class BertRelationship(Metrics):
@@ -27,10 +29,11 @@ class BertRelationship(Metrics):
         """
         :param predicted_sentences: list[str] batch of sentences
         :param original_contexts: list[TrainInput] correspoing original training example
-        :return: np.array of bert relationship scores
+        :return: pd.DataFrame["relationship"]
         """
-        return self.bert_relationship(predicted_sentences,
+        data = self.bert_relationship(predicted_sentences,
                                       [original_context.P2 for original_context in original_contexts])
+        return pd.DataFrame(columns=["relationship"], data=data)
 
     def bert_relationship_single_batch(self, list_seq_1, list_seq_2):
         """
