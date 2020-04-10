@@ -19,8 +19,13 @@ def bert_relationship_single_batch(list_seq_1, list_seq_2, BERT_model, BERT_toke
     token_type_ids = pad_sequence(token_type_ids, batch_first=True, padding_value=1)
     mask = (input_ids != BERT_tokenizer.pad_token_id).long()
 
+    if torch.cuda.is_available():
+        input_ids = input_ids.cuda()
+        token_type_ids = token_type_ids.cuda()
+        mask = mask.cuda()
+
     ouptput_bert = BERT_model(input_ids=input_ids, attention_mask=mask, token_type_ids=token_type_ids)
-    return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach().numpy()
+    return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach().cpu().numpy()
 
 def bert_relationship(list_seq_1, list_seq_2, BERT_model, BERT_tokenizer, batch_size=1):
     """

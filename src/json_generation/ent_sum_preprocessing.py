@@ -70,13 +70,12 @@ def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, ve
 			p['summaries'] = []
 
 		# Applying the different summarization models to the paragraph
-		print('text', text)
+		print('text', pi, text)
 		summaries = models[0](text)
 		print('sum', summaries)
-		for summary in summaries:
-			summary = summary[0].replace('\n', ' ').strip()
-			if summary not in p['summaries'] and summary != '':
-				p['summaries'].append(summary)
+		summary = summaries[0].replace('\n', ' ').strip()
+		if summary not in p['summaries'] and summary != '':
+			p['summaries'].append(summary)
 
 	# Saving JSON file
 	json.dump(data, open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)

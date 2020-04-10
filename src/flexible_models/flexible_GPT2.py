@@ -1,5 +1,6 @@
 from .flexible_model import FlexibleModel
 from src.utils import GPT2_BLOCK_SIZE
+import torch
 
 class FlexibleGPT2(FlexibleModel):
     """
@@ -15,6 +16,10 @@ class FlexibleGPT2(FlexibleModel):
         """
         super().__init__()
         self.model = model
+        self.model.eval()
+        if torch.cuda.is_available():
+            model.cuda()
+
         self.tokenizer = tokenizer
         tokenizer.pad_token = tokenizer.eos_token
         self.decoding_strategy = decoding_strategy
@@ -41,20 +46,26 @@ class FlexibleGPT2(FlexibleModel):
 
         # We use a mask so that GPT2 does not take into account the PAD token during generation time
         mask = (input_ids != self.tokenizer.pad_token_id).long()
-        self.model.eval()
 
         self.decoding_strategy['max_length'] = self.max_length + input_ids.shape[1]
         self.decoding_strategy['min_length'] = self.min_length + input_ids.shape[1]
 
+        if torch.cuda.is_available():
+            input_ids = input_ids.cuda()
+            mask = mask.cuda()
+
         outputs_id = self.model.generate(input_ids=input_ids,
-                                         pad_token_id=self.tokenizer.eos_token_id,
+                                         pad_token_id=self.tokenizer.pad_token_id,
+                                         eos_token_id=self.tokenizer.eos_token_id,
                                          attention_mask=mask,
                                          num_return_sequences=nb_samples,
-                                         **self.decoding_strategy).detach().cpu()
+                                         **self.decoding_strategy)
+
+        outputs_id = outputs_id.detach().cpu()
 
         # only keep the token corresponding to the generation part
         # this is because transformers.generate methods also return the input part
         truncated_outputs_id = outputs_id[:, input_ids.shape[1]:]
 
-        return [self.tokenizer.decode(truncated_outputs_id[i], skip_special_tokens=True)
+        return [self.tokenizer.decode(truncated_outputs_id[i], skip_special_tokens=False)
                 for i in range(outputs_id.shape[0])]

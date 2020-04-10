@@ -23,23 +23,37 @@ from src.model_evaluation.metrics.bert_relationship import bert_relationship
 
 
 class GPT2EvaluationScript:
-    def __init__(self, file_ids: List[str], batch_size: int = 1, use_context=True):
+    def __init__(self,
+                 file_ids: List[str] = None,
+                 path_to_data_folder=PREPROC_PATH,
+                 batch_size: int = 1,
+                 use_context=True,
+                 path_to_bert_ner=BERT_NER_LARGE):
         """
         Initializes a GPT-2 Benchmark script that will perform text generation on the paragraphs of given files.
         Call the script using parentheses to launch it.
-        :param file_ids: list of book ids, the part of the preproc file before "_preproc.json".
+        :param file_ids: list of book ids from data_folder that will be evaluated
+            (optionnal, if None will compute on every novel in the data_folder)
+        :param path_to_data_folder : path to the datafolder (by default src.utils.PREPOC_PATH)
         :param batch_size: number of simultaneous text generations + text evalution
                     will be used by all flexible model + metrics
         :param use_context: if True, will create special context sentences for model input :
                     [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2]
                             else, will juste use P1 without any special tokens
                 --> put use_context = False to compute GPT_2 baseline
+        :param path_to_bert_ner: path to bert ner model (needed if to use GPT2EvalutionScript to compute entities iou)
         """
-        # Filtering file ids on files that really exist in the preproc folder
-        self.list_of_fid = [f for f in file_ids if os.path.exists(PREPROC_PATH + f + PREPROC_SUFFIX)]
+
+        self.data_folder = path_to_data_folder
+        self.list_of_fid = file_ids
+
+        if self.list_of_fid:
+            # Filtering file ids on files that really exist in the preproc folder
+            self.list_of_fid = [f for f in file_ids if os.path.exists(self.data_folder + f + PREPROC_SUFFIX)]
 
         self.batch_size = batch_size
         self.use_context = use_context
+        self.path_to_bert_ner = path_to_bert_ner
 
     def __call__(self,
                  generations_path:str,
@@ -107,12 +121,9 @@ class GPT2EvaluationScript:
                                         mode=VectorizeMode.EVAL,
                                         use_context=self.use_context)
 
-        dataset = DatasetFromRepo(path=PREPROC_PATH, sublist=self.list_of_fid, transform=vectorizer)
+        dataset = DatasetFromRepo(path=self.data_folder, sublist=self.list_of_fid, transform=vectorizer)
         dataloader = DataLoader(dataset=dataset, batch_size=self.batch_size,
                                 collate_fn=lambda x: self.custom_collate(x, GPT2_model.tokenizer.pad_token_id))
-
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        GPT2_model.model.to(device)
 
         if verbose:
             print("\rGenerating texts...", end="")
@@ -122,7 +133,6 @@ class GPT2EvaluationScript:
             generations += GPT2_model(input_ids)
             originals += true_P2
             P3_list += P3
-            break  # TODO : !! REMOVE IT JUST TO TEST QUICKLY !!
 
         if verbose:
             print("\rSaving generated texts...", end="")
@@ -191,8 +201,8 @@ class GPT2EvaluationScript:
             register_stats(bert_similarities, 'bert_similarity')
 
         if compute_entites_iou:
-            #bert_ner_model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=self.batch_size)
-            bert_ner_model = FlexibleBERTNER(BERT_NER_BASE, batch_size=self.batch_size)  # TODO : REMOVE IT AFTER TEST
+            bert_ner_model = FlexibleBERTNER(self.path_to_bert_ner, batch_size=self.batch_size)
+
             ent_ious = entities_iou(originals, generated, bert_ner_model)
 
             ent_ious = np.sum([ent_ious[key] for key in ENTITY_TAGS], axis=0) / len(ENTITY_TAGS)
@@ -207,13 +217,12 @@ class GPT2EvaluationScript:
             register_stats(ent_ious, 'entities_iou')
 
         if compute_gpt2_perplexity:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
-            model = GPT2LMHeadModel.from_pretrained('gpt2').to(device)
+            model = GPT2LMHeadModel.from_pretrained('gpt2')
             tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
             flexible_model = FlexibleGPT2(model, tokenizer, DEFAULT_DECODING_STRATEGY)
 
-            gpt2_gen_perplexities = gpt2_perplexity(generated, flexible_model, device)
-            gpt2_ori_perplexities = gpt2_perplexity(originals, flexible_model, device)
+            gpt2_gen_perplexities = gpt2_perplexity(generated, flexible_model)
+            gpt2_ori_perplexities = gpt2_perplexity(originals, flexible_model)
             gpt2_perplexities = gpt2_gen_perplexities / gpt2_ori_perplexities
 
             # Freeing space
@@ -238,9 +247,11 @@ class GPT2EvaluationScript:
         json.dump(results, open(results_path, 'w'))
 
         if compute_bert_relationship:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
             tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-            model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased').to(device)
+            model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased')
+            model.eval()
+            if torch.cuda.is_available():
+                model.cuda()
 
             gen_relationships = bert_relationship(generated, P3, model, tokenizer, self.batch_size).astype(float)
             #ori_relationships = bert_relationship(originals, P3, model, tokenizer, self.batch_size)

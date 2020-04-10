@@ -1,23 +1,23 @@
-from src.flexible_models import FlexibleGPT2
+from src.flexible_models.flexible_GPT2 import FlexibleGPT2
 import numpy as np
 import math
 import torch
 
-def gpt2_perplexity(sentences, gpt2_model: FlexibleGPT2, device):
+def gpt2_perplexity(sentences, gpt2_model: FlexibleGPT2):
     """
     Score the sentences by GPT2 model :
      -> perplexity of each sentence for GPT2 internal probability distribution
     :param sentences: list[str] batch of sentences
     :param gpt2_model: [FlexibleGPT2] pre-train GPT2 model encapsulate in a FlexibleGPT2 object
-    :param device: device on which to run the model
     :return: list[float] list of perplexity score
     """
-    gpt2_model.model.eval()
     perplexity = []
 
     with torch.no_grad():
         for sentence in sentences:
-            input_ids = gpt2_model.tokenizer.encode(sentence, return_tensors='pt').to(device)
+            input_ids = gpt2_model.tokenizer.encode(sentence, return_tensors='pt')
+            if torch.cuda.is_available():
+                input_ids = input_ids.cuda()
             output = gpt2_model.model.forward(input_ids, labels=input_ids)
             cross_entropy_loss = output[0].detach().cpu()
             perplexity.append(math.exp(cross_entropy_loss.item()))
