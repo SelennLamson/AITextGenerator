@@ -8,6 +8,8 @@ class VectorizeMode(Enum):
     EVAL = 1
     GENERATE = 2
 
+
+# TODO : change documentation with new special tokens
 class VectorizeParagraph:
     """
     class VectorizeParagrah
@@ -121,7 +123,10 @@ class VectorizeParagraph:
             context['P3'] = ' [P3] ' + sample.P3 if sample.P3 != "" else ""
             context['P2'] = ' [P2] '
             context['T'] = ' [T] ' + " - ".join(sample.genre) if sample.genre != [] else ""
-            context['Ent'] = ' [Ent] ' + " - ".join(sample.entities) if sample.entities != [] else ""
+            context['Per'] = ' [Per] ' + " - ".join(sample.persons) if sample.persons != [] else ""
+            context['Org'] = ' [Org] ' + " - ".join(sample.organisations) if sample.organisations != [] else ""
+            context['Misc'] = ' [Misc] ' + " - ".join(sample.misc) if sample.misc != [] else ""
+            context['Loc'] = ' [Loc] ' + " - ".join(sample.locations) if sample.locations != [] else ""
             context['Size'] = self.special_token_for_size(sample.size)
 
             summary = sample.summary if self.mode == VectorizeMode.GENERATE else self.select_summary(sample.summaries)
@@ -129,7 +134,8 @@ class VectorizeParagraph:
 
         if not self.use_context:
             # if the full context must not used, only P1 will be taken into account without any special tokens
-            context = {'P1': sample.P1, 'P2': '', 'P3': '', 'Sum': '', 'T': '', 'Ent': '', 'Size': ''}
+            context = {'P1': sample.P1, 'P2': '', 'P3': '', 'Sum': '', 'T': '',
+                       'Per': '', 'Org': '', 'Misc': '', 'Loc': '', 'Size': ''}
 
         # Encode the context
         for key, value in context.items():

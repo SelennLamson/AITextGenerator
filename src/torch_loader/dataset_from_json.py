@@ -46,7 +46,10 @@ class DatasetFromJson(Dataset):
             summaries=P2['summaries'],
             size=P2['size'],
             genre=data['genre'],
-            entities=P2['persons']
+            persons=P2['persons'],
+            organisations=P2['organisations'],
+            locations=P2['locations'],
+            misc=P2['misc']
         )
 
         return self.transform(training_example)
