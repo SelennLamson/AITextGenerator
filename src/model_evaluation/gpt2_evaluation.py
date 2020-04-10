@@ -1,19 +1,11 @@
 import json
 import os
-from typing import List, Dict, Tuple
 from tqdm import tqdm
-
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
-from transformers import BertTokenizer, BertForNextSentencePrediction
-
-import torch
-import numpy as np
 from torch.utils.data import DataLoader
+import pandas as pd
 
 from src.utils import *
 from src.torch_loader import DatasetFromRepo, VectorizeParagraph, VectorizeMode, TrainInput
-from src.flexible_models.flexible_bert_embed import FlexibleBERTEmbed
-from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
 from src.flexible_models.flexible_GPT2 import FlexibleGPT2
 from src.model_evaluation.metrics.bert_similarity import BertSimilarity
 from src.model_evaluation.metrics.entities_count import EntitiesCount
@@ -119,18 +111,17 @@ class GPT2EvaluationScript:
                         generations_path:str,
                         results_path:str,
                         compute_bert_similarity=False,
-                        compute_entites_count=False,
+                        compute_entities_count=False,
                         compute_gpt2_perplexity=False,
-                        compute_residual_tokens=False,
                         compute_bert_relationship=False,
                         verbose: int = 1):
-        """Computes the selected metrics on generated texts.
+        """
+        Computes the selected metrics on generated texts.
         :param generations_path: The path where text generations can be found.
         :param results_path: The path where results should be saved.
         :param compute_bert_similarity: Should "BERT similarity" metric be computed?
-        :param compute_entites_count: Should "Entities I-o-U" metric be computed?
+        :param compute_entities_count: Should "Entities I-o-U" metric be computed?
         :param compute_gpt2_perplexity: Should "GPT-2 perplexity" metric be computed?
-        :param compute_residual_tokens: Should "Residual tokens" metric be computed?
         :param compute_bert_relationship: Should "Bert relationship" metric be computed?
         :param verbose: 0 for silent execution, 1 for progress.
         """
@@ -144,19 +135,33 @@ class GPT2EvaluationScript:
 
         results = []
         if compute_bert_similarity:
-            bert_similarities = BertSimilarity(self.batch_size)(generated_sentences, original_contexts)
-            results.append(bert_similarities)
+            if verbose:
+                print("Computing bert similarities...", end="")
+            bert_similarities = BertSimilarity(self.batch_size)
+            results.append(bert_similarities(generated_sentences, original_contexts))
+            del bert_similarities
 
-        if compute_entites_count:
-            entities_count = EntitiesCount(self.batch_size, self.path_to_bert_ner)(generated_sentences, original_contexts)
-            results.append(entities_count)
+        if compute_entities_count:
+            if verbose:
+                print("Computing entities count...", end="")
+            entities_count = EntitiesCount(self.batch_size, self.path_to_bert_ner)
+            results.append(entities_count(generated_sentences, original_contexts))
+            del entities_count
 
         if compute_gpt2_perplexity:
-            gpt2_perplexity = GPT2Perplexity()(generated_sentences, original_contexts)
-            results.append(gpt2_perplexity)
+            if verbose:
+                print("Computing gpt2 perplexity...", end="")
+            gpt2_perplexity = GPT2Perplexity()
+            results.append(gpt2_perplexity(generated_sentences, original_contexts))
+            del gpt2_perplexity
 
         if compute_bert_relationship:
-            bert_relationship = BertRelationship(self.batch_size)(generated_sentences, original_contexts)
-            results.append(bert_relationship)
+            if verbose:
+                print("Computing BERT relationship...", end="")
+            bert_relationship = BertRelationship(self.batch_size)
+            results.append(bert_relationship(generated_sentences, original_contexts))
+            del bert_relationship
 
-        pd.DataFrame()
+        df_results = pd.concat(results, axis=1)
+        df_results.to_csv(results_path)
+

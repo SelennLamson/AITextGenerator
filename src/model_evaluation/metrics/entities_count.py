@@ -20,8 +20,8 @@ class EntitiesCount(Metrics):
 
     def __call__(self, predicted_sentences, original_contexts):
         """
-        :param predicted_sentences: list[str] batch of sentences
-        :param original_contexts: list[TrainInput] correspoing original training example
+        :param predicted_sentences: list[str] batch of sentences corresponding to the generated P2
+        :param original_contexts: list[TrainInput] corresponding to original training examples
         :return: pd.DataFrame["relationship"]
         """
         entities_in_pred = self.ner_model.predict(predicted_sentences, verbose=0)
