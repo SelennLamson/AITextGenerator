@@ -54,8 +54,8 @@ class VectorizeParagraph:
         :param context_d: [dict] containing the context
         :return: concatanate of context_d values in the right order
         """
-        return context_d['P3'] + context_d['Sum'] + context_d['T'] + context_d['Ent'] + \
-               context_d['Size'] + context_d['P1'] + context_d['P2']
+        return context_d['P3'] + context_d['Sum'] + context_d['T'] + context_d['Per'] + context_d['Org'] + \
+               context_d['Loc'] + context_d['Misc'] + context_d['Size'] + context_d['P1'] + context_d['P2']
 
     def vectorize(self, context, P2, nb_tokens_for_P2):
         """
@@ -75,8 +75,8 @@ class VectorizeParagraph:
         # If the context + input space we must left for P2 is too big
         # We let 2/3 of the remaining space for P1 and 1/3 for P3
         if (nb_tokens_for_context + nb_tokens_for_P2 >= self.block_size) and self.use_context:
-            initial_vector_size = len(context['Sum'] + context['T'] + context['Ent'] + context['Size']) \
-                                  + nb_tokens_for_P2
+            initial_vector_size = len(context['Sum'] + context['T'] + context['Per'] + context['Org'] + \
+                                      context['Loc'] + context['Misc'] + context['Size']) + nb_tokens_for_P2
 
             nb_tokens_left_for_P1 = int((self.block_size - initial_vector_size) * 2 / 3 - 1)
             nb_tokens_left_for_P3 = int((self.block_size - initial_vector_size) * 1 / 3 - 1)
