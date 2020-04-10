@@ -31,11 +31,6 @@ print(end-start)
 
 model(big_text, lemmatize=True, pos_filter=('NN', 'JJ', 'VB'))
 
-# BART
-from transformers import pipeline
-summariser = pipeline('summarization')
-match_summary = summariser(big_text, min_length=5, max_length=50)
-print(match_summary[0]['summary_text'])
 
 
 ###  BART for summarisation
@@ -51,8 +46,16 @@ inputs = tokenizer.batch_encode_plus([ARTICLE_TO_SUMMARIZE], max_length=1024, re
 summary_ids = model.generate(inputs['input_ids'], num_beams=4, max_length=40, early_stopping=True)
 print([tokenizer.decode(g, skip_special_tokens=True, clean_up_tokenization_spaces=False) for g in summary_ids])
 
+# BART
+from transformers import pipeline
+summariser = pipeline('summarization')
+match_summary = summariser(big_text, min_length=5, max_length=50)
+print(match_summary[0]['summary_text'])
 
-# Import libraries
+
+
+
+### PYSUM
 from pysummarization.nlpbase.auto_abstractor import AutoAbstractor
 from pysummarization.tokenizabledoc.simple_tokenizer import SimpleTokenizer
 from pysummarization.abstractabledoc.top_n_rank_abstractor import TopNRankAbstractor
@@ -80,7 +83,8 @@ summary = [''.join(result_dict['summarize_result'][id])]
 
 
 
-# Pointer Generator Network
+###  Pointer Generator Network
+
 from eazymind.nlp.eazysum import Summarizer
 key = 'a6bd47ccfdc8f0ffc5b904cd7d90f840'
 sum = Summarizer(key)
@@ -91,15 +95,6 @@ input = text.encode('Latin-1', 'ignore')
 input = input.decode('ascii')
 res = print(sum.run(input))
 print(res)
-
-
-try:
-	input = text.replace('“', '').replace('”', '').replace('’', '')
-	res = sum.run(input)
-except UnicodeEncodeError:
-	res = []
-
-
 
 
 from eazymind.nlp.eazysum import Summarizer
@@ -115,17 +110,7 @@ print(summarizer.run(sentence))
 
 
 
-from transformers import BartTokenizer, BartForConditionalGeneration, BartConfig
-model = BartForConditionalGeneration.from_pretrained('bart-large-cnn')
-model.eval()
-tokenizer = BartTokenizer.from_pretrained('bart-large-cnn')
-# Tokenise text studied
-ARTICLE_TO_SUMMARIZE = big_text
-inputs = tokenizer.batch_encode_plus([ARTICLE_TO_SUMMARIZE], max_length=1024, return_tensors='pt')
-# Generate Summary
-summary_ids = model.generate(inputs['input_ids'], num_beams=4, max_length=40, early_stopping=True)
-print([tokenizer.decode(g, skip_special_tokens=True, clean_up_tokenization_spaces=False) for g in summary_ids])
-
+### T5
 
 from transformers import T5Tokenizer, TFT5ForConditionalGeneration
 tokenizer = T5Tokenizer.from_pretrained('t5-small')
@@ -134,14 +119,12 @@ input_ids = tokenizer.encode(text, return_tensors="tf")  # Batch size 1
 summary_ids = model.generate(input_ids)
 print([tokenizer.decode(g, skip_special_tokens=True, clean_up_tokenization_spaces=False) for g in summary_ids])
 
-
 from transformers import T5Tokenizer, TFT5ForConditionalGeneration
 tokenizer = T5Tokenizer.from_pretrained('t5-small')
 model = TFT5ForConditionalGeneration.from_pretrained('t5-small')
 input_ids = tokenizer.encode("Hello, my dog is cute", return_tensors="tf")  # Batch size 1
 outputs = model(input_ids, decoder_input_ids=input_ids)
 prediction_scores = outputs[0]
-
 # encode context the generation is conditioned on
 input_ids = tokenizer.encode('I enjoy walking with my friends', return_tensors='tf')
 greedy_output = model.generate(input_ids)

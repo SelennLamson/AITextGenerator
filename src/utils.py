@@ -27,6 +27,15 @@ ENTITY_TAGS = ("PER", "ORG", "LOC", "MISC")
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
 BERT_NER_BASE = 'models/entity_recognition/BERT_NER_Base/'
 
+FOLDER_NAME_KW = 'data/Preproc_KW/'
+PREFIX_KW = 'KW_'
+FOLDER_NAME_T5 = 'data/Preproc_T5/'
+PREFIX_T5 = 'T5_'
+FOLDER_NAME_BART = 'data/Preproc_BART/'
+PREFIX_BART = 'BART_'
+FOLDER_NAME_PYSUM = 'data/Preproc_PYSUM/'
+PREFIX_PYSUM = 'PYSUM_'
+
 WEBSERVICE_FEEDBACK = 'data/webservice_feedback/'
 
 DEFAULT_DECODING_STRATEGY = {
