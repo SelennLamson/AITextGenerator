@@ -51,9 +51,9 @@ class GPT2EvaluationScript:
                  results_path:str,
                  GPT2_model: FlexibleGPT2,
                  compute_bert_similarity=False,
-                 compute_entites_iou=False,
+                 compute_entities_count=False,
                  compute_gpt2_perplexity=False,
-                 compute_residual_tokens=False,
+                 compute_bert_relationship=False,
                  verbose=1):
         """
         Generates texts at generation_path and computes given metrics on them.
@@ -61,14 +61,14 @@ class GPT2EvaluationScript:
         :param results_path: The path where results should be saved.
         :param GPT2_model: FlexibneGPT2 model that need to be evaluated and will be used to generate text
         :param compute_bert_similarity: Should "BERT similarity" metric be computed?
-        :param compute_entites_iou: Should "Entities I-o-U" metric be computed?
+        :param compute_entities_count: Should "Entities I-o-U" metric be computed?
         :param compute_gpt2_perplexity: Should "GPT-2 perplexity" metric be computed?
-        :param compute_residual_tokens: Should "Residual tokens" metric be computed?
+        :param compute_bert_relationship: Should "Bert relationship" metric be computed?
         :param verbose: 0 for silent execution, 1 for progress.
         """
         self.generate_texts(generations_path, GPT2_model, verbose)
-        self.compute_metrics(generations_path, results_path, compute_bert_similarity, compute_entites_iou,
-                             compute_gpt2_perplexity, compute_residual_tokens, verbose)
+        self.compute_metrics(generations_path, results_path, compute_bert_similarity, compute_entities_count,
+                             compute_gpt2_perplexity, compute_bert_relationship, verbose)
 
     def generate_texts(self, generations_path: str, GPT2_model:FlexibleGPT2, verbose: int = 1):
         """Starts the text generation on all paragraphs.
@@ -127,7 +127,7 @@ class GPT2EvaluationScript:
         """
 
         if verbose:
-            print("Computing metrics...", end="")
+            print("Computing metrics...")
 
         generations = json.load(open(generations_path, 'r', encoding='utf-8'))
         generated_sentences = [g['generated'] for g in generations]
@@ -136,32 +136,34 @@ class GPT2EvaluationScript:
         results = []
         if compute_bert_similarity:
             if verbose:
-                print("Computing bert similarities...", end="")
+                print("Computing bert similarities...")
             bert_similarities = BertSimilarity(self.batch_size)
             results.append(bert_similarities(generated_sentences, original_contexts))
             del bert_similarities
 
         if compute_entities_count:
             if verbose:
-                print("Computing entities count...", end="")
-            entities_count = EntitiesCount(self.batch_size, self.path_to_bert_ner)
+                print("Computing entities count...")
+            entities_count = EntitiesCount(self.path_to_bert_ner, self.batch_size)
             results.append(entities_count(generated_sentences, original_contexts))
             del entities_count
 
         if compute_gpt2_perplexity:
             if verbose:
-                print("Computing gpt2 perplexity...", end="")
+                print("Computing gpt2 perplexity...")
             gpt2_perplexity = GPT2Perplexity()
             results.append(gpt2_perplexity(generated_sentences, original_contexts))
             del gpt2_perplexity
 
         if compute_bert_relationship:
             if verbose:
-                print("Computing BERT relationship...", end="")
+                print("Computing BERT relationship...")
             bert_relationship = BertRelationship(self.batch_size)
             results.append(bert_relationship(generated_sentences, original_contexts))
             del bert_relationship
 
+        if verbose:
+            print("Saving results on disk...")
         df_results = pd.concat(results, axis=1)
         df_results.to_csv(results_path)
 

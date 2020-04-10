@@ -46,7 +46,7 @@ class GPT2Perplexity(Metrics):
                 input_ids = self.gpt2_tokenizer.encode(sentence, return_tensors='pt')
                 if torch.cuda.is_available():
                     input_ids = input_ids.cuda()
-                output = self.gpt2_model.model.forward(input_ids, labels=input_ids)
+                output = self.gpt2_model.forward(input_ids, labels=input_ids)
                 cross_entropy_loss = output[0].detach().cpu()
                 perplexity.append(math.exp(cross_entropy_loss.item()))
 
