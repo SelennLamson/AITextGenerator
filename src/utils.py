@@ -12,6 +12,8 @@ from math import ceil
 from enum import Enum
 from collections import namedtuple
 import random
+import os
+import json
 
 # Constants
 NOVEL_PATH = 'data/novel/'
@@ -28,15 +30,24 @@ ENTITY_TAGS = ("PER", "ORG", "LOC", "MISC")
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
 BERT_NER_BASE = 'models/entity_recognition/BERT_NER_Base/'
 
+FOLDER_NAME_KW = 'data/Preproc_KW/'
+PREFIX_KW = 'KW_'
+FOLDER_NAME_T5 = 'data/Preproc_T5/'
+PREFIX_T5 = 'T5_'
+FOLDER_NAME_BART = 'data/Preproc_BART/'
+PREFIX_BART = 'BART_'
+FOLDER_NAME_PYSUM = 'data/Preproc_PYSUM/'
+PREFIX_PYSUM = 'PYSUM_'
+
 WEBSERVICE_FEEDBACK = 'data/webservice_feedback/'
 WEBSERVICE_SHARED = 'data/webservice_feedback/shared.json'
 
 DEFAULT_DECODING_STRATEGY = {
-    'do_sample': True,
-    'min_length': 0,
-    'max_length': 50,
-    'top_k': 50,
-    'top_p': 0.95
+	'do_sample': True,
+	'min_length': 0,
+	'max_length': 50,
+	'top_k': 50,
+	'top_p': 0.95
 }
 
 
@@ -210,6 +221,46 @@ def summary_selector(summary_models=None):
 
     summary_model = random.choice(summary_models)
     return lambda summaries_dict: summaries_dict[summary_model]
+
+
+
+def merge_summaries():
+	"""
+	Add summaries for each paragraph of every book.
+	We merge the 4 distinct summaries obtained from the summarizers (T5, BART, PYSUM, KW) in our preproc data files
+	These summaries are stored as json files (like preproc) in a different folder per summarizer
+	The final format in preproc files is a {'summarizer_name':'summary',...}
+	"""
+	# Loop on all books. Look at original json file + corresponding files but with a summary (x4)
+	files = os.listdir(PREPROC_PATH)
+	for f in files:
+		if PREPROC_SUFFIX in f:
+			d_id = f[:-len(PREPROC_SUFFIX)]
+			data = json.load(open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'r'))
+			if os.path.exists(FOLDER_NAME_T5):
+				data_t5 = json.load(open(FOLDER_NAME_T5 + PREFIX_T5 + d_id + PREPROC_SUFFIX, 'r'))
+			if os.path.exists(FOLDER_NAME_BART):
+				data_bart = json.load(open(FOLDER_NAME_BART + PREFIX_BART + d_id + PREPROC_SUFFIX, 'r'))
+			if os.path.exists(FOLDER_NAME_PYSUM):
+				data_pysum = json.load(open(FOLDER_NAME_PYSUM + PREFIX_PYSUM + d_id + PREPROC_SUFFIX, 'r'))
+			if os.path.exists(FOLDER_NAME_KW):
+				data_kw = json.load(open(FOLDER_NAME_KW + PREFIX_KW + d_id + PREPROC_SUFFIX, 'r'))
+
+			# Add summary from each summariser to the original preproc json file
+			for i in range(len(data['paragraphs'])):
+				data['paragraphs'][i]['summaries'] = dict()
+				if os.path.exists(FOLDER_NAME_T5):
+					data['paragraphs'][i]['summaries'].update(data_t5['paragraphs'][i]['summaries'])
+				if os.path.exists(FOLDER_NAME_BART):
+					data['paragraphs'][i]['summaries'].update(data_bart['paragraphs'][i]['summaries'])
+				if os.path.exists(FOLDER_NAME_PYSUM):
+					data['paragraphs'][i]['summaries'].update(data_pysum['paragraphs'][i]['summaries'])
+				if os.path.exists(FOLDER_NAME_KW):
+					data['paragraphs'][i]['summaries'].update(data_kw['paragraphs'][i]['summaries'])
+
+			# Save modifications to preproc json files
+			json.dump(data, open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False,
+			          indent=1)
 
 def pad_left_side(sequences, padding_value):
     """
