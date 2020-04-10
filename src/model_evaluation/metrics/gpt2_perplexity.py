@@ -1,29 +1,53 @@
-from src.flexible_models.flexible_GPT2 import FlexibleGPT2
-import numpy as np
+from src.model_evaluation.metrics import Metrics
+
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import math
 import torch
+import numpy as np
 
-def gpt2_perplexity(sentences, gpt2_model: FlexibleGPT2):
+class Perplexity(Metrics):
     """
+    Perplexity metrics
     Score the sentences by GPT2 model :
-     -> perplexity of each sentence for GPT2 internal probability distribution
-    :param sentences: list[str] batch of sentences
-    :param gpt2_model: [FlexibleGPT2] pre-train GPT2 model encapsulate in a FlexibleGPT2 object
-    :return: list[float] list of perplexity score
+     -> compute perplexity of each sentence for GPT2 internal probability distribution
+     -> normalize by the perplexity of the true P2
     """
-    perplexity = []
+    def __init__(self):
+        """
+        Initialize the GPT2 model (base from huggingface transformers) that will be used to compute the perplexity
+        """
+        super().__init__()
+        self.gpt2_model = GPT2LMHeadModel.from_pretrained('gpt2')
+        self.gpt2_tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
 
-    with torch.no_grad():
-        for sentence in sentences:
-            input_ids = gpt2_model.tokenizer.encode(sentence, return_tensors='pt')
-            if torch.cuda.is_available():
-                input_ids = input_ids.cuda()
-            output = gpt2_model.model.forward(input_ids, labels=input_ids)
-            cross_entropy_loss = output[0].detach().cpu()
-            perplexity.append(math.exp(cross_entropy_loss.item()))
+    def __call__(self, predicted_sentences, original_contexts):
+        """
+        :param predicted_sentences: list[str] batch of sentences
+        :param original_contexts: list[TrainInput] correspoing original training example
+        :return: np.array of normalized perplexity score
+        """
+        predicted_perplexity = self.perplexity(predicted_sentences)
+        original_perplexity = self.perplexity([original_context.P2 for original_context in original_contexts])
+        return predicted_perplexity / original_perplexity
 
-    return np.array(perplexity)
+    def perplexity(self, sentences):
+        """
+        Score the sentences by GPT2 model :
+         -> perplexity of each sentence for GPT2 internal probability distribution
+        :param sentences: list[str] batch of sentences
+        :param gpt2_model: [FlexibleGPT2] pre-train GPT2 model encapsulate in a FlexibleGPT2 object
+        :return: np.array that contains perplexity score
+        """
+        perplexity = []
 
-def normalized_gpt2_perplexity(pred_sentences, true_sentences, gpt2_model: FlexibleGPT2):
-    return [gpt2_perplexity([pred_sentence], gpt2_model)[0] / gpt2_perplexity([true_sentence], gpt2_model)[0]
-            for (pred_sentence, true_sentence) in zip(pred_sentences, true_sentences)]
+        with torch.no_grad():
+            for sentence in sentences:
+                input_ids = self.gpt2_tokenizer.encode(sentence, return_tensors='pt')
+                if torch.cuda.is_available():
+                    input_ids = input_ids.cuda()
+                output = self.gpt2_model.model.forward(input_ids, labels=input_ids)
+                cross_entropy_loss = output[0].detach().cpu()
+                perplexity.append(math.exp(cross_entropy_loss.item()))
+
+        return np.array(perplexity)
+

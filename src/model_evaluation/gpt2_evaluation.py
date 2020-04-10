@@ -106,10 +106,9 @@ class GPT2EvaluationScript:
                             list of true_P2, P3)
         """
         input_ids = self.pad_left_side([sample[0] for sample in data_samples], padding_value)
-        target_P2 = [sample[1] for sample in data_samples]
-        P3 = [sample[2] for sample in data_samples]
+        original_samples = [sample[1] for sample in data_samples]
 
-        return input_ids, target_P2, P3
+        return input_ids, original_samples
 
     def generate_texts(self, generations_path: str, GPT2_model:FlexibleGPT2, verbose: int = 1):
         """Starts the text generation on all paragraphs.
@@ -128,17 +127,22 @@ class GPT2EvaluationScript:
         if verbose:
             print("\rGenerating texts...", end="")
 
-        generations, originals, P3_list = [], [], []
-        for input_ids, true_P2, P3 in tqdm(dataloader):
+        generations, originals = [], []
+        for input_ids, sample in tqdm(dataloader):
             generations += GPT2_model(input_ids)
-            originals += true_P2
-            P3_list += P3
+            originals += sample
 
         if verbose:
             print("\rSaving generated texts...", end="")
 
-        json_data = [{"generated": gen, "original": ori, "P3": P3}
-                     for gen, ori, P3 in zip(generations, originals, P3_list)]
+        json_data = [{"generated": gen,
+                      "original": {'P1': ori.P1,
+                                   'P2': ori.P2,
+                                   'P3': ori.P3,
+                                   'entities': ori.entities,
+                                   'kw': ori.kw,
+                                   'size': ori.size}}
+                     for gen, ori, P3 in zip(generations, originals)]
 
         json.dump(json_data, open(generations_path, 'w', encoding='utf-8'))
 

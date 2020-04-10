@@ -1,6 +1,22 @@
 from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
+from src.model_evaluation.metrics import Metrics
 from src.utils import ENTITY_TAGS
 import numpy as np
+
+class EntitiesCount(Metrics):
+	"""
+	Return the proportion of entities of true P2 that is present if pred P2
+	"""
+	# TODO improve this class so that it can also output number of false positive
+
+	def __init__(self, batch_size=1):
+        """
+        Initialized the BERT model
+        :param batch_size: [int] batch size to used for bert
+        """
+        super().__init__()
+		bert_ner_model = FlexibleBERTNER(self.path_to_bert_ner, batch_size=self.batch_size)
+
 
 def entities_iou(true_paragraphs, pred_paragraphs, ner_model: FlexibleBERTNER, class_tags=None):
 	"""Evaluates the intersection-over-union of entities in input and output P2,
