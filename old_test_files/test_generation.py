@@ -1,6 +1,7 @@
-from src.model_use import TextGeneration, GenerationInput
+from src.model_use import TextGeneration
 from src.utils import DEFAULT_DECODING_STRATEGY, MEDIUM
-from src.flexible_models import FlexibleGPT2
+from src.flexible_models.flexible_GPT2 import FlexibleGPT2
+from src.torch_loader import GenerationInput
 from src.model_training import add_special_tokens
 
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
@@ -11,7 +12,7 @@ if __name__ == "__main__":
                                     genre=["horror"],
                                     entities=["Gael", "Alex", "Thomas"],
                                     size=MEDIUM,
-                                    context="Je voudrai parler de ceci")
+                                    summary="Je voudrai parler de ceci")
 
 
     print("PREDICTION WITH CONTEXT")
