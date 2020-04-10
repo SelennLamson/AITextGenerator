@@ -1,4 +1,4 @@
-from src.model_evaluation.metrics import Metrics
+from src.model_evaluation.metrics.flexible_metrics import Metrics
 
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import math

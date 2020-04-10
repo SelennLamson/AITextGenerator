@@ -1,5 +1,5 @@
 from src.flexible_models.flexible_bert_embed import FlexibleBERTEmbed
-from src.model_evaluation.metrics import Metrics
+from src.model_evaluation.metrics.flexible_metrics import Metrics
 
 import numpy as np
 import pandas as pd

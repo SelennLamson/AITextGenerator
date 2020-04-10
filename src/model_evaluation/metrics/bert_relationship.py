@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from transformers import BertTokenizer, BertForNextSentencePrediction
 
-from src.model_evaluation.metrics import Metrics
+from src.model_evaluation.metrics.flexible_metrics import Metrics
 
 
 class BertRelationship(Metrics):

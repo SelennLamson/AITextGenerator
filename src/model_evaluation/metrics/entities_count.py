@@ -1,7 +1,8 @@
 from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
-from src.model_evaluation.metrics import Metrics
-from src.utils import ENTITY_TAGS, BERT_NER_LARGE
+from src.model_evaluation.metrics.flexible_metrics import Metrics
+from src.utils import ENTITY_TAGS, ENTITY_CLASSES, BERT_NER_LARGE
 import numpy as np
+import pandas as pd
 
 class EntitiesCount(Metrics):
     """
@@ -22,42 +23,26 @@ class EntitiesCount(Metrics):
         """
         :param predicted_sentences: list[str] batch of sentences corresponding to the generated P2
         :param original_contexts: list[TrainInput] corresponding to original training examples
-        :return: pd.DataFrame["relationship"]
+        :return: pd.DataFrame containing
+            - proportion of correct entities for each class / each pred_P2
         """
-        entities_in_pred = self.ner_model.predict(predicted_sentences, verbose=0)
+        entities_in_preds = self.ner_model.predict(predicted_sentences, verbose=0)
 
-	# TODO CONTINUE HERE
+        df_proportion = pd.DataFrame(columns=["proportion_of_"+class_name for class_name in ENTITY_CLASSES],
+                                     data=np.zeros((len(predicted_sentences), len(ENTITY_CLASSES))))
 
+        def filter_by_class(entity_list, class_tag):
+            return set(entity for entity, value in entity_list.items() if value[0] == class_tag)
 
-def entities_iou(true_paragraphs, pred_paragraphs, ner_model: FlexibleBERTNER, class_tags=None):
-    """Evaluates the intersection-over-union of entities in input and output P2,
-            for each example in a batch
-            for each class of entity in classes
+        for i, (entities_in_pred, original_context) in enumerate(zip(entities_in_preds, original_contexts)):
+            for class_tag, class_name in zip(ENTITY_TAGS, ENTITY_CLASSES):
+                entities_of_class_tag_in_pred = filter_by_class(entities_in_pred, class_tag)
+                entities_in_class_tag_in_true = set(original_context.to_dict()[class_name])
 
-    :param true_paragraphs: list of true paragraph as a string
-    :param pred_paragraphs: list of generated paragraph as a string.
-    :param ner_model: FlexibleBERTNER model to detect entities in output P2
-    :param class_tags: sublist of  ["PER", "LOC", "ORG, "MISC"], if None compute for all classes
+                proportion = -1 if len(entities_in_class_tag_in_true) == 0 \
+                                else len(entities_in_class_tag_in_true.intersection(entities_of_class_tag_in_pred)) / \
+                                     len(entities_in_class_tag_in_true)
 
-    :return dict {class -> np.array : intersection-over-union score on required and detected entities for each example}
-    """
-    if class_tags is None:
-        class_tags = ENTITY_TAGS
+                df_proportion.loc[i, "proportion_of_"+class_name] = proportion
 
-    entities_in_true = ner_model.predict(true_paragraphs, verbose=0)
-    entities_in_pred = ner_model.predict(pred_paragraphs, verbose=0)
-
-    def filter_by_class(entity_list, class_tag):
-        return set(entity for entity, value in entity_list.items() if value[0] == class_tag)
-
-    def iou(true, pred, single_class):
-        true_entities = filter_by_class(true, single_class)
-        pred_entities = filter_by_class(pred, single_class)
-        union = pred_entities.union(set(true_entities))
-        intersection = pred_entities.intersection(set(true_entities))
-        return 1 if len(union) == 0 else len(intersection) / len(union)
-
-    def iou_on_batch_for_class(class_tag):
-        return np.array(list(map(lambda x:iou(x[0], x[1], class_tag), zip(entities_in_true, entities_in_pred))))
-
-    return {key: iou_on_batch_for_class(key) for key in class_tags}
+        return df_proportion
