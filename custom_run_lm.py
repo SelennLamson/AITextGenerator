@@ -39,7 +39,7 @@ from tqdm import tqdm, trange
 
 from src.torch_loader import DatasetFromRepo, VectorizeParagraph, VectorizeMode
 from src.model_training import add_special_tokens
-from src.utils import GPT2_BLOCK_SIZE
+from src.utils import GPT2_BLOCK_SIZE, summary_selector
 
 from transformers import (
     MODEL_WITH_LM_HEAD_MAPPING,
@@ -604,6 +604,11 @@ def main():
     parser.add_argument("--local_rank", type=int, default=-1, help="For distributed training: local_rank")
     parser.add_argument("--server_ip", type=str, default="", help="For distant debugging.")
     parser.add_argument("--server_port", type=str, default="", help="For distant debugging.")
+
+    # MODIF 1 :
+    parser.add_argument("--sum", default=[], nargs='+', help="Choose list of summarizers to use from \
+                                                              T5, BART, KW, PYSUM \
+                                                              by default do not use any summariers")
     args = parser.parse_args()
 
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
@@ -723,7 +728,7 @@ def main():
 
     logger.info("Training/evaluation parameters %s", args)
 
-    # MODIFICATION 1/2
+    # MODIF 2
     # ADD SPECIAL TOKENS (IE CONTROL CODES)
     # FOR THE FIRST TIME
     # BUT NO WHEN WE RELOAD AN ALREADY FINE-TUNED MODEL
@@ -736,12 +741,14 @@ def main():
             torch.distributed.barrier()  # Barrier to make sure only the first process in distributed training process the dataset, and the others will use the cache
 
         # train_dataset = load_and_cache_examples(args, tokenizer, evaluate=False)
-        # MODIFICATION 2/2
+        # MODIF 3
+        summarize_to_select = summary_selector(args.sum)
         # USE CUSTOM DATASET
         vectorizer = VectorizeParagraph(tokenizer=tokenizer,
                                         block_size=GPT2_BLOCK_SIZE,
                                         mode=VectorizeMode.TRAIN,
-                                        use_context=True)
+                                        use_context=True,
+                                        select_summary=summarize_to_select)
 
         train_dataset = DatasetFromRepo(path=args.train_data_file, transform=vectorizer)
 
