@@ -15,7 +15,7 @@ from src.utils import *
 from src.flexible_models.flexible_GPT2 import FlexibleGPT2
 from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
 from src.model_use.text_generation import TextGeneration
-from src.model_use.generation_input import GenerationInput
+from src.torch_loader.vectorize_input import GenerationInput
 
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
