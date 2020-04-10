@@ -40,11 +40,14 @@ class Generator:
 	def perform_ner(self, text) -> Dict[str, Tuple[str, float]]:
 		return self.ner_model([text], verbose=0)[0]
 
-	def generate_text(self, p1, sp2, p3, entities, genre, size):
+	def generate_text(self, p1, sp2, p3, persons, locations, organisations, misc, genre, size):
 		context_input = GenerationInput(P1=p1,
 										P3=p3,
 										genre=[genre],
-										entities=entities,
+										persons=persons,
+										locations=locations,
+										organisations=organisations,
+										misc=misc,
 										size=size,
 										context=sp2)
 		predictions = self.gen_model(context_input, nb_samples=4)
@@ -95,8 +98,11 @@ class AITextGeneratorHTTPServer(Handler):
 				p1 = params["p1"]
 				sp2 = params["sp2"]
 				p3 = params["p3"]
-				entities = params["entities"]
-				theme = params["theme"]
+				persons = params["persons"]
+				locations = params["locations"]
+				organisations = params["organisations"]
+				misc = params["misc"]
+				genre = params["genre"]
 				size_tok = params["size"]
 
 				size = SMALL
@@ -104,7 +110,7 @@ class AITextGeneratorHTTPServer(Handler):
 					if s.token == size_tok:
 						size = s
 
-				generated = generator.generate_text(p1, sp2, p3, entities, theme, size)
+				generated = generator.generate_text(p1, sp2, p3, persons, locations, organisations, misc, genre, size)
 
 				response.write(bytes('||'.join(generated), 'utf-8'))
 
