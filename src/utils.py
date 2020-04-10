@@ -29,6 +29,7 @@ BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
 BERT_NER_BASE = 'models/entity_recognition/BERT_NER_Base/'
 
 WEBSERVICE_FEEDBACK = 'data/webservice_feedback/'
+WEBSERVICE_SHARED = 'data/webservice_feedback/shared.json'
 
 DEFAULT_DECODING_STRATEGY = {
     'do_sample': True,
