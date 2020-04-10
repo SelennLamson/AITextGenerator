@@ -1,6 +1,5 @@
-from src.torch_loader import VectorizeParagraph, DatasetFromRepo, VectorizeMode
+from src.torch_loader import VectorizeParagraph, DatasetFromRepo, VectorizeMode, GenerationInput, TrainInput
 from src.model_training import add_special_tokens
-from src.model_use import GenerationInput
 from src.utils import MEDIUM
 
 import random
@@ -57,19 +56,19 @@ if __name__ == '__main__':
                                     genre=["horror"],
                                     entities=["Gael", "Alex", "Thomas"],
                                     size=MEDIUM,
-                                    context="Je voudrai parler de ceci")
+                                    summary="Je voudrai parler de ceci")
 
     print("\n", '-'*100,"\n")
     print("--- TEST VECTORIZER IN GENERATE MODE WITH FULL CONTEXT ---")
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.GENERATE, use_context=True)
-    tokenize_context = vectorize_paragraph(context_input.vectorizer_input_format())
+    tokenize_context = vectorize_paragraph(context_input)
     print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
     print(tokenizer.decode(tokenize_context))
 
     print("\n", '-'*100,"\n")
     print("--- TEST VECTORIZER IN GENERATE MODE WITHOUT FULL CONTEXT ---")
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.GENERATE, use_context=False)
-    tokenize_context = vectorize_paragraph(context_input.vectorizer_input_format())
+    tokenize_context = vectorize_paragraph(context_input)
     print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
     print(tokenizer.decode(tokenize_context))
 
@@ -81,23 +80,23 @@ if __name__ == '__main__':
                                     genre=["horror"],
                                     entities=["Gael", "Alex", "Thomas"],
                                     size=MEDIUM,
-                                    context="Je voudrai parler de ceci")
+                                    summary="Je voudrai parler de ceci")
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.GENERATE, use_context=True)
-    tokenize_context = vectorize_paragraph(context_input.vectorizer_input_format())
+    tokenize_context = vectorize_paragraph(context_input)
     print("CONTEXT SIZE (IN NUMBER TOKENS) : ", len(tokenize_context))
     print(tokenizer.decode(tokenize_context))
 
     print("\n", '-'*100,"\n")
     print("--- TEST VECTORIZER TRUNCATURE IN TRAIN MODE ---")
     big_paragraph = " ".join(list(map(str, range(1,1000))))
-    input_for_vectorize = (
-        {'genre': ["horror"]},
-        {'text':big_paragraph},
-        {'text': big_paragraph},
-        {'text':"CECI EST UN TEST DE PARAGRAPHE P2",
-                'persons':["gael", "alex"],
-                "summaries": ["bla bla bla "],
-                'size': len('CECI EST UN TEST DE PARAGRAPHE P2')}
+    input_for_vectorize = TrainInput(
+        genre=["horror"],
+        P1=big_paragraph,
+        P3=big_paragraph,
+        P2="P2 PARAGRAPH",
+        summaries={"T5":"summaries"},
+        size=len("P2 PARAGRAPH"),
+        entities=["gael", "alex"]
     )
 
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.TRAIN, use_context=True)

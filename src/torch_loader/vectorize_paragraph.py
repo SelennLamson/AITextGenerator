@@ -67,7 +67,8 @@ class VectorizeParagraph:
 
         if self.mode == VectorizeMode.TRAIN:
             # In train mode, P2 is added to the context and the sentence to predict is simplify the full context
-            context['P2'] += self.tokenizer.encode(P2 + ' <|endoftext|>') if self.use_context else self.tokenizer.encode(P2)
+            context['P2'] += self.tokenizer.encode(P2 + ' ' + '<|endoftext|>') if self.use_context \
+                             else self.tokenizer.encode(P2)
 
         # If the context + input space we must left for P2 is too big
         # We let 2/3 of the remaining space for P1 and 1/3 for P3
@@ -120,10 +121,10 @@ class VectorizeParagraph:
             context['P3'] = ' [P3] ' + sample.P3 if sample.P3 != "" else ""
             context['P2'] = ' [P2] '
             context['T'] = ' [T] ' + " - ".join(sample.genre) if sample.genre != [] else ""
-            context['Ent'] = ' [Ent] ' + " - ".join(sample.entites) if sample.entites != [] else ""
+            context['Ent'] = ' [Ent] ' + " - ".join(sample.entities) if sample.entities != [] else ""
             context['Size'] = self.special_token_for_size(sample.size)
 
-            summary = sample.summary if VectorizeMode.GENERATE else self.select_summary(sample.summaries)
+            summary = sample.summary if self.mode == VectorizeMode.GENERATE else self.select_summary(sample.summaries)
             context['Sum'] = '[Sum] ' + summary if summary != "" else ""
 
         if not self.use_context:
