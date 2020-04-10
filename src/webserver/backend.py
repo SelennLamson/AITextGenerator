@@ -6,6 +6,8 @@ import socketserver
 import json
 import random
 import time
+import datetime
+import os
 from io import BytesIO
 from typing import List, Dict, Tuple
 
@@ -31,7 +33,7 @@ class Generator:
 		gpt2_model = GPT2LMHeadModel.from_pretrained('gpt2')
 		gpt2_tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
 		gpt2_flexible_model = FlexibleGPT2(gpt2_model, gpt2_tokenizer, DEFAULT_DECODING_STRATEGY)
-		self.gen_model = TextGeneration(gpt2_flexible_model)
+		self.gen_model = TextGeneration(gpt2_flexible_model, use_context=True)
 
 		print("Models loaded, ready to serve!")
 
@@ -95,11 +97,29 @@ class AITextGeneratorHTTPServer(Handler):
 				p3 = params["p3"]
 				entities = params["entities"]
 				theme = params["theme"]
-				size = params["size"]
+				size_tok = params["size"]
+
+				size = SMALL
+				for s in SIZES:
+					if s.token == size_tok:
+						size = s
 
 				generated = generator.generate_text(p1, sp2, p3, entities, theme, size)
 
 				response.write(bytes('||'.join(generated), 'utf-8'))
+
+			elif order == 'feedback':
+				mail = params['mail']
+				message = params['message']
+
+				filename = WEBSERVICE_FEEDBACK + datetime.datetime.now().strftime("%Y-%m-%d") + '_feedbacks.json'
+				if os.path.exists(filename):
+					json_feedbacks = json.load(open(filename, 'r', encoding='utf-8'))
+				else:
+					json_feedbacks = []
+
+				json_feedbacks.append({'mail': mail, 'message': message, 'time': datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")})
+				json.dump(json_feedbacks, open(filename, 'w', encoding='utf-8'))
 
 		except (KeyError, json.JSONDecodeError) as e:
 			if isinstance(e, KeyError):
