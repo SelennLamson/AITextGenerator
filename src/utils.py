@@ -24,7 +24,7 @@ METADATA_PATH = 'data/metadata/files/'
 METADATA_SUFFIX = '.json'
 METADATA_ROOT = 'data/metadata/'
 
-ENTITY_CLASSES = ("persons", "organisations", "locations", "misc")
+ENTITY_CLASSES = ("persons", "organisation", "locations", "misc")
 ENTITY_TAGS = ("PER", "ORG", "LOC", "MISC")
 
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
@@ -36,6 +36,8 @@ FOLDER_NAME_T5 = 'data/Preproc_T5/'
 PREFIX_T5 = 'T5_'
 FOLDER_NAME_BART = 'data/Preproc_BART/'
 PREFIX_BART = 'BART_'
+FOLDER_NAME_BERTSUM = 'data/Preproc_BERTSUM/'
+PREFIX_BERTSUM = 'BERTSUM_'
 FOLDER_NAME_PYSUM = 'data/Preproc_PYSUM/'
 PREFIX_PYSUM = 'PYSUM_'
 
@@ -243,6 +245,8 @@ def merge_summaries():
 				data_bart = json.load(open(FOLDER_NAME_BART + PREFIX_BART + d_id + PREPROC_SUFFIX, 'r'))
 			if os.path.exists(FOLDER_NAME_PYSUM):
 				data_pysum = json.load(open(FOLDER_NAME_PYSUM + PREFIX_PYSUM + d_id + PREPROC_SUFFIX, 'r'))
+			if os.path.exists(FOLDER_NAME_BERTSUM):
+				data_bertsum = json.load(open(FOLDER_NAME_BERTSUM + PREFIX_BERTSUM + d_id + PREPROC_SUFFIX, 'r'))
 			if os.path.exists(FOLDER_NAME_KW):
 				data_kw = json.load(open(FOLDER_NAME_KW + PREFIX_KW + d_id + PREPROC_SUFFIX, 'r'))
 
@@ -255,6 +259,8 @@ def merge_summaries():
 					data['paragraphs'][i]['summaries'].update(data_bart['paragraphs'][i]['summaries'])
 				if os.path.exists(FOLDER_NAME_PYSUM):
 					data['paragraphs'][i]['summaries'].update(data_pysum['paragraphs'][i]['summaries'])
+				if os.path.exists(FOLDER_NAME_BERTSUM):
+					data['paragraphs'][i]['summaries'].update(data_bertsum['paragraphs'][i]['summaries'])
 				if os.path.exists(FOLDER_NAME_KW):
 					data['paragraphs'][i]['summaries'].update(data_kw['paragraphs'][i]['summaries'])
 
