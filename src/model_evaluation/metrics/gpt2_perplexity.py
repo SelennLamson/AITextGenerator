@@ -20,6 +20,8 @@ class GPT2Perplexity(Metrics):
         super().__init__()
         self.gpt2_model = GPT2LMHeadModel.from_pretrained('gpt2')
         self.gpt2_tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+        if torch.cuda.is_available():
+            self.model.cuda()
 
     def __call__(self, predicted_sentences, original_contexts):
         """
