@@ -4,6 +4,7 @@ from src.utils import ENTITY_TAGS, ENTITY_CLASSES, BERT_NER_LARGE
 import numpy as np
 import pandas as pd
 
+
 class EntitiesCount(Metrics):
     """
     Compute the proportion of entities of true_P2 that is present in pred_P2 for each type of class
