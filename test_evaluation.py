@@ -29,5 +29,4 @@ if __name__ == '__main__':
 
     evaluation_script.compute_metrics(generations_path=GENERATION_PATH,
                                       results_path=RESULT_PATH,
-                                      metric_names=["EntitiesCount", "BertSimilarity",
-                                                    "BertRelationship", "GPT2Perplexity"])
+                                      metric_names=["KwCount"])
