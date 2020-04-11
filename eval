@@ -1,0 +1,8 @@
+#!/bin/bash
+
+python evaluation.py \
+    --data=data/eval/ \
+    --output=data/outputs/ \
+    --model=gpt2 \
+    --ner=models/entity_recognition/BERT_NER_Base/ \
+    --batch_size=1

@@ -58,7 +58,7 @@ class GPT2EvaluationScript:
         :param verbose: 0 for silent execution, 1 for progress.
         """
         self.generate_texts(generations_path, GPT2_model, verbose)
-        self.compute_metrics(generations_path, results_path, metrics, verbose)
+        self.compute_metrics(generations_path, results_path, metric_names, verbose)
 
     def generate_texts(self, generations_path: str, GPT2_model:FlexibleGPT2, verbose: int = 1):
         """Starts the text generation on all paragraphs.

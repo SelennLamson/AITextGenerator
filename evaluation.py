@@ -1,6 +1,6 @@
 from src.model_evaluation import GPT2EvaluationScript
 from src.flexible_models.flexible_GPT2 import FlexibleGPT2
-from src.utils import DEFAULT_DECODING_STRATEGY
+from src.utils import DEFAULT_DECODING_STRATEGY, ALL_METRICS
 from datetime import datetime
 import argparse
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
@@ -41,12 +41,9 @@ if __name__ == '__main__':
                                   batch_size=args.batch_size,
                                   path_to_bert_ner=args.ner)
 
-    moment = str(datetime.now().strftime("%m_%d-%H_%M"))
-    script(generations_path=args.output + 'generation' + moment + '.json',
-           results_path=args.output + 'metrics' + moment + '.json',
+    moment = str(datetime.now().strftime("%d_%b_%Hh%M"))
+    script(generations_path=args.output + 'generation_' + moment + '.json',
+           results_path=args.output + 'metrics_' + moment + '.json',
            GPT2_model=gpt_2,
-           compute_bert_similarity=True,
-           compute_entites_iou=True,
-           compute_gpt2_perplexity=True,
-           compute_residual_tokens=True,
+           metric_names=ALL_METRICS,
            verbose=1)

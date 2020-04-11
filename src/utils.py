@@ -24,7 +24,7 @@ METADATA_PATH = 'data/metadata/files/'
 METADATA_SUFFIX = '.json'
 METADATA_ROOT = 'data/metadata/'
 
-ENTITY_CLASSES = ("persons", "organisation", "locations", "misc")
+ENTITY_CLASSES = ("persons", "organisations", "locations", "misc")
 ENTITY_TAGS = ("PER", "ORG", "LOC", "MISC")
 
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
@@ -52,6 +52,7 @@ DEFAULT_DECODING_STRATEGY = {
 	'top_p': 0.95
 }
 
+ALL_METRICS = ['BertSimilarity', 'EntitiesCount', 'GPT2Perplexity', 'BertRelationship', 'KwCount']
 
 SizeInfo = namedtuple('Size', 'inf_chars sup_chars mean_tokens token')
 SMALL = SizeInfo(inf_chars=1, sup_chars=700, mean_tokens=100, token='[S]')
