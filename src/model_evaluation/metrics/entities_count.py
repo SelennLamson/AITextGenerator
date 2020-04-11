@@ -10,14 +10,14 @@ class EntitiesCount(Metrics):
     Compute also the total number of absent entities in true_P2 that are present in pred_P2
     """
 
-    def __init__(self, path_to_bert_ner=BERT_NER_LARGE, batch_size=1):
+    def __init__(self, **kwargs):
         """
         Initialized the BERT NER model
         :param path_to_bert_ner: path to the folder containing the BERT NER weights
         :param batch_size: [int] batch size to used for bert
         """
         super().__init__()
-        self.ner_model = FlexibleBERTNER(path_to_bert_ner, batch_size=batch_size)
+        self.ner_model = FlexibleBERTNER(kwargs['path_to_bert_ner'], batch_size=kwargs['batch_size'])
 
     def __call__(self, predicted_sentences, original_contexts):
         """

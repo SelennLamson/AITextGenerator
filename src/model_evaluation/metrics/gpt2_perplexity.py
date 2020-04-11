@@ -13,7 +13,7 @@ class GPT2Perplexity(Metrics):
      -> compute perplexity of each sentence for GPT2 internal probability distribution
      -> normalize by the perplexity of the true P2
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
         Initialize the GPT2 model (base from huggingface transformers) that will be used to compute the perplexity
         """
