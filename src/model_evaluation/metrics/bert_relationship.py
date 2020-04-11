@@ -22,8 +22,8 @@ class BertRelationship(Metrics):
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased')
         self.model.eval()
-        if torch.cuda.is_available():
-            self.model.cuda()
+        #if torch.cuda.is_available():
+        #    self.model.cuda()
 
     def __call__(self, predicted_sentences, original_contexts):
         """
