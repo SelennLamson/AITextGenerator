@@ -12,13 +12,13 @@ class BertRelationship(Metrics):
     1. Compute the probability (for pre-trained BERT) that P3 follow pred P2
     2. Normalize by the probability that P3 follow true P2
     """
-    def __init__(self, batch_size=1):
+    def __init__(self, **kwargs):
         """
         Initialized the BERT model
         :param batch_size: [int] batch size to used for bert
         """
         super().__init__()
-        self.batch_size = batch_size
+        self.batch_size = kwargs['batch_size']
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased')
         self.model.eval()
