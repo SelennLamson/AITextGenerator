@@ -8,7 +8,8 @@ Created on Mon Dec 17 10:04:40 2020
 
 # Import libraries 
 from src.utils import *
-import json 
+import json
+import os
 from tqdm import tqdm
 from gutenberg.acquire import load_etext 
 from gutenberg.cleanup import strip_headers 
@@ -20,30 +21,27 @@ from gutenberg._domain_model.exceptions import UnknownDownloadUriException  # er
 
 class DataPrepro:
 	"""
-	Creates a json file for each book contains the text of book as well as its related metadata
+	Creates a json file for each book containing the text of book as well as its related metadata, including the genre,
+	which we define ourselves from theme information
+	Stores new json file in 'data/metadata/files'
 	"""
 
 	def __init__(self):
 		self.old_filename = 'clean_data.json'
+		self.stats = dict()
 		# Define literature genres - assign them keywords to be able to spot the genre from the theme of the book
 		self.genres = SortedDict({
+				'fiction': ['fiction', 'fictions'],
 				'adventure':['action', 'adventure', 'adventures'],
-				'biography': ['biography', 'autobiography'],
-				'children': ['child', 'children', 'baby', 'fairy'],
-				'detective': ['detective', 'crime', 'crimes', 'detectives', 'murder', 'police'],
-				'english':['literature', 'literary'],
-				'fantasy':['fantasy'],
-				'fiction':['fiction', 'fictions'],
-				'history': ['history', 'historical', 'historical-fiction'],
-				'horror':['horror', 'paranormal', 'ghost'],
-				'mystery':['mystery', 'mysteries'],
+				'biography/history': ['biography', 'autobiography','history', 'historical', 'historical-fiction'],
+				'children': ['child', 'tale', 'tales','children', 'baby', 'fairy',
+				             'teenager', 'teen', 'teenage', 'young', 'juvenile'],
+				'fantasy':['fantasy', 'fantastic'],
 				'romance':['romance', 'love'],
-				'satire': ['satirical', 'satire', 'criticism', 'satires'],
-				'short stories': ['short-stories', 'tale', 'tales', 'short'],
-				'science-fiction': ['sci-fy', 'science-fiction'],
-				'teen':['teenager', 'teen', 'teenage', 'young', 'juvenile'],
-				'thriller':['suspense', 'thriller', 'thrillers'],
-				'western': ['western']})
+				'science-fiction': ['sci-fy', 'science-fiction', 'scify', 'science'],
+				'thriller':['suspense', 'thriller', 'thrillers', 'horror', 'paranormal', 'ghost', 'mystery', 'mysteries',
+				            'detective', 'crime', 'crimes', 'detectives', 'murder', 'police']
+		})
 		# Import json dataset 
 		try:
 			self.data = json.load(open(METADATA_ROOT + self.old_filename, 'r'))
@@ -97,4 +95,63 @@ class DataPrepro:
 				# print('exception')
 				pass
 
+	def leave_one_genre(self, folder_data='data/preproc/'):
+		books = os.listdir(folder_data)
 
+		for book in tqdm(books):
+			try:
+				data = json.load(open(folder_data + book, 'r+'))
+			except UnicodeDecodeError:
+				print('WRONG ID, WRONG ID', book)
+				pass
+
+			# Change names
+			mapping_names = {'biography':'biography/history',
+			                 'history':'biography/history',
+			                 'detective':'thriller',
+			                 'mystery':'thriller',
+			                 'horror':'thriller',
+			                 'teen':'children'}
+			for i, genre in enumerate(data['genre']):
+				if genre in list(mapping_names.keys()):
+					data['genre'][i] = mapping_names[genre]
+				if genre in ['short stories', 'english', 'satire', 'western']:
+					data['genre'].pop(i)
+
+			# Preprocess genre again to leave only one
+			if len(data['genre']) > 1:
+				for genre in ['fiction', 'children', 'adventure', 'biography/history', 'romance', 'thriller', 'science-fiction']:
+					if genre in data['genre'] and len(data['genre']) != 1: data['genre'].remove(genre)
+			if len(data['genre']) == 0:
+				data['genre'] = ['fiction']
+
+			# Reprocess correctly science fiction
+			if data['genre'][0] == 'fiction':
+				flat_list = list(set([item.lower() for sublist in data['theme'] for item in sublist.split()]))
+				if 'science' in flat_list:
+					data['genre'] = ['science-fiction']
+
+			json.dump(data, open(folder_data + book, 'w', encoding='utf-8'),
+			          ensure_ascii=False, indent=1)
+
+
+	def stats_genre(self, folder_data ='data/preproc/'):
+		"""
+		:param folder_data: folder where data is placed
+		:return: dictionary giving information on genre repartition
+		"""
+		books = os.listdir(folder_data)
+
+		for genre in list(self.genres.keys()):
+			self.stats[genre] = 0
+
+		for book in tqdm(books):
+			try:
+				data = json.load(open(folder_data + book, 'r+'))
+			except UnicodeDecodeError:
+				print('WRONG ID, WRONG ID', book)
+				pass
+
+			self.stats[data['genre'][0]] += 1
+
+		return self.stats

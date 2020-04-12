@@ -53,7 +53,7 @@ class GPT2EvaluationScript:
         Generates texts at generation_path and computes given metrics on them.
         :param generations_path: The path where text generations can be found.
         :param results_path: The path where results should be saved.
-        :param GPT2_model: FlexibneGPT2 model that need to be evaluated and will be used to generate text
+        :param GPT2_model: FlexibleGPT2 model that need to be evaluated and will be used to generate text
         :param metric_names : name's list of metrics to compute
         :param verbose: 0 for silent execution, 1 for progress.
         """

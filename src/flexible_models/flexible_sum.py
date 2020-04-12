@@ -1,4 +1,6 @@
 from .flexible_model import FlexibleModel
+from src.utils import T5_DECODING_STRAT, BART_DECODING_STRAT
+
 from typing import List
 from enum import Enum
 from summarizer import Summarizer
@@ -56,7 +58,7 @@ class FlexibleSum(FlexibleModel):
             self.model.eval()
             if torch.cuda.is_available():
                 self.model.cuda()
-            self.decoding_strategy = {'top_p':0.7, 'min_length':10, 'max_length':30, 'repetition_penalty':4}
+            self.decoding_strategy = T5_DECODING_STRAT
             print("Use for decoding strategy :", self.decoding_strategy)
 
         if self.summarizer == SummarizerModel.BART:
@@ -66,7 +68,7 @@ class FlexibleSum(FlexibleModel):
             if torch.cuda.is_available():
                 self.model.cuda()
 
-            self.decoding_strategy = {'temperature':1.4, 'num_beams':5, 'min_length':25, 'max_length':65}
+            self.decoding_strategy = BART_DECODING_STRAT
             print("Use for decoding strategy :", self.decoding_strategy)
 
         if self.summarizer == SummarizerModel.PYSUM:

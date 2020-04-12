@@ -11,7 +11,7 @@ class GPT2Perplexity(Metrics):
     Perplexity metrics
     Score the sentences by GPT2 model :
      -> compute perplexity of T5, BART and pysum summaries for GPT2 internal probability distribution
-     -> average perplexity
+     -> average perplexity between summarizers
     """
     def __init__(self, **kwargs):
         """

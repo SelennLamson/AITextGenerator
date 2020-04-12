@@ -55,7 +55,7 @@ BART_DECODING_STRAT = \
 	{'temperature':1.25,
 	 'top_p':0.9,
 	 'min_length':25,
-	 'max_length':65
+	 'max_length':65,
 	 'repetition_penalty':3}
 
 T5_DECODING_STRAT = \
