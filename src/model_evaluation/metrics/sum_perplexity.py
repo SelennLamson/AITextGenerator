@@ -27,10 +27,10 @@ class GPT2Perplexity(Metrics):
         :param original_contexts: list[TrainInput] corresponding to original training examples
         :return: pd.DataFrame [perplexity]
         """
-        sum_perplexity = self.perplexity(predicted_sentences, original_contexts)
+        sum_perplexity = self.perplexity(original_contexts)
         return pd.DataFrame(columns=['sum_perplexity'], data=sum_perplexity)
 
-    def perplexity(self, sentences, original_contexts):
+    def perplexity(self, original_contexts):
         """
         Score the sentences by GPT2 model :
          -> perplexity of each summary for GPT2 internal probability distribution
