@@ -51,6 +51,18 @@ DEFAULT_DECODING_STRATEGY = {
 	'top_k': 50,
 	'top_p': 0.95
 }
+BART_DECODING_STRAT = \
+	{'temperature':1.25,
+	 'top_p':0.9,
+	 'min_length':25,
+	 'max_length':65
+	 'repetition_penalty':3}
+
+T5_DECODING_STRAT = \
+	{'top_p':0.85,
+	 'min_length':10,
+	 'max_length':30,
+	 'repetition_penalty':4}
 
 ALL_METRICS = ['BertSimilarity', 'EntitiesCount', 'GPT2Perplexity', 'BertRelationship', 'KwCount']
 
