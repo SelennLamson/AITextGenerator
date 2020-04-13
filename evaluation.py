@@ -46,4 +46,5 @@ if __name__ == '__main__':
            results_path=args.output + 'metrics_' + moment + '.json',
            GPT2_model=gpt_2,
            metric_names=ALL_METRICS,
+           summarizer='KW',
            verbose=1)

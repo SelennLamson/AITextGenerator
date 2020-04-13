@@ -131,6 +131,7 @@ class VectorizeParagraph:
 
             summary = sample.summary if self.mode == VectorizeMode.GENERATE else self.select_summary(sample.summaries)
             context['Sum'] = '[Sum] ' + summary if summary != "" else ""
+            print('summary', summary)
 
         if not self.use_context:
             # if the full context must not used, only P1 will be taken into account without any special tokens
