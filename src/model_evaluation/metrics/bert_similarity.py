@@ -17,10 +17,11 @@ class BertSimilarity(Metrics):
 		super().__init__()
 		self.bert_model = FlexibleBERTEmbed(2000, kwargs['batch_size'])
 
-	def __call__(self, predicted_sentences, original_contexts):
+	def __call__(self, predicted_sentences, original_contexts, summarizer):
 		"""
         :param predicted_sentences: list[str] batch of sentences corresponding to the generated P2
         :param original_contexts: list[TrainInput] corresponding to original training examples
+        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
 		:return: pd.DataFrame['similarity']
 		"""
 		# Change notation to match with Thomas old codes

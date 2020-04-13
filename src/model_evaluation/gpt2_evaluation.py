@@ -56,6 +56,7 @@ class GPT2EvaluationScript:
         :param results_path: The path where results should be saved.
         :param GPT2_model: FlexibleGPT2 model that need to be evaluated and will be used to generate text
         :param metric_names : name's list of metrics to compute
+        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         :param verbose: 0 for silent execution, 1 for progress.
         """
         self.generate_texts(generations_path, GPT2_model, summarizer, verbose)
@@ -65,6 +66,7 @@ class GPT2EvaluationScript:
         """Starts the text generation on all paragraphs.
         :param generations_path: The path where text generations should be saved.
         :param GPT2_model: FlexibleGPT2 model that need to be evaluated and will be used to generate text
+        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         :param verbose: 0 for silent execution, 1 for progress.
         """
         vectorizer = VectorizeParagraph(tokenizer=GPT2_model.tokenizer,
@@ -105,6 +107,7 @@ class GPT2EvaluationScript:
         :param generations_path: The path where text generations can be found.
         :param results_path: The path where results should be saved.
         :param metric_names : name's list of metrics to compute
+        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         :param verbose: 0 for silent execution, 1 for progress.
         """
 

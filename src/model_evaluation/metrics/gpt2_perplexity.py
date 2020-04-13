@@ -23,10 +23,11 @@ class GPT2Perplexity(Metrics):
         if torch.cuda.is_available():
             self.gpt2_model.cuda()
 
-    def __call__(self, predicted_sentences, original_contexts):
+    def __call__(self, predicted_sentences, original_contexts, summarizer):
         """
         :param predicted_sentences: list[str] batch of sentences
         :param original_contexts: list[TrainInput] corresponding to original training examples
+        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         :return: pd.DataFrame [perplexity]
         """
         predicted_perplexity = self.perplexity(predicted_sentences)
