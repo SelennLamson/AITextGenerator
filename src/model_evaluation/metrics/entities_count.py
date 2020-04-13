@@ -20,10 +20,11 @@ class EntitiesCount(Metrics):
         super().__init__()
         self.ner_model = FlexibleBERTNER(kwargs['path_to_bert_ner'], batch_size=kwargs['batch_size'])
 
-    def __call__(self, predicted_sentences, original_contexts):
+    def __call__(self, predicted_sentences, original_contexts, summarizer):
         """
         :param predicted_sentences: list[str] batch of sentences corresponding to the generated P2
         :param original_contexts: list[TrainInput] corresponding to original training examples
+        :param summarizer: name of the summarizer we use for text generation, from ['PYSUM', 'T5', 'BART', 'KW']
         :return: pd.DataFrame containing
             - proportion of correct entities for each class / each pred_P2
         """

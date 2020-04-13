@@ -13,10 +13,11 @@ class KwCount(Metrics):
         super().__init__()
         self.model = keywords
 
-    def __call__(self, predicted_sentences, original_contexts):
+    def __call__(self, predicted_sentences, original_contexts, summarizer):
         """
         :param predicted_sentences: generated P2 by GPT2
         :param original_contexts: original P2
+        :param summarizer: name of the summarizer we use for text generation, from ['PYSUM', 'T5', 'BART', 'KW']
         :return: proportion of number of original P2 keywords existent in generated P2
         """
         df_results = pd.DataFrame(columns=["keyword_proportion"], data=np.zeros((len(predicted_sentences),1)))
@@ -27,7 +28,7 @@ class KwCount(Metrics):
 
         for i, (predicted_sentence, original_context) in enumerate(zip(predicted_sentences, original_contexts)):
             df_results.loc[i, "keyword_proportion"] = kw_proportion_one_sentence(predicted_sentence,
-                                                                                 original_context.summaries['KW'])
+                                                                                 original_context.summaries[summarizer])
 
         return df_results
 
@@ -42,10 +43,11 @@ class KwIou(Metrics):
         super().__init__()
         self.model = keywords
 
-    def __call__(self, predicted_sentences, original_contexts):
+    def __call__(self, predicted_sentences, original_contexts, summarizer):
         """
         :param predicted_sentences: generated P2 by GPT2
         :param original_contexts: original P2
+        :param summarizer: name of the summarizer we use for text generation, from ['PYSUM', 'T5', 'BART', 'KW']
         :return: the iou score between list of keywords in original P2 and generated P2
         """
         df_results = pd.DataFrame(columns=["keyword_proportion"], data=np.zeros((len(predicted_sentences), 1)))
@@ -61,6 +63,6 @@ class KwIou(Metrics):
 
         for i, (predicted_sentence, original_context) in enumerate(zip(predicted_sentences, original_contexts)):
             df_results.loc[i, "keyword_proportion"] = kw_iou_one_sentence(predicted_sentence,
-                                                                          original_context.summaries['KW'])
+                                                                          original_context.summaries[summarizer])
 
         return df_results

@@ -25,10 +25,11 @@ class BertRelationship(Metrics):
         if torch.cuda.is_available():
             self.model.cuda()
 
-    def __call__(self, predicted_sentences, original_contexts):
+    def __call__(self, predicted_sentences, original_contexts, summarizer):
         """
         :param predicted_sentences: list[str] batch of sentences corresponding to the generated P2
         :param original_contexts: list[TrainInput] corresponding to original training examples
+        :param summarizer: name of the summarizer we use for text generation, from ['PYSUM', 'T5', 'BART', 'KW']
         :return: pd.DataFrame["relationship"]
         """
         data = self.bert_relationship(predicted_sentences,
