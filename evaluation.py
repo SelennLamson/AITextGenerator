@@ -29,6 +29,10 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", type=int, default=8,
                         help="Batch size that will be used by all models, by default 8")
 
+    parser.add_argument("--sum", type=str, default="",
+                        help="Which summary to use for text generation : KW, T5, BART, PYSUM. \
+                              by default do not use any summaries")
+
     args = parser.parse_args()
 
     print("Loading the GPT2 fine-tuned model ...")
@@ -39,12 +43,12 @@ if __name__ == '__main__':
     print("Evaluating the model ...")
     script = GPT2EvaluationScript(path_to_data_folder=args.data,
                                   batch_size=args.batch_size,
-                                  path_to_bert_ner=args.ner)
+                                  path_to_bert_ner=args.ner,
+                                  summarizer=args.sum)
 
     moment = str(datetime.now().strftime("%d_%b_%Hh%M"))
     script(generations_path=args.output + 'generation_' + moment + '.json',
            results_path=args.output + 'metrics_' + moment + '.json',
            GPT2_model=gpt_2,
            metric_names=ALL_METRICS,
-           summarizer='KW',
            verbose=1)

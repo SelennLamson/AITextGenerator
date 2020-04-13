@@ -16,7 +16,8 @@ class GPT2EvaluationScript:
                  path_to_data_folder=PREPROC_PATH,
                  batch_size: int = 1,
                  use_context=True,
-                 path_to_bert_ner=BERT_NER_LARGE):
+                 path_to_bert_ner=BERT_NER_LARGE,
+                 summarizer=''):
         """
         Initializes a GPT-2 Benchmark script that will perform text generation on the paragraphs of given files.
         Call the script using parentheses to launch it.
@@ -30,6 +31,7 @@ class GPT2EvaluationScript:
                             else, will juste use P1 without any special tokens
                 --> put use_context = False to compute GPT_2 baseline
         :param path_to_bert_ner: path to bert ner model (needed if to use GPT2EvalutionScript to compute entities iou)
+        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         """
 
         self.data_folder = path_to_data_folder
@@ -41,14 +43,14 @@ class GPT2EvaluationScript:
 
         self.batch_size = batch_size
         self.use_context = use_context
-        self.init_args = {'batch_size':batch_size, 'path_to_bert_ner':path_to_bert_ner}
+        self.summarizer = summarizer
+        self.init_args = {'batch_size':batch_size, 'path_to_bert_ner':path_to_bert_ner, 'summarizer':summarizer}
 
     def __call__(self,
                  generations_path:str,
                  results_path:str,
                  GPT2_model: FlexibleGPT2,
                  metric_names:List[str],
-                 summarizer,
                  verbose=1):
         """
         Generates texts at generation_path and computes given metrics on them.
@@ -56,23 +58,21 @@ class GPT2EvaluationScript:
         :param results_path: The path where results should be saved.
         :param GPT2_model: FlexibleGPT2 model that need to be evaluated and will be used to generate text
         :param metric_names : name's list of metrics to compute
-        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         :param verbose: 0 for silent execution, 1 for progress.
         """
-        self.generate_texts(generations_path, GPT2_model, summarizer, verbose)
-        self.compute_metrics(generations_path, results_path, metric_names, summarizer, verbose)
+        self.generate_texts(generations_path, GPT2_model, verbose)
+        self.compute_metrics(generations_path, results_path, metric_names, verbose)
 
-    def generate_texts(self, generations_path: str, GPT2_model:FlexibleGPT2, summarizer:str, verbose: int = 1):
+    def generate_texts(self, generations_path: str, GPT2_model:FlexibleGPT2, verbose: int = 1):
         """Starts the text generation on all paragraphs.
         :param generations_path: The path where text generations should be saved.
         :param GPT2_model: FlexibleGPT2 model that need to be evaluated and will be used to generate text
-        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         :param verbose: 0 for silent execution, 1 for progress.
         """
         vectorizer = VectorizeParagraph(tokenizer=GPT2_model.tokenizer,
                                         mode=VectorizeMode.EVAL,
                                         use_context=self.use_context,
-                                        select_summary=summary_selector([summarizer]))
+                                        select_summary=summary_selector([self.summarizer]))
 
         dataset = DatasetFromRepo(path=self.data_folder, sublist=self.list_of_fid, transform=vectorizer)
 
@@ -101,13 +101,12 @@ class GPT2EvaluationScript:
         if verbose:
             print("\rGeneration successfull.")
 
-    def compute_metrics(self, generations_path:str,results_path:str, metric_names, summarizer, verbose: int = 1):
+    def compute_metrics(self, generations_path:str,results_path:str, metric_names, verbose: int = 1):
         """
         Computes the selected metrics on generated texts.
         :param generations_path: The path where text generations can be found.
         :param results_path: The path where results should be saved.
         :param metric_names : name's list of metrics to compute
-        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         :param verbose: 0 for silent execution, 1 for progress.
         """
 
@@ -126,7 +125,7 @@ class GPT2EvaluationScript:
             if verbose:
                 print("Computing  :" + metric_name + "...")
             metric = getattr(metrics, metric_name)(**self.init_args)
-            results.append(metric(generated_sentences, original_contexts, summarizer))
+            results.append(metric(generated_sentences, original_contexts))
             del metric
 
         if verbose:

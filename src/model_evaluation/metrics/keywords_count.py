@@ -12,8 +12,9 @@ class KwCount(Metrics):
     def __init__(self, **kwargs):
         super().__init__()
         self.model = keywords
+        self.summarizer = kwargs['summarizer']
 
-    def __call__(self, predicted_sentences, original_contexts, summarizer):
+    def __call__(self, predicted_sentences, original_contexts):
         """
         :param predicted_sentences: generated P2 by GPT2
         :param original_contexts: original P2
@@ -22,19 +23,17 @@ class KwCount(Metrics):
         """
         df_results = pd.DataFrame(columns=["keyword_proportion"], data=np.zeros((len(predicted_sentences),1)))
 
-        def kw_proportion_one_sentence(pred_P2, kw_list, summarizer):
-            if summarizer != 'KW':
+        def kw_proportion_one_sentence(pred_P2, kw_list):
+            if self.summarizer != 'KW':
                 kw_list = self.model(kw_list, lemmatize=False, pos_filter=('NN', 'JJ', 'VB')).split('\n')
             count = len([kw for kw in kw_list if kw is pred_P2.lower().split(' ')])
             return count / len(set(kw_list)) if len(kw_list) != 0 else 'NaN'
 
         for i, (predicted_sentence, original_context) in enumerate(zip(predicted_sentences, original_contexts)):
-            df_results.loc[i, "keyword_proportion"] = kw_proportion_one_sentence(predicted_sentence,
-                                                                                 original_context.summaries[summarizer],
-                                                                                 summarizer)
+            df_results.loc[i, "keyword_proportion"] = \
+                kw_proportion_one_sentence(predicted_sentence, original_context.summaries[self.summarizer])
 
         return df_results
-
 
 
 class KwIou(Metrics):
@@ -45,8 +44,9 @@ class KwIou(Metrics):
     def __init__(self, **kwargs):
         super().__init__()
         self.model = keywords
+        self.summarizer = kwargs['summarizer']
 
-    def __call__(self, predicted_sentences, original_contexts, summarizer):
+    def __call__(self, predicted_sentences, original_contexts):
         """
         :param predicted_sentences: generated P2 by GPT2
         :param original_contexts: original P2
@@ -56,7 +56,6 @@ class KwIou(Metrics):
 
         def kw_iou_one_sentence(predicted_sentence, kw_in_text):
             kw_in_pred = self.model(predicted_sentence, lemmatize=False, pos_filter=('NN', 'JJ', 'VB')).split('\n')
-            # kw_in_text = self.model(original_context, lemmatize=False, pos_filter=('NN', 'JJ', 'VB')).split('\n')
             if len(kw_in_pred) == 0 and len(kw_in_text) == 0:
                 iou = 'NaN'
             else:
@@ -65,6 +64,6 @@ class KwIou(Metrics):
 
         for i, (predicted_sentence, original_context) in enumerate(zip(predicted_sentences, original_contexts)):
             df_results.loc[i, "keyword_proportion"] = kw_iou_one_sentence(predicted_sentence,
-                                                                          original_context.summaries[summarizer])
+                                                                          original_context.summaries[self.summarizer])
 
         return df_results

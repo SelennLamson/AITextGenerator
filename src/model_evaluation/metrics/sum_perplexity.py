@@ -20,30 +20,29 @@ class SumPerplexity(Metrics):
         super().__init__()
         self.gpt2_model = GPT2LMHeadModel.from_pretrained('gpt2')
         self.gpt2_tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+        self.summarizer = kwargs['summarizer']
 
-    def __call__(self, predicted_sentences, original_contexts, summarizer):
+    def __call__(self, predicted_sentences, original_contexts):
         """
         :param predicted_sentences: list[str] batch of sentences
         :param original_contexts: list[TrainInput] corresponding to original training examples
-        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         :return: pd.DataFrame [perplexity]
         """
-        sum_perplexity = self.perplexity(original_contexts, summarizer)
+        sum_perplexity = self.perplexity(original_contexts)
         return pd.DataFrame(columns=['sum_perplexity'], data=sum_perplexity)
 
-    def perplexity(self, original_contexts, summarizer):
+    def perplexity(self, original_contexts):
         """
         Score the sentences by GPT2 model :
          -> perplexity of each summary for GPT2 internal probability distribution
         :param original_contexts: list[TrainInput] corresponding to original training examples
-        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         :return: np.array that contains perplexity score
         """
         perplexity = []
 
         with torch.no_grad():
             for original_context in original_contexts:
-                input_ids = self.gpt2_tokenizer.encode(original_context.summaries[summarizer], return_tensors='pt')
+                input_ids = self.gpt2_tokenizer.encode(original_context.summaries[self.summarizer], return_tensors='pt')
                 if torch.cuda.is_available():
                     input_ids = input_ids.cuda()
                 output = self.gpt2_model.forward(input_ids, labels=input_ids)
