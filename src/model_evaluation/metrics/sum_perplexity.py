@@ -6,7 +6,7 @@ import torch
 import numpy as np
 import pandas as pd
 
-class GPT2Perplexity(Metrics):
+class SumPerplexity(Metrics):
     """
     Perplexity metrics
     Score the sentences by GPT2 model :
