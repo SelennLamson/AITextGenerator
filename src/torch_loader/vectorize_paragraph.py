@@ -91,7 +91,7 @@ class VectorizeParagraph:
 
         return torch.tensor(self.concat_context(context))
 
-    def __call__(self, sample):
+    def __call__(self, sample, summarizer):
         """
         Create an input_dict which formats and encodes (using GPT2 tokenizer) the data
 
