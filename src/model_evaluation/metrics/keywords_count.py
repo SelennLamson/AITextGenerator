@@ -22,13 +22,16 @@ class KwCount(Metrics):
         """
         df_results = pd.DataFrame(columns=["keyword_proportion"], data=np.zeros((len(predicted_sentences),1)))
 
-        def kw_proportion_one_sentence(pred_P2, kw_list):
+        def kw_proportion_one_sentence(pred_P2, kw_list, summarizer):
+            if summarizer != 'KW':
+                kw_list = self.model(kw_list, lemmatize=False, pos_filter=('NN', 'JJ', 'VB')).split('\n')
             count = len([kw for kw in kw_list if kw is pred_P2.lower().split(' ')])
             return count / len(set(kw_list)) if len(kw_list) != 0 else 'NaN'
 
         for i, (predicted_sentence, original_context) in enumerate(zip(predicted_sentences, original_contexts)):
             df_results.loc[i, "keyword_proportion"] = kw_proportion_one_sentence(predicted_sentence,
-                                                                                 original_context.summaries[summarizer])
+                                                                                 original_context.summaries[summarizer],
+                                                                                 summarizer)
 
         return df_results
 
