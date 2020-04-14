@@ -69,10 +69,11 @@ class GPT2EvaluationScript:
         :param GPT2_model: FlexibleGPT2 model that need to be evaluated and will be used to generate text
         :param verbose: 0 for silent execution, 1 for progress.
         """
+        select_summary = summary_selector([self.summarizer] if self.summarizer != "" else [])
         vectorizer = VectorizeParagraph(tokenizer=GPT2_model.tokenizer,
                                         mode=VectorizeMode.EVAL,
                                         use_context=self.use_context,
-                                        select_summary=summary_selector([self.summarizer]))
+                                        select_summary=select_summary)
 
         dataset = DatasetFromRepo(path=self.data_folder, sublist=self.list_of_fid, transform=vectorizer)
 
