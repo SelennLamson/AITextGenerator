@@ -25,8 +25,10 @@ class KwCount(Metrics):
 
         def kw_proportion_one_sentence(pred_P2, kw_list):
             if self.summarizer != 'KW':
-                kw_list = self.model(kw_list, lemmatize=False, pos_filter=('NN', 'JJ', 'VB')).split('\n')
-            count = len([kw for kw in kw_list if kw is pred_P2.lower().split(' ')])
+                kw_list = self.model(kw_list, lemmatize=False, pos_filter=('NN', 'JJ', 'VB'), ratio=1).split('\n')
+                count = len([kw for kw in kw_list if kw in pred_P2.lower().split(' ')])
+            else:
+                count = len([kw for kw in kw_list.split(' - ') if kw in pred_P2.lower().split(' ')])
             return count / len(set(kw_list)) if len(kw_list) != 0 else 'NaN'
 
         for i, (predicted_sentence, original_context) in enumerate(zip(predicted_sentences, original_contexts)):
