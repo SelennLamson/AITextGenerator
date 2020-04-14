@@ -28,7 +28,6 @@ class KwCount(Metrics):
                 count = len([kw for kw in kw_list.split(' - ') if kw in pred_P2.lower().split(' ')])
             else:
                 kw_list = self.model(kw_list, lemmatize=False, pos_filter=('NN', 'JJ', 'VB'), ratio=1).split('\n')
-                print(kw_list)
                 count = len([kw for kw in kw_list if kw in pred_P2.lower().split(' ')])
             return count / len(set(kw_list)) if len(kw_list) != 0 else 'NaN'
 
