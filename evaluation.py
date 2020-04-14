@@ -58,8 +58,3 @@ if __name__ == '__main__':
 
     script.compute_metrics(generation_path, results_path, ALL_METRICS, verbose=1)
 
-    script(generations_path=args.output + 'generation_' + save_name + '.json',
-           results_path=args.output + 'metrics_' + save_name + '.csv',
-           GPT2_model=gpt_2,
-           metric_names=ALL_METRICS,
-           verbose=1)
