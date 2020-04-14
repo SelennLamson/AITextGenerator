@@ -33,6 +33,8 @@ if __name__ == '__main__':
                         help="Which summary to use for text generation : KW, T5, BART, PYSUM. \
                               by default do not use any summaries")
 
+    parser.add_argument("--name", type=str, default="", help="Name of save, by default the time")
+
     args = parser.parse_args()
 
     print("Loading the GPT2 fine-tuned model ...")
@@ -46,9 +48,10 @@ if __name__ == '__main__':
                                   path_to_bert_ner=args.ner,
                                   summarizer=args.sum)
 
-    moment = str(datetime.now().strftime("%d_%b_%Hh%M"))
-    script(generations_path=args.output + 'generation_' + moment + '.json',
-           results_path=args.output + 'metrics_' + moment + '.json',
+    save_name = str(datetime.now().strftime("%d_%b_%Hh%M")) if args.name == "" else args.name
+
+    script(generations_path=args.output + 'generation_' + save_name + '.json',
+           results_path=args.output + 'metrics_' + save_name + '.json',
            GPT2_model=gpt_2,
            metric_names=ALL_METRICS,
            verbose=1)
