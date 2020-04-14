@@ -64,7 +64,7 @@ T5_DECODING_STRAT = \
 	 'max_length':30,
 	 'repetition_penalty':4}
 
-ALL_METRICS = ['BertSimilarity', 'EntitiesCount', 'GPT2Perplexity', 'BertRelationship', 'KwCount', 'SumPerplexity']
+ALL_METRICS = ['BertSimilarity', 'EntitiesCount', 'GPT2Perplexity', 'BertRelationship', 'KwCount']
 
 SizeInfo = namedtuple('Size', 'inf_chars sup_chars mean_tokens token')
 SMALL = SizeInfo(inf_chars=1, sup_chars=700, mean_tokens=100, token='[S]')
