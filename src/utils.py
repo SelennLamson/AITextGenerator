@@ -232,7 +232,7 @@ def summary_selector(summary_models=None):
 	:return: function [dict] -> [str]
 	"""
 	if summary_models is None or len(summary_models) == 0 or \
-		(len(summary_models) == 1 and summary_models[0] == "")
+		(len(summary_models) == 1 and summary_models[0] == ""):
 		return lambda x: ""
 
 	summary_model = random.choice(summary_models)
