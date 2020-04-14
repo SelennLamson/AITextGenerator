@@ -5,6 +5,7 @@ from datetime import datetime
 import argparse
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import nltk
+import os
 
 """
 Script to evaluate one model
@@ -49,9 +50,11 @@ if __name__ == '__main__':
                                   summarizer=args.sum)
 
     save_name = str(datetime.now().strftime("%d_%b_%Hh%M")) if args.name == "" else args.name
+    generation_path = args.output + 'generation_' + save_name + '.json'
+    results_path = args.output + 'metrics_' + save_name + '.csv'
 
-    script(generations_path=args.output + 'generation_' + save_name + '.json',
-           results_path=args.output + 'metrics_' + save_name + '.csv',
-           GPT2_model=gpt_2,
-           metric_names=ALL_METRICS,
-           verbose=1)
+    if not os.path.exists(generation_path):
+        script.generate_texts(generation_path, gpt_2, verbose=1)
+
+    script.compute_metrics(generation_path, results_path, ALL_METRICS, verbose=1)
+
