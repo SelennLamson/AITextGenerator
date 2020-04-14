@@ -22,7 +22,9 @@ if __name__ == '__main__':
             decoding_strategy=DEFAULT_DECODING_STRATEGY
         )
 
-    evaluation_script = GPT2EvaluationScript(path_to_data_folder=EVAL_PATH,path_to_bert_ner=BERT_NER_BASE)
+    evaluation_script = GPT2EvaluationScript(path_to_data_folder=EVAL_PATH,
+                                             path_to_bert_ner=BERT_NER_BASE,
+                                             summarizer='KW')
 
     if not os.path.exists(GENERATION_PATH):
         evaluation_script.generate_texts(GENERATION_PATH, flexible_gpt2_to_evaluate)
