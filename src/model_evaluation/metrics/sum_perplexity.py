@@ -44,11 +44,14 @@ class SumPerplexity(Metrics):
 
         with torch.no_grad():
             for original_context in original_contexts:
-                input_ids = self.gpt2_tokenizer.encode(original_context.summaries[self.summarizer], return_tensors='pt')
-                if torch.cuda.is_available():
-                    input_ids = input_ids.cuda()
-                output = self.gpt2_model.forward(input_ids, labels=input_ids)
-                cross_entropy_loss = output[0].detach().cpu()
-                perplexity.append(math.exp(cross_entropy_loss.item()))
+                if self.summarizer == '':
+                    perplexity.append('NaN')
+                else:
+                    input_ids = self.gpt2_tokenizer.encode(original_context.summaries[self.summarizer], return_tensors='pt')
+                    if torch.cuda.is_available():
+                        input_ids = input_ids.cuda()
+                    output = self.gpt2_model.forward(input_ids, labels=input_ids)
+                    cross_entropy_loss = output[0].detach().cpu()
+                    perplexity.append(math.exp(cross_entropy_loss.item()))
 
         return np.array(perplexity)
