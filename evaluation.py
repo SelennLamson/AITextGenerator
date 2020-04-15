@@ -6,6 +6,9 @@ import argparse
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import nltk
 import os
+import logging
+
+
 
 """
 Script to evaluate one model
@@ -13,7 +16,6 @@ Script to evaluate one model
 
 if __name__ == '__main__':
     nltk.download('punkt')
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=str, required=True,
                         help="Path to the folder containing the novels on which the model will be evaluated")
@@ -36,25 +38,33 @@ if __name__ == '__main__':
 
     parser.add_argument("--name", type=str, default="", help="Name of save, by default the time")
 
+    parser.add_argument("--metrics", default=ALL_METRICS, nargs='+', help="Names of the metrics you want to compute")
+
+    parser.add_argument("--no_context", action="store_true", help="Do not use any context, use it to eval raw gpt2")
+
     args = parser.parse_args()
-
-    print("Loading the GPT2 fine-tuned model ...")
-    gpt_2 = FlexibleGPT2(model=GPT2LMHeadModel.from_pretrained(args.model),
-                         tokenizer=GPT2Tokenizer.from_pretrained(args.model),
-                         decoding_strategy=DEFAULT_DECODING_STRATEGY)
-
-    print("Evaluating the model ...")
-    script = GPT2EvaluationScript(path_to_data_folder=args.data,
-                                  batch_size=args.batch_size,
-                                  path_to_bert_ner=args.ner,
-                                  summarizer=args.sum)
-
     save_name = str(datetime.now().strftime("%d_%b_%Hh%M")) if args.name == "" else args.name
     generation_path = args.output + 'generation_' + save_name + '.json'
     results_path = args.output + 'metrics_' + save_name + '.csv'
+    use_context = False if args.no_context else True
+
+    print("Initialize evaluation script ...")
+
+    script = GPT2EvaluationScript(path_to_data_folder=args.data,
+                                  batch_size=args.batch_size,
+                                  path_to_bert_ner=args.ner,
+                                  use_context=use_context,
+                                  summarizer=args.sum)
 
     if not os.path.exists(generation_path):
+        print("Load GPT2 model in memory ...")
+        gpt_2 = FlexibleGPT2(model=GPT2LMHeadModel.from_pretrained(args.model),
+                             tokenizer=GPT2Tokenizer.from_pretrained(args.model),
+                             decoding_strategy=DEFAULT_DECODING_STRATEGY)
+
+        print("Begin text generation ...")
         script.generate_texts(generation_path, gpt_2, verbose=1)
 
-    script.compute_metrics(generation_path, results_path, ALL_METRICS, verbose=1)
+    print("Compute metrics ...")
+    script.compute_metrics(generation_path, results_path, args.metrics, verbose=1)
 
