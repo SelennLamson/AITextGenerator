@@ -44,7 +44,7 @@ class SumPerplexity(Metrics):
 
         with torch.no_grad():
             for original_context in original_contexts:
-                if self.summarizer == '':
+                if self.summarizer == '' or original_context.summaries[self.summarizer] == '':
                     perplexity.append('NaN')
                 else:
                     input_ids = self.gpt2_tokenizer.encode(original_context.summaries[self.summarizer], return_tensors='pt')
