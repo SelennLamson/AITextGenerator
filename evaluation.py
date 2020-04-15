@@ -8,7 +8,8 @@ import nltk
 import os
 import logging
 
-
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
 
 """
 Script to evaluate one model
