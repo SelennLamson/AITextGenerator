@@ -416,12 +416,11 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
 
     # MODIF FOR EVAL SCRIPT / USE CUSTOM DATASET
     #eval_dataset = load_and_cache_examples(args, tokenizer, evaluate=True)
-    summarize_to_select = summary_selector(args.sum)
     vectorizer = VectorizeParagraph(tokenizer=tokenizer,
                                     block_size=GPT2_BLOCK_SIZE,
                                     mode=VectorizeMode.TRAIN,
                                     use_context=True,
-                                    select_summary=summarize_to_select)
+                                    select_summary=lambda input_dict: random.choice(input_dict.values()))
 
     eval_dataset = DatasetFromRepo(path=args.eval_data_file, transform=vectorizer)
 
@@ -620,11 +619,6 @@ def main():
     parser.add_argument("--server_ip", type=str, default="", help="For distant debugging.")
     parser.add_argument("--server_port", type=str, default="", help="For distant debugging.")
 
-    # MODIF 1 :
-    parser.add_argument("--sum", default=[], nargs='+', help="Choose list of summarizers to use from \
-                                                              T5, BART, KW, PYSUM \
-                                                              by default do not use any summariers")
-
     parser.add_argument("--print_input", action="store_true", help="Print the input given to the model")
 
     args = parser.parse_args()
@@ -759,14 +753,14 @@ def main():
             torch.distributed.barrier()  # Barrier to make sure only the first process in distributed training process the dataset, and the others will use the cache
 
         # train_dataset = load_and_cache_examples(args, tokenizer, evaluate=False)
-        # MODIF 3
-        summarize_to_select = summary_selector(args.sum)
         # USE CUSTOM DATASET
         vectorizer = VectorizeParagraph(tokenizer=tokenizer,
                                         block_size=GPT2_BLOCK_SIZE,
                                         mode=VectorizeMode.TRAIN,
                                         use_context=True,
-                                        select_summary=summarize_to_select)
+                                        select_summary=lambda input_dict: random.choice(input_dict.values())
+
+)
 
         train_dataset = DatasetFromRepo(path=args.train_data_file, transform=vectorizer)
 
