@@ -408,7 +408,16 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
     # Loop to handle MNLI double evaluation (matched, mis-matched)
     eval_output_dir = args.output_dir
 
-    eval_dataset = load_and_cache_examples(args, tokenizer, evaluate=True)
+    # MODIF FOR EVAL SCRIPT / USE CUSTOM DATASET
+    #eval_dataset = load_and_cache_examples(args, tokenizer, evaluate=True)
+    summarize_to_select = summary_selector(args.sum)
+    vectorizer = VectorizeParagraph(tokenizer=tokenizer,
+                                    block_size=GPT2_BLOCK_SIZE,
+                                    mode=VectorizeMode.TRAIN,
+                                    use_context=True,
+                                    select_summary=summarize_to_select)
+
+    eval_dataset = DatasetFromRepo(path=args.eval_data_file, transform=vectorizer)
 
     if args.local_rank in [-1, 0]:
         os.makedirs(eval_output_dir, exist_ok=True)
@@ -539,7 +548,7 @@ def main():
     parser.add_argument("--do_train", action="store_true", help="Whether to run training.")
     parser.add_argument("--do_eval", action="store_true", help="Whether to run eval on the dev set.")
     parser.add_argument(
-        "--evaluate_during_training", action="store_true", help="Run evaluation during training at each logging step."
+        "s", action="store_true", help="Run evaluation during training at each logging step."
     )
 
     parser.add_argument("--per_gpu_train_batch_size", default=4, type=int, help="Batch size per GPU/CPU for training.")
