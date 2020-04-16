@@ -335,7 +335,7 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
             if args.print_input:
                 logger.info("Examples contained in the batch that will be given as input in the model")
                 for i in range(inputs.shape[0]):
-                    decoded_input = tokenizer.decode(inputs[i,:].tolist(), skip_special_tokens=True)
+                    decoded_input = tokenizer.decode(inputs[i,:].tolist(), skip_special_tokens=False)
                     logger.info("Ex n° %d : %s" % (i, decoded_input))
 
             inputs = inputs.to(args.device)
