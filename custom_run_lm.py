@@ -420,7 +420,7 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
                                     block_size=GPT2_BLOCK_SIZE,
                                     mode=VectorizeMode.TRAIN,
                                     use_context=True,
-                                    select_summary=lambda input_dict: random.choice(input_dict.values()))
+                                    select_summary=lambda input_dict: random.choice(list(input_dict.values())))
 
     eval_dataset = DatasetFromRepo(path=args.eval_data_file, transform=vectorizer)
 
@@ -758,7 +758,7 @@ def main():
                                         block_size=GPT2_BLOCK_SIZE,
                                         mode=VectorizeMode.TRAIN,
                                         use_context=True,
-                                        select_summary=lambda input_dict: random.choice(input_dict.values())
+                                        select_summary=lambda input_dict: random.choice(list(input_dict.values()))
 
 )
 
