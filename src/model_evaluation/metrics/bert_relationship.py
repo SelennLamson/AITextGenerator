@@ -77,6 +77,5 @@ class BertRelationship(Metrics):
             i += batch_size
 
         outputs.append(self.bert_relationship_single_batch(list_seq_1[i:], list_seq_2[i:]))
-        outputs.append(1)  # dimension is N-1 (cannot compute metric it for last sentence)
         return np.hstack(outputs)
 
