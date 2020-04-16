@@ -72,7 +72,7 @@ class BertRelationship(Metrics):
         outputs = []
         batch_size = self.batch_size
         i = 0
-        while i + batch_size < number_seq:
+        while i + batch_size < number_seq-1:
             outputs.append(self.bert_relationship_single_batch(list_seq_1[i:i+batch_size], list_seq_2[i:i+batch_size]))
             i += batch_size
 
