@@ -22,8 +22,8 @@ class BertRelationship(Metrics):
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased')
         self.model.eval()
-        #if torch.cuda.is_available():
-        #    self.model.cuda()
+        if torch.cuda.is_available():
+            self.model.cuda()
 
     def __call__(self, predicted_sentences, original_contexts):
         """
@@ -32,7 +32,7 @@ class BertRelationship(Metrics):
         :return: pd.DataFrame["relationship"]
         """
         data = self.bert_relationship(predicted_sentences,
-                                      [original_context.P2 for original_context in original_contexts])
+                                      [original_context.P3 for original_context in original_contexts])
         return pd.DataFrame(columns=["relationship"], data=data)
 
     def bert_relationship_single_batch(self, list_seq_1, list_seq_2):
@@ -57,7 +57,7 @@ class BertRelationship(Metrics):
             mask = mask.cuda()
         """
         ouptput_bert = self.model(input_ids=input_ids, attention_mask=mask, token_type_ids=token_type_ids)
-        return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach()  #.cpu().numpy()
+        return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach().cpu().numpy()
 
     def bert_relationship(self, list_seq_1, list_seq_2):
         """
@@ -67,6 +67,8 @@ class BertRelationship(Metrics):
         :return: np.array for each idx : probability that list_seq_2[idx] is the continuation of list_seq_1[idx]
         """
         number_seq = len(list_seq_1)
+        print(len(list_seq_1))
+        print(len(list_seq_2))
         outputs = []
         batch_size = self.batch_size
         i = 0
@@ -75,5 +77,6 @@ class BertRelationship(Metrics):
             i += batch_size
 
         outputs.append(self.bert_relationship_single_batch(list_seq_1[i:], list_seq_2[i:]))
+        outputs.append(1)  # dimension is N-1 (cannot compute metric it for last sentence)
         return np.hstack(outputs)
 
