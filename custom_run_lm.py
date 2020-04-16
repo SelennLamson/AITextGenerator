@@ -337,7 +337,6 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
                 for i in range(inputs.shape[0]):
                     decoded_input = tokenizer.decode(inputs[i,:].tolist(), skip_special_tokens=False)
                     logger.info("Ex n° %d : %s" % (i, decoded_input))
-
             inputs = inputs.to(args.device)
             labels = labels.to(args.device)
             model.train()
@@ -555,7 +554,7 @@ def main():
     parser.add_argument("--do_train", action="store_true", help="Whether to run training.")
     parser.add_argument("--do_eval", action="store_true", help="Whether to run eval on the dev set.")
     parser.add_argument(
-        "s", action="store_true", help="Run evaluation during training at each logging step."
+        "--evaluate_during_training", action="store_true", help="Run evaluation during training at each logging step."
     )
 
     parser.add_argument("--per_gpu_train_batch_size", default=4, type=int, help="Batch size per GPU/CPU for training.")
