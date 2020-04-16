@@ -331,6 +331,13 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
                 continue
 
             inputs, labels = mask_tokens(batch, tokenizer, args) if args.mlm else (batch, batch)
+
+            if args.print_input:
+                logger.info("Examples contained in the batch that will be given as input in the model")
+                for i in range(inputs.shape[0]):
+                    decoded_input = tokenizer.decode(inputs[i,:].tolist(), skip_special_tokens=True)
+                    logger.info("Ex n° %d : %s" % (i, decoded_input))
+
             inputs = inputs.to(args.device)
             labels = labels.to(args.device)
             model.train()
@@ -618,6 +625,9 @@ def main():
     parser.add_argument("--sum", default=[], nargs='+', help="Choose list of summarizers to use from \
                                                               T5, BART, KW, PYSUM \
                                                               by default do not use any summariers")
+
+    parser.add_argument("--print_input", action="store_true", help="Print the input given to the model")
+
     args = parser.parse_args()
 
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
