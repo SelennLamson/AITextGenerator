@@ -2,12 +2,13 @@ import numpy as np
 import pandas as pd
 import os
 import itertools
+import argparse
 FOLDER_PATH = 'data/results/'
 
 
-def results_comparison():
+def model_comparison(FOLDER_PATH):
 	"""
-	:param files: name of the files (dataframes) that we would like to compare.
+	:param FOLDER_PATH: path leading to the files (dataframes with metrics results) that we would like to compare.
 	Compare the eval metrics obtained for different gpt2 finetuning models (with summary, no summary, no context,...)
 	"""
 	files = os.listdir(FOLDER_PATH)
@@ -26,16 +27,11 @@ def results_comparison():
 		print('Difference between', files[pair[0]], 'and', files[pair[1]])
 		print(res)
 
-results_comparison()
 
-
-
-
-def evolution(files):
+def model_evolution(FOLDER_PATH):
 	"""
-	:param files: dataframe containing eval metrics, which we would like to interpret
-	Provides an idea of the effects of finetuning through easy to interpret results
-	Prints the difference between metrics value in first part of training and end of training
+	:param FOLDER_PATH: path leading to the files (dataframes with metrics results) that we would like to compare.
+	Compare the evolution of metrics for a same model but at different epochs
 	"""
 	# Read files
 	for i, file in enumerate(files):
@@ -57,6 +53,15 @@ def evolution(files):
 		print(results)
 
 
+# ADD A FILTER (SUFFIXES, PREFIX) to identify files where metrics belong to same model, with same epoch but different models
+# ADD ARGUMENTS to specify what epoch to compare or list of models that you want to compare
+# Store in dico with key = name model and values = epoch for second function
 
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--Data", type=str, required=True, help="Path where files are stored")
+	args = parser.parse_args()
+	model_comparison(args.Data)
+	# model_evolution(args.Data)
 
 
