@@ -56,6 +56,11 @@ class ParagraphParser(FlexibleModel):
 		:return: list of paragraphs
 		"""
 
+		all_p = set(ents_p.values()).difference({'M', 'Mr', 'Ms', 'The', 'Dr'})
+		all_o = set(ents_o.values()).difference({'M', 'Mr', 'Ms', 'The', 'Dr'})
+		all_l = set(ents_l.values()).difference({'M', 'Mr', 'Ms', 'The', 'Dr'})
+		all_m = set(ents_m.values()).difference({'M', 'Mr', 'Ms', 'The', 'Dr'})
+
 		classes = dict()
 		classes['persons'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_p.items()], key=lambda x: x[0])})
 		classes['organisations'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_o.items()], key=lambda x: x[0])})
@@ -71,29 +76,21 @@ class ParagraphParser(FlexibleModel):
 		# Parsing paragraphs
 		def add_paragraph(content):
 			c = content.strip()
-			paragraphs.append({
+
+			p_data = {
 				'size': len(c),
 				'text': c,
 				'summaries': list()
-			})
+			} + {ent_class: [] for ent_class in ENTITY_CLASSES}
 
-			search_content = content.replace(',', ' ')
+			search_content = content.replace(',', ' ').replace('"', '').replace("'", '').replace(';', '').replace('_', '').replace('”', '').replace('“', '')
 
-			for ent_class in ENTITY_CLASSES:
-				paragraphs[-1][ent_class] = []
-				cursor = 0
-				to_rem = []
-				for key, elt in classes[ent_class].items():
-					if cursor >= len(content):
-						break
-					index = content.find(elt + ' ', cursor)
-					if index != -1:
-						paragraphs[-1][ent_class].append(elt)
-						cursor = index + len(elt)
-						to_rem.append(key)
-				for rem in to_rem:
-					del classes[ent_class][rem]
-				paragraphs[-1][ent_class] = list(set(paragraphs[-1][ent_class]))
+			p_data['persons'] = [p for p in all_p if p in search_content]
+			p_data['organisations'] = [o for o in all_o if o in search_content]
+			p_data['locations'] = [l for l in all_l if l in search_content]
+			p_data['misc'] = [m for m in all_m if m in search_content]
+
+			paragraphs.append(p_data)
 
 		# Removing any isolated line-breaks, any multiple whitespaces and separating text into real paragraphs
 		striped_of_linebreaks = ' '.join('\n' if elt == '' else elt for elt in full_text.split('\n'))

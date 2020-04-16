@@ -127,6 +127,37 @@ class AITextGeneratorHTTPServer(Handler):
 				json_feedbacks.append({'mail': mail, 'message': message, 'time': datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")})
 				json.dump(json_feedbacks, open(filename, 'w', encoding='utf-8'))
 
+			elif order == 'share':
+				pseudo = params['pseudo'].replace('|', '')
+				text = params['text'].replace('|', '')
+
+				if os.path.exists(WEBSERVICE_SHARED):
+					json_shared = json.load(open(WEBSERVICE_SHARED, 'r', encoding='utf-8'))
+				else:
+					json_shared = []
+
+				json_shared.append(
+					{'pseudo': pseudo, 'text': text, 'time': datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")})
+				json.dump(json_shared, open(WEBSERVICE_SHARED, 'w', encoding='utf-8'))
+
+			elif order == 'getshared':
+				if os.path.exists(WEBSERVICE_SHARED):
+					json_shared = json.load(open(WEBSERVICE_SHARED, 'r', encoding='utf-8'))
+				else:
+					json_shared = []
+
+				messages = []
+				for shared in json_shared:
+					pseudo = shared['pseudo']
+					text = shared['text']
+					message_time = shared['time']
+					messages.append(text + '|' + pseudo + '|' + message_time)
+
+				messages.sort(key=lambda x: x.split('|')[2], reverse=True)
+
+				response.write(bytes('||'.join(messages[:100]), 'utf-8'))
+
+
 		except (KeyError, json.JSONDecodeError) as e:
 			if isinstance(e, KeyError):
 				print("KeyError while parsing JSON")

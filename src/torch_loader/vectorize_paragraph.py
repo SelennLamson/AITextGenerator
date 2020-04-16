@@ -104,8 +104,8 @@ class VectorizeParagraph:
                 without context : P1 P2
 
             for eval mode:
-                with context : [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2], P2_str, P3_str
-                witouht context : P1, P2_str, P3_str
+                with context : [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2], sample
+                witouht context : P1, sample
 
             for generate mode:
                 with context: [P3] P3 [Sum] Sum_P2 [T] Theme [Ent] list_of_person [Size] [P1] P1 [P2]
@@ -155,5 +155,5 @@ class VectorizeParagraph:
         if self.mode == VectorizeMode.TRAIN or self.mode == VectorizeMode.GENERATE:
             return input_ids
         if self.mode == VectorizeMode.EVAL:
-            return input_ids, P2, sample.P3
+            return input_ids, sample
 
