@@ -7,7 +7,7 @@ class Metrics(ABC):
     """
     Abstract class for which all custom metrics must inherated
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
         Will be use to initialize transformer model if needed
         """

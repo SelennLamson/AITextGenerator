@@ -1,5 +1,5 @@
 from src.flexible_models.flexible_bert_embed import FlexibleBERTEmbed
-from src.model_evaluation.metrics import Metrics
+from src.model_evaluation.metrics.flexible_metrics import Metrics
 
 import numpy as np
 import pandas as pd
@@ -9,13 +9,13 @@ class BertSimilarity(Metrics):
 	Compute the Bert Similarity between pred_P2 and true_P2
 		ie : cosine similarity between the embeddings of the two paragraphs
 	"""
-	def __init__(self, batch_size=1):
+	def __init__(self, **kwargs):
 		"""
 		Initialized the BERT model
 		:param batch_size: [int] batch size to used for bert
 		"""
 		super().__init__()
-		self.bert_model = FlexibleBERTEmbed(2000, batch_size)
+		self.bert_model = FlexibleBERTEmbed(2000, kwargs['batch_size'])
 
 	def __call__(self, predicted_sentences, original_contexts):
 		"""

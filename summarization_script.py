@@ -46,6 +46,10 @@ def retrieve_list_of_books_to_summarize(input_folder_path, output_folder_path, s
     :param summarizer_model: SummarizerModel value
     :return: list[str] list of book id not summarize yet
     """
+    # Create folder where data is stored if it does not exist
+    if not os.path.exists(output_folder_path):
+        os.mkdir(output_folder_path)
+
     # input_book_ids = set(re.search("(.*)" + PREPROC_SUFFIX, file).group(1) for file in os.listdir(input_folder_path))
     input_book_ids = set(re.search("(.*)" + PREPROC_SUFFIX, file).group(1)
                          for file in os.listdir(input_folder_path)

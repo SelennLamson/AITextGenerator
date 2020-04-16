@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from transformers import BertTokenizer, BertForNextSentencePrediction
 
-from src.model_evaluation.metrics import Metrics
+from src.model_evaluation.metrics.flexible_metrics import Metrics
 
 
 class BertRelationship(Metrics):
@@ -12,13 +12,13 @@ class BertRelationship(Metrics):
     1. Compute the probability (for pre-trained BERT) that P3 follow pred P2
     2. Normalize by the probability that P3 follow true P2
     """
-    def __init__(self, batch_size=1):
+    def __init__(self, **kwargs):
         """
         Initialized the BERT model
         :param batch_size: [int] batch size to used for bert
         """
         super().__init__()
-        self.batch_size = batch_size
+        self.batch_size = kwargs['batch_size']
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased')
         self.model.eval()
@@ -32,7 +32,7 @@ class BertRelationship(Metrics):
         :return: pd.DataFrame["relationship"]
         """
         data = self.bert_relationship(predicted_sentences,
-                                      [original_context.P2 for original_context in original_contexts])
+                                      [original_context.P3 for original_context in original_contexts])
         return pd.DataFrame(columns=["relationship"], data=data)
 
     def bert_relationship_single_batch(self, list_seq_1, list_seq_2):
@@ -50,11 +50,12 @@ class BertRelationship(Metrics):
         token_type_ids = pad_sequence(token_type_ids, batch_first=True, padding_value=1)
         mask = (input_ids != self.tokenizer.pad_token_id).long()
 
+        """
         if torch.cuda.is_available():
             input_ids = input_ids.cuda()
             token_type_ids = token_type_ids.cuda()
             mask = mask.cuda()
-
+        """
         ouptput_bert = self.model(input_ids=input_ids, attention_mask=mask, token_type_ids=token_type_ids)
         return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach().cpu().numpy()
 
@@ -66,13 +67,16 @@ class BertRelationship(Metrics):
         :return: np.array for each idx : probability that list_seq_2[idx] is the continuation of list_seq_1[idx]
         """
         number_seq = len(list_seq_1)
+        print(len(list_seq_1))
+        print(len(list_seq_2))
         outputs = []
         batch_size = self.batch_size
         i = 0
-        while i + batch_size < number_seq:
+        while i + batch_size < number_seq-1:
             outputs.append(self.bert_relationship_single_batch(list_seq_1[i:i+batch_size], list_seq_2[i:i+batch_size]))
             i += batch_size
 
         outputs.append(self.bert_relationship_single_batch(list_seq_1[i:], list_seq_2[i:]))
+        outputs.append(1)  # dimension is N-1 (cannot compute metric it for last sentence)
         return np.hstack(outputs)
 

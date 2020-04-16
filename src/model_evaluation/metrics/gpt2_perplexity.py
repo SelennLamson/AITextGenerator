@@ -1,4 +1,4 @@
-from src.model_evaluation.metrics import Metrics
+from src.model_evaluation.metrics.flexible_metrics import Metrics
 
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import math
@@ -13,13 +13,15 @@ class GPT2Perplexity(Metrics):
      -> compute perplexity of each sentence for GPT2 internal probability distribution
      -> normalize by the perplexity of the true P2
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
         Initialize the GPT2 model (base from huggingface transformers) that will be used to compute the perplexity
         """
         super().__init__()
         self.gpt2_model = GPT2LMHeadModel.from_pretrained('gpt2')
         self.gpt2_tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+        if torch.cuda.is_available():
+            self.gpt2_model.cuda()
 
     def __call__(self, predicted_sentences, original_contexts):
         """
@@ -46,7 +48,7 @@ class GPT2Perplexity(Metrics):
                 input_ids = self.gpt2_tokenizer.encode(sentence, return_tensors='pt')
                 if torch.cuda.is_available():
                     input_ids = input_ids.cuda()
-                output = self.gpt2_model.model.forward(input_ids, labels=input_ids)
+                output = self.gpt2_model.forward(input_ids, labels=input_ids)
                 cross_entropy_loss = output[0].detach().cpu()
                 perplexity.append(math.exp(cross_entropy_loss.item()))
 

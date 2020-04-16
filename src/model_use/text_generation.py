@@ -1,5 +1,7 @@
 from src.torch_loader import VectorizeParagraph, VectorizeMode
 from src.utils import GPT2_BLOCK_SIZE
+
+
 class TextGeneration:
     """
     TextGeneration will be used to generate text from input given by webserver

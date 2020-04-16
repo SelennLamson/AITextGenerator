@@ -54,7 +54,8 @@ if __name__ == '__main__':
     context_input = GenerationInput(P1="Ceci est le début de phrase, ",
                                     P3="et ceci sera la fin de la phrase.",
                                     genre=["horror"],
-                                    entities=["Gael", "Alex", "Thomas"],
+                                    persons=["Gael", "Alex", "Thomas"],
+                                    locations=["Carvin"],
                                     size=MEDIUM,
                                     summary="Je voudrai parler de ceci")
 
@@ -78,7 +79,10 @@ if __name__ == '__main__':
     context_input = GenerationInput(P1=big_paragraph,
                                     P3=big_paragraph,
                                     genre=["horror"],
-                                    entities=["Gael", "Alex", "Thomas"],
+                                    persons=["Gael", "Alex", "Thomas"],
+                                    locations=[],
+                                    organisations=["Church"],
+                                    misc=[],
                                     size=MEDIUM,
                                     summary="Je voudrai parler de ceci")
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.GENERATE, use_context=True)
@@ -96,7 +100,10 @@ if __name__ == '__main__':
         P2="P2 PARAGRAPH",
         summaries={"T5":"summaries"},
         size=len("P2 PARAGRAPH"),
-        entities=["gael", "alex"]
+        locations=[],
+        organisations=["Church"],
+        misc=[],
+        persons=["gael", "alex"]
     )
 
     vectorize_paragraph = VectorizeParagraph(tokenizer, mode=VectorizeMode.TRAIN, use_context=True)

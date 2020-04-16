@@ -1,10 +1,15 @@
 from src.model_evaluation import GPT2EvaluationScript
 from src.flexible_models.flexible_GPT2 import FlexibleGPT2
-from src.utils import DEFAULT_DECODING_STRATEGY
+from src.utils import DEFAULT_DECODING_STRATEGY, ALL_METRICS
 from datetime import datetime
 import argparse
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import nltk
+import os
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
 
 """
 Script to evaluate one model
@@ -12,7 +17,6 @@ Script to evaluate one model
 
 if __name__ == '__main__':
     nltk.download('punkt')
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=str, required=True,
                         help="Path to the folder containing the novels on which the model will be evaluated")
@@ -29,24 +33,39 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", type=int, default=8,
                         help="Batch size that will be used by all models, by default 8")
 
+    parser.add_argument("--sum", type=str, default="",
+                        help="Which summary to use for text generation : KW, T5, BART, PYSUM. \
+                              by default do not use any summaries")
+
+    parser.add_argument("--name", type=str, default="", help="Name of save, by default the time")
+
+    parser.add_argument("--metrics", default=ALL_METRICS, nargs='+', help="Names of the metrics you want to compute")
+
+    parser.add_argument("--no_context", action="store_true", help="Do not use any context, use it to eval raw gpt2")
+
     args = parser.parse_args()
+    save_name = str(datetime.now().strftime("%d_%b_%Hh%M")) if args.name == "" else args.name
+    generation_path = args.output + 'generation_' + save_name + '.json'
+    results_path = args.output + 'metrics_' + save_name + '.csv'
+    use_context = False if args.no_context else True
 
-    print("Loading the GPT2 fine-tuned model ...")
-    gpt_2 = FlexibleGPT2(model=GPT2LMHeadModel.from_pretrained(args.model),
-                         tokenizer=GPT2Tokenizer.from_pretrained(args.model),
-                         decoding_strategy=DEFAULT_DECODING_STRATEGY)
+    print("Initialize evaluation script ...")
 
-    print("Evaluating the model ...")
     script = GPT2EvaluationScript(path_to_data_folder=args.data,
                                   batch_size=args.batch_size,
-                                  path_to_bert_ner=args.ner)
+                                  path_to_bert_ner=args.ner,
+                                  use_context=use_context,
+                                  summarizer=args.sum)
 
-    moment = str(datetime.now().strftime("%m_%d-%H_%M"))
-    script(generations_path=args.output + 'generation' + moment + '.json',
-           results_path=args.output + 'metrics' + moment + '.json',
-           GPT2_model=gpt_2,
-           compute_bert_similarity=True,
-           compute_entites_iou=True,
-           compute_gpt2_perplexity=True,
-           compute_residual_tokens=True,
-           verbose=1)
+    if not os.path.exists(generation_path):
+        print("Load GPT2 model in memory ...")
+        gpt_2 = FlexibleGPT2(model=GPT2LMHeadModel.from_pretrained(args.model),
+                             tokenizer=GPT2Tokenizer.from_pretrained(args.model),
+                             decoding_strategy=DEFAULT_DECODING_STRATEGY)
+
+        print("Begin text generation ...")
+        script.generate_texts(generation_path, gpt_2, verbose=1)
+
+    print("Compute metrics ...")
+    script.compute_metrics(generation_path, results_path, args.metrics, verbose=1)
+

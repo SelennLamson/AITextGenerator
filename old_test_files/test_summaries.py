@@ -16,12 +16,27 @@ Facebook says that, unlike its past, its future is privacy
 A trader works ahead of the closing bell on the floor of the New York Stock Exchange (NYSE) on April 12, 2019 in New York City. (Photo by Johannes EISELE / AFP)        (Photo credit should read JOHANNES EISELE/AFP/Getty Images)
 Resilience is still the word for stocks"""
 
+sentence2 = """ Mark Zuckerberg makes the keynote speech at F8, the Facebook's developer conference in San Jose, Calif. (AP Photo/Tony Avelar ).
+Facebook says that, unlike its past, its future is privacy and no one else will be subject to privacy disasters as they were
+A trader works ahead of the closing bell on the floor of the New York Stock Exchange (NYSE) on April 12, 2019 in New York City. Resilience is still the word for stocks"""
+
+
+# KW METRIC
+from src.model_evaluation.metrics import KwCount, KwIou
+
+kw_count = KwCount()
+kw_count(sentence, sentence2)
+
+kw_iou = KwIou()
+kw_iou(sentence, sentence2)
+
+
 
 
 # KEYWORDS EXTRACTION
 from gensim.summarization import keywords
 model = keywords
-' - '.join(model(big_text, lemmatize=False, pos_filter=('NN', 'JJ', 'VB')).split('\n'))
+' - '.join(model(sentence, lemmatize=False, pos_filter=('NN', 'JJ', 'VB')).split('\n'))
 
 start = time.time()
 keywords_sum = model(big_text, lemmatize=True, pos_filter=('NN', 'JJ', 'VB')).split('\n')
