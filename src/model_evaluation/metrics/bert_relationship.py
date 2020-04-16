@@ -22,8 +22,8 @@ class BertRelationship(Metrics):
         self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.model = BertForNextSentencePrediction.from_pretrained('bert-base-uncased')
         self.model.eval()
-        if torch.cuda.is_available():
-            self.model.cuda()
+        #if torch.cuda.is_available():
+        #    self.model.cuda()
 
     def __call__(self, predicted_sentences, original_contexts):
         """
@@ -50,13 +50,14 @@ class BertRelationship(Metrics):
         token_type_ids = pad_sequence(token_type_ids, batch_first=True, padding_value=1)
         mask = (input_ids != self.tokenizer.pad_token_id).long()
 
+        """
         if torch.cuda.is_available():
             input_ids = input_ids.cuda()
             token_type_ids = token_type_ids.cuda()
             mask = mask.cuda()
-
+        """
         ouptput_bert = self.model(input_ids=input_ids, attention_mask=mask, token_type_ids=token_type_ids)
-        return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach().cpu().numpy()
+        return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach()  #.cpu().numpy()
 
     def bert_relationship(self, list_seq_1, list_seq_2):
         """
