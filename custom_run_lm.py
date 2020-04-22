@@ -221,10 +221,19 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
 
     args.train_batch_size = args.per_gpu_train_batch_size * max(1, args.n_gpu)
 
-    def collate(examples: List[torch.Tensor]):
-        if tokenizer._pad_token is None:
-            return pad_sequence(examples, batch_first=True)
-        return pad_sequence(examples, batch_first=True, padding_value=tokenizer.pad_token_id)
+    def collate(examples: List[Tuple[torch.Tensor]]):
+        all_inputs = [elt[0] for elt in examples]
+        all_types = [elt[1] for elt in examples]
+        all_labels = [elt[2] for elt in examples]
+
+        pad_token = 0 if tokenizer._pad_token is None else tokenizer.pad_token_id
+
+        padded_inputs = pad_sequence(all_inputs, batch_first=True, padding_value=pad_token)
+        padded_types = pad_sequence(all_types, batch_first=True, padding_value=pad_token)
+        padded_labels = pad_sequence(all_labels, batch_first=True, padding_value=pad_token)
+
+        return padded_inputs, padded_types, padded_labels
+
 
     train_sampler = RandomSampler(train_dataset) if args.local_rank == -1 else DistributedSampler(train_dataset)
     train_dataloader = DataLoader(
@@ -330,17 +339,20 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
                 steps_trained_in_current_epoch -= 1
                 continue
 
-            inputs, labels = mask_tokens(batch, tokenizer, args) if args.mlm else (batch, batch)
+            # inputs, labels = mask_tokens(batch, tokenizer, args) if args.mlm else (batch, batch)
+
+            input_ids, type_ids, labels = batch
 
             if args.print_input:
                 logger.info("Examples contained in the batch that will be given as input in the model")
-                for i in range(inputs.shape[0]):
-                    decoded_input = tokenizer.decode(inputs[i,:].tolist(), skip_special_tokens=False)
+                for i in range(input_ids.shape[0]):
+                    decoded_input = tokenizer.decode(input_ids[i,:].tolist(), skip_special_tokens=False)
                     logger.info("Ex n° %d : %s" % (i, decoded_input))
-            inputs = inputs.to(args.device)
+            input_ids = input_ids.to(args.device)
+            type_ids = type_ids.to(args.device)
             labels = labels.to(args.device)
             model.train()
-            outputs = model(inputs, masked_lm_labels=labels) if args.mlm else model(inputs, labels=labels)
+            outputs = model(input_ids, labels=labels, token_type_ids=type_ids)
             loss = outputs[0]  # model outputs are always tuple in transformers (see doc)
 
             if args.n_gpu > 1:
@@ -430,10 +442,17 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
     args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
     # Note that DistributedSampler samples randomly
 
-    def collate(examples: List[torch.Tensor]):
-        if tokenizer._pad_token is None:
-            return pad_sequence(examples, batch_first=True)
-        return pad_sequence(examples, batch_first=True, padding_value=tokenizer.pad_token_id)
+    def collate(examples: List[Tuple[torch.Tensor]]):
+        all_inputs = [elt[0] for elt in examples]
+        all_types = [elt[1] for elt in examples]
+
+        pad_token = 0 if tokenizer._pad_token is None else tokenizer.pad_token_id
+
+        padded_inputs = pad_sequence(all_inputs, batch_first=True, padding_value=pad_token)
+        padded_types = pad_sequence(all_types, batch_first=True, padding_value=pad_token)
+        padded_labels = pad_sequence(all_labels, batch_first=True, padding_value=pad_token)
+
+        return padded_inputs, padded_types, padded_labels
 
     eval_sampler = SequentialSampler(eval_dataset)
     eval_dataloader = DataLoader(
@@ -453,12 +472,13 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
     model.eval()
 
     for batch in tqdm(eval_dataloader, desc="Evaluating"):
-        inputs, labels = mask_tokens(batch, tokenizer, args) if args.mlm else (batch, batch)
+        inputs, types, labels = batch
         inputs = inputs.to(args.device)
+        types = types.to(args.device)
         labels = labels.to(args.device)
 
         with torch.no_grad():
-            outputs = model(inputs, masked_lm_labels=labels) if args.mlm else model(inputs, labels=labels)
+            outputs = model(inputs, labels=labels, token_type_ids=types)
             lm_loss = outputs[0]
             eval_loss += lm_loss.mean().item()
         nb_eval_steps += 1
@@ -759,8 +779,7 @@ def main():
                                         mode=VectorizeMode.TRAIN,
                                         use_context=True,
                                         select_summary=lambda input_dict: random.choice(list(input_dict.values()))
-
-)
+        )
 
         train_dataset = DatasetFromRepo(path=args.train_data_file, transform=vectorizer)
 

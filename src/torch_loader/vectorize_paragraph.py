@@ -75,7 +75,7 @@ class VectorizeParagraph:
         # If the context + input space we must left for P2 is too big
         # We let 2/3 of the remaining space for P1 and 1/3 for P3
         if (nb_tokens_for_context + nb_tokens_for_P2 >= self.block_size) and self.use_context:
-            initial_vector_size = len(context['Sum'] + context['T'] + context['Per'] + context['Org'] + \
+            initial_vector_size = len(context['Sum'] + context['T'] + context['Per'] + context['Org'] +
                                       context['Loc'] + context['Misc'] + context['Size']) + nb_tokens_for_P2
 
             nb_tokens_left_for_P1 = int((self.block_size - initial_vector_size) * 2 / 3 - 1)
@@ -89,7 +89,19 @@ class VectorizeParagraph:
             nb_tokens_left_for_P1 = self.block_size - nb_tokens_for_P2
             context['P1'] = context['P1'][len(context['P1']) - nb_tokens_left_for_P1:]
 
-        return torch.tensor(self.concat_context(context))
+        token_types = {key: [value[0]] * len(value) if len(value) > 0 else [] for key, value in context.items()}
+
+        tensor_input = torch.tensor(self.concat_context(context))
+        tensor_types = torch.tensor(self.concat_context(token_types))
+        assert len(tensor_input) == len(tensor_types)
+
+        if self.mode == VectorizeMode.TRAIN:
+            labels = torch.tensor([-100] * sum(len(v) for k, v in context.items() if k != 'P2') + context['P2'])
+
+            assert len(labels) == len(tensor_input)
+            return tensor_input, tensor_types, labels
+        else:
+            return tensor_input, tensor_types
 
     def __call__(self, sample):
         """
@@ -150,10 +162,15 @@ class VectorizeParagraph:
         else:
             nb_tokens_for_P2 = len(self.tokenizer.encode(P2)) + 2  # +1 for [P2] and +1 for <|endoftext|>
 
-        input_ids = self.vectorize(context, P2, nb_tokens_for_P2)
+        if self.mode == VectorizeMode.TRAIN:
+            input_ids, type_ids, labels = self.vectorize(context, P2, nb_tokens_for_P2)
+            return input_ids, type_ids, labels
 
-        if self.mode == VectorizeMode.TRAIN or self.mode == VectorizeMode.GENERATE:
-            return input_ids
+        if self.mode == VectorizeMode.GENERATE:
+            input_ids, type_ids = self.vectorize(context, P2, nb_tokens_for_P2)
+            return input_ids, type_ids
+
         if self.mode == VectorizeMode.EVAL:
-            return input_ids, sample
+            input_ids, type_ids = self.vectorize(context, P2, nb_tokens_for_P2)
+            return input_ids, type_ids, sample
 
