@@ -3,10 +3,17 @@ from src.flexible_models.flexible_GPT2 import FlexibleGPT2
 from src.utils import DEFAULT_DECODING_STRATEGY, ALL_METRICS
 from datetime import datetime
 import argparse
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
+from transformers import GPT2Tokenizer
+from src.flexible_models.GPT2_lm_segment_model import GPT2LMSegmentModel
 import nltk
 import os
 import logging
+
+
+
+from src.model_training.update_model import add_special_tokens
+
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
@@ -59,9 +66,15 @@ if __name__ == '__main__':
 
     if not os.path.exists(generation_path):
         print("Load GPT2 model in memory ...")
-        gpt_2 = FlexibleGPT2(model=GPT2LMHeadModel.from_pretrained(args.model),
-                             tokenizer=GPT2Tokenizer.from_pretrained(args.model),
+
+        model = GPT2LMSegmentModel.from_pretrained(args.model)
+        tokenizer = GPT2Tokenizer.from_pretrained(args.model)
+        # add_special_tokens(model, tokenizer)
+
+        gpt_2 = FlexibleGPT2(model=model,
+                             tokenizer=tokenizer,
                              decoding_strategy=DEFAULT_DECODING_STRATEGY)
+
 
         print("Begin text generation ...")
         script.generate_texts(generation_path, gpt_2, verbose=1)

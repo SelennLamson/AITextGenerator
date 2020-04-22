@@ -2,6 +2,8 @@ from .flexible_model import FlexibleModel
 from src.utils import GPT2_BLOCK_SIZE
 import torch
 
+from src.flexible_models.GPT2_lm_segment_model import GPT2LMSegmentModel
+
 class FlexibleGPT2(FlexibleModel):
     """
     A FlexibleGPT2 model is simply the combination of a huggingface gpt2 transformers model and
@@ -26,6 +28,9 @@ class FlexibleGPT2(FlexibleModel):
         self.max_length = GPT2_BLOCK_SIZE
         self.min_length = 0
         self.set_decoding_strategy(decoding_strategy)
+
+        if isinstance(self.model, GPT2LMSegmentModel):
+            self.model.set_special_tokens(self.tokenizer)
 
     def set_decoding_strategy(self, decoding_strategy):
         self.decoding_strategy = decoding_strategy

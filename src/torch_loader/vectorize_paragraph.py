@@ -172,5 +172,5 @@ class VectorizeParagraph:
 
         if self.mode == VectorizeMode.EVAL:
             input_ids, type_ids = self.vectorize(context, P2, nb_tokens_for_P2)
-            return input_ids, type_ids, sample
+            return input_ids, sample
 
