@@ -41,9 +41,6 @@ PREFIX_BERTSUM = 'BERTSUM_'
 FOLDER_NAME_PYSUM = 'data/Preproc_PYSUM/'
 PREFIX_PYSUM = 'PYSUM_'
 
-WEBSERVICE_FEEDBACK = 'data/webservice_feedback/'
-WEBSERVICE_SHARED = 'data/webservice_feedback/shared.json'
-
 DEFAULT_DECODING_STRATEGY = {
 	'do_sample': True,
 	'min_length': 0,

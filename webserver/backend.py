@@ -23,6 +23,8 @@ from transformers import GPT2LMHeadModel, GPT2Tokenizer
 PORT = 7777
 Handler = http.server.SimpleHTTPRequestHandler
 
+WEBSERVICE_FEEDBACK = 'webserver/webservice_feedback/'
+WEBSERVICE_SHARED = 'webserver/webservice_feedback/shared.json'
 
 class Generator:
 	def __init__(self):
