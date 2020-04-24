@@ -96,7 +96,7 @@ class VectorizeParagraph:
         assert len(tensor_input) == len(tensor_types)
 
         if self.mode == VectorizeMode.TRAIN:
-            labels = torch.tensor([-100] * sum(len(v) for k, v in context.items() if k != 'P2') + context['P2'])
+            labels = torch.tensor([-100] * (sum(len(v) for k, v in context.items() if k != 'P2') + 1) + context['P2'][1:])
 
             assert len(labels) == len(tensor_input)
             return tensor_input, tensor_types, labels
@@ -172,5 +172,5 @@ class VectorizeParagraph:
 
         if self.mode == VectorizeMode.EVAL:
             input_ids, type_ids = self.vectorize(context, P2, nb_tokens_for_P2)
-            return input_ids, sample
+            return input_ids, sample, nb_tokens_for_P2
 
