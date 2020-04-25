@@ -41,10 +41,12 @@ PREFIX_BERTSUM = 'BERTSUM_'
 FOLDER_NAME_PYSUM = 'data/Preproc_PYSUM/'
 PREFIX_PYSUM = 'PYSUM_'
 
+GPT2_BLOCK_SIZE = 1020
+
 DEFAULT_DECODING_STRATEGY = {
 	'do_sample': True,
 	'min_length': 0,
-	'max_length': 50,
+	'max_length': GPT2_BLOCK_SIZE,
 	'top_k': 50,
 	'top_p': 0.95
 }
@@ -68,8 +70,6 @@ SMALL = SizeInfo(inf_chars=1, sup_chars=700, mean_tokens=100, token='[S]')
 MEDIUM = SizeInfo(inf_chars=701, sup_chars=1200, mean_tokens=250, token='[M]')
 LARGE = SizeInfo(inf_chars=1201, sup_chars=1700, mean_tokens=350, token='[L]')
 SIZES = [SMALL, MEDIUM, LARGE]
-
-GPT2_BLOCK_SIZE = 1020
 
 def get_size_from_chars(length_in_chars):
 	size = SMALL

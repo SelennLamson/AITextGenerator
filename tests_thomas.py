@@ -16,6 +16,14 @@
 # 	   verbose=1)
 
 
+import json
+import random
+
+data = json.load(open('data_output/generation_epoch_2_BART.json', 'r'))
+random.shuffle(data)
+data = data[:50]
+json.dump(data, open('data_output/selection_epoch_2_BART.json', 'w'))
+
 
 
 
