@@ -22,9 +22,14 @@ class RougeScore(Metrics):
 		df_results = pd.DataFrame(columns=["rouge_1", "rouge_2", "rouge_l"], data=np.zeros((len(predicted_sentences),3)))
 
 		for i, (predicted_sentence, original_context) in enumerate(zip(predicted_sentences, original_contexts)):
-			rouge_score = self.rouge.get_scores(predicted_sentence, original_context.P2)
-			df_results.loc[i, "rouge_1"] = rouge_score[0]['rouge-1']['f']
-			df_results.loc[i, "rouge_2"] = rouge_score[0]['rouge-2']['f']
-			df_results.loc[i, "rouge_l"] = rouge_score[0]['rouge-l']['f']
+			try:
+				rouge_score = self.rouge.get_scores(predicted_sentence, original_context.P2)
+				df_results.loc[i, "rouge_1"] = rouge_score[0]['rouge-1']['f']
+				df_results.loc[i, "rouge_2"] = rouge_score[0]['rouge-2']['f']
+				df_results.loc[i, "rouge_l"] = rouge_score[0]['rouge-l']['f']
+			except ValueError:
+				df_results.loc[i, "rouge_1"] = 'NaN'
+				df_results.loc[i, "rouge_2"] = 'NaN'
+				df_results.loc[i, "rouge_l"] = 'NaN'
 
 		return df_results
