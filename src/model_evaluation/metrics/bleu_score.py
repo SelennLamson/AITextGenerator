@@ -21,6 +21,9 @@ class BleuScore(Metrics):
 		df_results = pd.DataFrame(columns=["bleu_score"], data=np.zeros((len(predicted_sentences),1)))
 
 		for i, (predicted_sentence, original_context) in enumerate(zip(predicted_sentences, original_contexts)):
-			df_results.loc[i, "bleu_score"] = sentence_bleu(original_context.P2, predicted_sentence)
+			try:
+				df_results.loc[i, "bleu_score"] = sentence_bleu(original_context.P2, predicted_sentence)
+			except ValueError:
+				df_results.loc[i, "bleu_score"] = 'NaN'
 
 		return df_results
