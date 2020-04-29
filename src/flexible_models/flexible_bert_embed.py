@@ -35,6 +35,10 @@ class FlexibleBERTEmbed(FlexibleModel):
 		if self.cuda_device != -1:
 			self.bert_model.to('cuda:' + str(self.cuda_device))
 
+		self.pad_token = self.tokenizer.pad_token_id
+		self.cls_token = self.tokenizer.cls_token_id
+		self.sep_token = self.tokenizer.sep_token_id
+
 	def predict(self, inputs: List[str], verbose=1) -> np.ndarray:
 		"""
 		Performs embedding on strings of any length.
@@ -43,41 +47,63 @@ class FlexibleBERTEmbed(FlexibleModel):
 		:return: array of shape (N, 768) containing embedding vectors for each input.
 		"""
 
-		split_strings, split_information = text_batch_splitter(inputs, self.max_length)
+		# Encoding without special tokens (will be added manually)
+		tokenized_strings = [self.tokenizer.encode(x, add_special_tokens=False) for x in inputs]
 
-		# Preparing sequences in batch
-		tokenized = [self.tokenizer.encode(x, add_special_tokens=True) for x in split_strings]
-		max_len = max(len(t) for t in tokenized)
-		padded = np.array([i + [0] * (max_len - len(i)) for i in tokenized])
+		# Splitting at max_length - 2 to keep some space for special tokens
+		split_inputs, split_information = token_batch_splitter(tokenized_strings, self.max_length - 2)
+		assert all([len(toks) <= self.max_length - 2 for toks in split_inputs])
+		assert len(split_inputs) >= len(tokenized_strings)
+
+		# Adding special tokens to every input and padding every input to max_length
+		padded = torch.LongTensor([[self.cls_token] + toks + [self.sep_token] + [self.pad_token] * (self.max_length - len(toks) - 2) for toks in split_inputs])
+		assert padded.shape[1] == self.max_length
 
 		# Building attention mask to hide padding
-		attention_mask_np = np.where(padded != 0, 1, 0)
+		ones = torch.ones_like(padded)
+		zeros = torch.zeros_like(padded)
+		attention_masks = torch.where(padded != self.pad_token, ones, zeros)
+		del ones
+		del zeros
+		assert all([padded.shape[dim] == attention_masks.shape[dim] for dim in range(len(padded.shape))])
+
+		# Saving memory
+		del split_inputs
+		del tokenized_strings
+
+		# Preparing embeddings output tensor
+		embeddings = torch.zeros((len(padded), 768))
+
+		# Transferring to GPU if using it
+		if self.cuda_device != -1:
+			padded = padded.to('cuda:' + str(self.cuda_device))
+			attention_masks = attention_masks.to('cuda:' + str(self.cuda_device))
+			embeddings = embeddings.to('cuda:' + str(self.cuda_device))
 
 		# Embedding the sentences with BERT
-		embeddings = np.zeros((len(padded), 768))
 		start_i = 0
 		batch_i = 0
 		while start_i < len(padded):
 			if verbose:
 				print("\rEmbedding {:.2f}%".format(start_i / len(padded) * 100), end="")
 
-			input_ids = torch.LongTensor(padded[start_i:start_i + self.batch_size])
-			attention_mask = torch.tensor(attention_mask_np[start_i:start_i + self.batch_size])
+			input_ids = padded[start_i:start_i + self.batch_size]
+			attention_mask = attention_masks[start_i:start_i + self.batch_size]
 
-			if self.cuda_device != -1:
-				input_ids = input_ids.to('cuda:' + str(self.cuda_device))
-				attention_mask = attention_mask.to('cuda:' + str(self.cuda_device))
-
+			# The embeddings of the [CLS] tokens are the embeddings of the first token of each sentence
 			with torch.no_grad():
-				last_hidden_states = self.bert_model.forward(input_ids, attention_mask=attention_mask)[0][:, 0, :]
+				embeddings[start_i:start_i + self.batch_size, :] = self.bert_model.forward(input_ids, attention_mask=attention_mask)[0][:, 0, :]
 
-			if self.cuda_device != -1:
-				last_hidden_states = last_hidden_states.cpu()
-
-			embeddings[start_i:start_i + self.batch_size, :] = last_hidden_states.numpy()
+			# Next batch
 			start_i += self.batch_size
 			batch_i += 1
 
+		# Retrieving the computed values into a numpy array
+		if self.cuda_device != -1:
+			embeddings = embeddings.cpu()
+		embeddings = embeddings.numpy()
+
+		# Merging the values back when input was split before, using mean as a reduce operation
 		return np.array(batch_merger(embeddings, split_information, merge_function=lambda x: np.mean(x, axis=0)))
 
 

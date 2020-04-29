@@ -154,7 +154,7 @@ class GPT2EvaluationScript:
         for metric_name in metric_names:
             assert hasattr(metrics, metric_name), 'unknown ' + metric_name
             if verbose:
-                print("Computing  :" + metric_name + "...")
+                print("\nComputing: " + metric_name + "...")
             metric = getattr(metrics, metric_name)(**self.init_args)
             results.append(metric(generated_sentences, original_contexts))
             del metric

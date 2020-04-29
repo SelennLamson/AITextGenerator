@@ -15,7 +15,7 @@ class BertSimilarity(Metrics):
 		:param batch_size: [int] batch size to used for bert
 		"""
 		super().__init__()
-		self.bert_model = FlexibleBERTEmbed(2000, kwargs['batch_size'])
+		self.bert_model = FlexibleBERTEmbed(512, kwargs['batch_size'])
 
 	def __call__(self, predicted_sentences, original_contexts):
 		"""
