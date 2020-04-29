@@ -37,12 +37,11 @@ class FlexibleGPT2(FlexibleModel):
         self.max_length = decoding_strategy['max_length'] if 'max_length' in decoding_strategy.keys() else GPT2_BLOCK_SIZE
         self.min_length = decoding_strategy['min_length'] if 'min_length' in decoding_strategy.keys() else 0
 
-    def predict(self, input_ids, nb_samples=1, mean_size=500):
+    def predict(self, input_ids, nb_samples=1):
         """
         Performs GPT-2 generation on strings of any length.
         :param input_ids: torch.tensor of shape (batch_size, max_length)
         :param nb_samples: nb_sample to generate for each input example
-        :param mean_size: mean size of outputs to generate
         :return: list of strings of len batch_size * nb_samples
         """
 
@@ -53,8 +52,8 @@ class FlexibleGPT2(FlexibleModel):
         # We use a mask so that GPT2 does not take into account the PAD token during generation time
         mask = (input_ids != self.tokenizer.pad_token_id).long()
 
-        self.decoding_strategy['max_length'] = min(int(mean_size + 50) + input_ids.shape[1], self.max_length)
-        self.decoding_strategy['min_length'] = min(int(max(self.min_length, mean_size - 50)) + input_ids.shape[1], self.max_length - 50)
+        self.decoding_strategy['max_length'] = self.max_length
+        self.decoding_strategy['min_length'] = 10
 
         if torch.cuda.is_available():
             input_ids = input_ids.cuda()
@@ -73,5 +72,5 @@ class FlexibleGPT2(FlexibleModel):
         # this is because transformers.generate methods also return the input part
         truncated_outputs_id = outputs_id[:, input_ids.shape[1]:]
 
-        return [self.tokenizer.decode(truncated_outputs_id[i], skip_special_tokens=False)
+        return [self.tokenizer.decode(truncated_outputs_id[i], skip_special_tokens=False).replace('<|endoftext|>', '')
                 for i in range(outputs_id.shape[0])]

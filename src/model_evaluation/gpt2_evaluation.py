@@ -79,49 +79,21 @@ class GPT2EvaluationScript:
         dataset = DatasetFromRepo(path=self.data_folder, sublist=self.list_of_fid, transform=vectorizer)
 
         def custom_collate(data_samples):
-            # collate_input_ids = pad_sequence([single_sample[0] for single_sample in data_samples],
-            #                                  batch_first=True,
-            #                                  padding_value=GPT2_model.tokenizer.pad_token_id)
             collate_input_ids = pad_left_side([single_sample[0] for single_sample in data_samples],
                                               padding_value=GPT2_model.tokenizer.pad_token_id)
             original_samples = [single_sample[1] for single_sample in data_samples]
-            return collate_input_ids, original_samples, [s[2] for s in data_samples]
+            return collate_input_ids, original_samples
 
-        dataloader = DataLoader(dataset=dataset, batch_size=1, collate_fn=custom_collate)
+        dataloader = DataLoader(dataset=dataset, batch_size=10, collate_fn=custom_collate)
 
         if verbose:
             print("\rGenerating texts...", end="")
 
         generations, originals = [], []
 
-        hundreds_batches = [[] for _ in range((GPT2_BLOCK_SIZE // 100) + 1)]
-
-        for input_ids, sample, p2_sizes in tqdm(dataloader):
-            hundred = p2_sizes[0] // 100
-            hundreds_batches[hundred].append((input_ids[0], sample[0]))
-
-            for i in range(len(hundreds_batches)):
-                if len(hundreds_batches[i]) >= self.batch_size:
-                    inputs = pad_left_side([elt[0] for elt in hundreds_batches[i]], padding_value=GPT2_model.tokenizer.pad_token_id)
-                    samples = [elt[1] for elt in hundreds_batches[i]]
-
-                    generations += GPT2_model(inputs, mean_size=hundred*100 + 50)
-                    originals += samples
-
-                    hundreds_batches[i] = []
-
-        for hundred, datasamples in enumerate(hundreds_batches):
-            if len(datasamples) > 0:
-                inputs = pad_left_side([elt[0] for elt in datasamples], padding_value=GPT2_model.tokenizer.pad_token_id)
-                samples = [elt[1] for elt in datasamples]
-
-                generations += GPT2_model(inputs, mean_size=hundred*100 + 50)
-                originals += samples
-
-
-            # mean_size = sum(p2_sizes) / len(p2_sizes)
-            # generations += GPT2_model(input_ids, mean_size=mean_size)
-            # originals += sample
+        for input_ids, samples in tqdm(dataloader):
+            generations += GPT2_model(input_ids)
+            originals += samples
 
         if verbose:
             print("\rSaving generated texts...", end="")
