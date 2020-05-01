@@ -57,7 +57,7 @@ class Generator:
 										organisations=organisations,
 										misc=misc,
 										size=size,
-										context=sp2)
+										summary=sp2)
 		input_ids, _ = self.vectorizer(context_input)
 		return self.gpt2_flexible_model.predict(input_ids, nb_samples=4)
 
