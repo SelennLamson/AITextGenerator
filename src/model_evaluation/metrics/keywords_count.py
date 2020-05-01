@@ -18,10 +18,9 @@ class KwCount(Metrics):
         """
         :param predicted_sentences: generated P2 by GPT2
         :param original_contexts: original P2
-        :param summarizer: name of the summarizer chosen for text generation, among ['T5','BART','PYSUM','KW']
         :return: proportion of number of original P2 keywords existent in generated P2
         """
-        df_results = pd.DataFrame(columns=["keyword_proportion"], data=np.zeros((len(predicted_sentences),1)))
+        df_results = pd.DataFrame(columns=["keyword_proportion"], data=np.zeros((len(predicted_sentences), 1)))
 
         def kw_proportion_one_sentence(pred_P2, kw_list):
             if self.summarizer == 'KW':

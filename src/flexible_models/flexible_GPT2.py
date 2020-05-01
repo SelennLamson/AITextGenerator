@@ -4,11 +4,13 @@ import torch
 
 from src.flexible_models.GPT2_lm_segment_model import GPT2LMSegmentModel
 
+
 class FlexibleGPT2(FlexibleModel):
     """
     A FlexibleGPT2 model is simply the combination of a huggingface gpt2 transformers model and
     a decoding strategy
     """
+
     def __init__(self, model, tokenizer, decoding_strategy):
         """
         Initializes a GPT2 model.
@@ -34,7 +36,8 @@ class FlexibleGPT2(FlexibleModel):
 
     def set_decoding_strategy(self, decoding_strategy):
         self.decoding_strategy = decoding_strategy
-        self.max_length = decoding_strategy['max_length'] if 'max_length' in decoding_strategy.keys() else GPT2_BLOCK_SIZE
+        self.max_length = decoding_strategy[
+            'max_length'] if 'max_length' in decoding_strategy.keys() else GPT2_BLOCK_SIZE
         self.min_length = decoding_strategy['min_length'] if 'min_length' in decoding_strategy.keys() else 0
 
     def predict(self, input_ids, nb_samples=1):

@@ -1,9 +1,5 @@
-import json
-import os
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from torch.nn.utils.rnn import pad_sequence
-import torch
 import pandas as pd
 
 from src.utils import *
@@ -46,13 +42,13 @@ class GPT2EvaluationScript:
         self.batch_size = batch_size
         self.use_context = use_context
         self.summarizer = summarizer
-        self.init_args = {'batch_size':batch_size, 'path_to_bert_ner':path_to_bert_ner, 'summarizer':summarizer}
+        self.init_args = {'batch_size': batch_size, 'path_to_bert_ner': path_to_bert_ner, 'summarizer': summarizer}
 
     def __call__(self,
-                 generations_path:str,
-                 results_path:str,
+                 generations_path: str,
+                 results_path: str,
                  GPT2_model: FlexibleGPT2,
-                 metric_names:List[str],
+                 metric_names: List[str],
                  verbose=1):
         """
         Generates texts at generation_path and computes given metrics on them.
@@ -65,7 +61,7 @@ class GPT2EvaluationScript:
         self.generate_texts(generations_path, GPT2_model, verbose)
         self.compute_metrics(generations_path, results_path, metric_names, verbose)
 
-    def generate_texts(self, generations_path: str, GPT2_model:FlexibleGPT2, verbose: int = 1):
+    def generate_texts(self, generations_path: str, GPT2_model: FlexibleGPT2, verbose: int = 1):
         """Starts the text generation on all paragraphs.
         :param generations_path: The path where text generations should be saved.
         :param GPT2_model: FlexibleGPT2 model that need to be evaluated and will be used to generate text
@@ -104,7 +100,7 @@ class GPT2EvaluationScript:
         if verbose:
             print("\rGeneration successfull.")
 
-    def compute_metrics(self, generations_path:str,results_path:str, metric_names, verbose: int = 1):
+    def compute_metrics(self, generations_path: str, results_path: str, metric_names, verbose: int = 1):
         """
         Computes the selected metrics on generated texts.
         :param generations_path: The path where text generations can be found.
@@ -135,4 +131,3 @@ class GPT2EvaluationScript:
             print("Saving results on disk...")
         df_results = pd.concat(results, axis=1)
         df_results.to_csv(results_path)
-

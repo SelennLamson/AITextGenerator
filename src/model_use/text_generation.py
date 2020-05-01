@@ -28,7 +28,7 @@ class TextGeneration:
         :param verbose: 1 for messages, 0 for silent execution
         :return: list[str] : list of generated text
         """
-        input_ids = self.vectorizer(context_input)
+        input_ids = self.vectorizer(context_input)[0]
 
         if verbose >= 1:
             print(self.GPT2_model.tokenizer.decode(input_ids))

@@ -1,7 +1,7 @@
 from src.json_generation import paragraph_preprocessing
 from src.json_generation import ent_sum_preprocessing
 from src.json_generation.data_preprocessing import DataPrepro
-from src.flexible_models import FlexibleBERTNER # New NER
+from src.flexible_models. import FlexibleBERTNER # New NER
 from src.flexible_models import FlexibleBERTSum # New Sum
 from src.utils import *
 

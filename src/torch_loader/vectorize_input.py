@@ -1,9 +1,11 @@
 from src.utils import MEDIUM
 
+
 class TrainInput:
     """
     Use this class to vectorize a triplet of paragraphs in training or evaluation context
     """
+
     def __init__(self, P1, P2, P3, summaries, genre, size, persons, organisations, locations, misc):
         """
         :param P1: [str]
@@ -31,16 +33,16 @@ class TrainInput:
 
     def to_dict(self):
         return {
-            'P1':self.P1,
-            'P2':self.P2,
-            'P3':self.P3,
-            'summaries':self.summaries,
-            'genre':self.genre,
-            'size':self.size,
-            'persons':self.persons,
-            'organisations':self.organisations,
-            'locations':self.locations,
-            'misc':self.misc
+            'P1': self.P1,
+            'P2': self.P2,
+            'P3': self.P3,
+            'summaries': self.summaries,
+            'genre': self.genre,
+            'size': self.size,
+            'persons': self.persons,
+            'organisations': self.organisations,
+            'locations': self.locations,
+            'misc': self.misc
         }
 
     @classmethod
@@ -58,10 +60,12 @@ class TrainInput:
             misc=dict['misc']
         )
 
+
 class GenerationInput:
     """
     Use this class to vectorize a context input in Generation context
     """
+
     def __init__(self, P1=None, P3=None, summary=None, genre=None, size=MEDIUM,
                  persons=None, locations=None, organisations=None, misc=None):
         """

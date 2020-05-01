@@ -12,6 +12,7 @@ class BertRelationship(Metrics):
     1. Compute the probability (for pre-trained BERT) that P3 follow pred P2
     2. Normalize by the probability that P3 follow true P2
     """
+
     def __init__(self, **kwargs):
         """
         Initialized the BERT model
@@ -44,7 +45,8 @@ class BertRelationship(Metrics):
         """
         encoded_dicts = [self.tokenizer.encode_plus(seq_1, seq_2) for (seq_1, seq_2) in zip(list_seq_1, list_seq_2)]
         input_ids = [torch.tensor(encoded_dict['input_ids']) for encoded_dict in encoded_dicts]
-        token_type_ids = [torch.tensor(encoded_dict['token_type_ids'], dtype=torch.long) for encoded_dict in encoded_dicts]
+        token_type_ids = [torch.tensor(encoded_dict['token_type_ids'], dtype=torch.long) for encoded_dict in
+                          encoded_dicts]
 
         input_ids = pad_sequence(input_ids, batch_first=True, padding_value=self.tokenizer.pad_token_id)
         token_type_ids = pad_sequence(token_type_ids, batch_first=True, padding_value=1)
@@ -56,7 +58,7 @@ class BertRelationship(Metrics):
             mask = mask.cuda()
 
         ouptput_bert = self.model(input_ids=input_ids, attention_mask=mask, token_type_ids=token_type_ids)
-        return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:,0].detach().cpu().numpy()
+        return torch.nn.functional.softmax(ouptput_bert[0], dim=1)[:, 0].detach().cpu().numpy()
 
     def bert_relationship(self, list_seq_1, list_seq_2):
         """
@@ -71,10 +73,10 @@ class BertRelationship(Metrics):
         outputs = []
         batch_size = self.batch_size
         i = 0
-        while i + batch_size < number_seq-1:
-            outputs.append(self.bert_relationship_single_batch(list_seq_1[i:i+batch_size], list_seq_2[i:i+batch_size]))
+        while i + batch_size < number_seq - 1:
+            outputs.append(
+                self.bert_relationship_single_batch(list_seq_1[i:i + batch_size], list_seq_2[i:i + batch_size]))
             i += batch_size
 
         outputs.append(self.bert_relationship_single_batch(list_seq_1[i:], list_seq_2[i:]))
         return np.hstack(outputs)
-

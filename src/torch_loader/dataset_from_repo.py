@@ -16,7 +16,8 @@ class DatasetFromRepo(Dataset):
             (all this operation will be proceed on the fly)
 
     """
-    def __init__(self, path, sublist=None, transform=lambda x:x):
+
+    def __init__(self, path, sublist=None, transform=lambda x: x):
         """
         :param path: repository containing json files
         :param sublist: use it to specify a sublist of book_id from the folder in path
@@ -36,4 +37,3 @@ class DatasetFromRepo(Dataset):
 
     def __len__(self):
         return len(self.dataset)
-

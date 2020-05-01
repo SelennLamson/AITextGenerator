@@ -1,8 +1,8 @@
-import numpy as np
 import pandas as pd
 import os
 import itertools
 import argparse
+
 FOLDER_PATH = 'data/results/'
 
 

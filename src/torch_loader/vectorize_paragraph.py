@@ -3,24 +3,25 @@ from enum import Enum
 from src.utils import get_size_from_chars, GPT2_BLOCK_SIZE
 from src.torch_loader.vectorize_input import TrainInput, GenerationInput
 
+
 class VectorizeMode(Enum):
     TRAIN = 0
     EVAL = 1
     GENERATE = 2
 
 
-# TODO : change documentation with new special tokens
 class VectorizeParagraph:
     """
     class VectorizeParagrah
     An instance of this class will be callable on {input: (metadata, P1, P3), target: P2}
     """
+
     def __init__(self,
                  tokenizer,
                  block_size=GPT2_BLOCK_SIZE,
                  mode=VectorizeMode.TRAIN,
                  use_context=True,
-                 select_summary=lambda x:""):
+                 select_summary=lambda x: ""):
         """
         Store the parameters of the vectorizer, by default : mode = Train, use_context = True
         :param block_size : int, max sequence_token_len for GPT_2 input
@@ -70,7 +71,7 @@ class VectorizeParagraph:
         if self.mode == VectorizeMode.TRAIN:
             # In train mode, P2 is added to the context and the sentence to predict is simplify the full context
             context['P2'] += self.tokenizer.encode(P2 + ' ' + '<|endoftext|>') if self.use_context \
-                             else self.tokenizer.encode(P2)
+                else self.tokenizer.encode(P2)
 
         # If the context + input space we must left for P2 is too big
         # We let 2/3 of the remaining space for P1 and 1/3 for P3
@@ -96,7 +97,8 @@ class VectorizeParagraph:
         assert len(tensor_input) == len(tensor_types)
 
         if self.mode == VectorizeMode.TRAIN:
-            labels = torch.tensor([-100] * (sum(len(v) for k, v in context.items() if k != 'P2') + 1) + context['P2'][1:])
+            labels = torch.tensor(
+                [-100] * (sum(len(v) for k, v in context.items() if k != 'P2') + 1) + context['P2'][1:])
 
             assert len(labels) == len(tensor_input)
             return tensor_input, tensor_types, labels
@@ -127,7 +129,8 @@ class VectorizeParagraph:
             assert type(sample) == TrainInput, 'In train/eval mode, vectorizer input must be of type TrainInput'
 
         if self.mode == VectorizeMode.GENERATE:
-            assert type(sample) == GenerationInput, 'In generation mode, vectorizer input must be of type GenerationInput'
+            assert type(
+                sample) == GenerationInput, 'In generation mode, vectorizer input must be of type GenerationInput'
 
         context = dict()
         if self.use_context:
@@ -173,4 +176,3 @@ class VectorizeParagraph:
         if self.mode == VectorizeMode.EVAL:
             input_ids, type_ids = self.vectorize(context, P2, nb_tokens_for_P2)
             return input_ids, sample, nb_tokens_for_P2
-

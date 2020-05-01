@@ -6,6 +6,7 @@ import torch
 import numpy as np
 import pandas as pd
 
+
 class SumPerplexity(Metrics):
     """
     Perplexity metrics
@@ -13,6 +14,7 @@ class SumPerplexity(Metrics):
      -> compute perplexity of T5, BART and pysum summaries for GPT2 internal probability distribution
      -> average perplexity between summarizers
     """
+
     def __init__(self, **kwargs):
         """
         Initialize the GPT2 model (base from huggingface transformers) that will be used to compute the perplexity
@@ -47,7 +49,8 @@ class SumPerplexity(Metrics):
                 if self.summarizer == '' or original_context.summaries[self.summarizer] == '':
                     perplexity.append('NaN')
                 else:
-                    input_ids = self.gpt2_tokenizer.encode(original_context.summaries[self.summarizer], return_tensors='pt')
+                    input_ids = self.gpt2_tokenizer.encode(original_context.summaries[self.summarizer],
+                                                           return_tensors='pt')
                     if torch.cuda.is_available():
                         input_ids = input_ids.cuda()
                     output = self.gpt2_model.forward(input_ids, labels=input_ids)

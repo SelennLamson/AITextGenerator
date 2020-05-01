@@ -10,6 +10,7 @@ import re
 Script to apply summarization on the preproccess paragraph 
 """
 
+
 def apply_summarization(input_folder_path, output_folder_path, list_of_book_id, summarizer_model, batch_size=1):
     """
     apply summarization on all json file of a given path
@@ -36,6 +37,7 @@ def apply_summarization(input_folder_path, output_folder_path, list_of_book_id, 
 
         json.dump(data, open(output_folder_path + str(summarizer_model) + '_' + book_id+PREPROC_SUFFIX,
                              'w', encoding='utf-8'))
+
 
 def retrieve_list_of_books_to_summarize(input_folder_path, output_folder_path, summarizer_model):
     """
@@ -64,6 +66,7 @@ def retrieve_list_of_books_to_summarize(input_folder_path, output_folder_path, s
           len(input_book_ids - summarized_book_ids))
 
     return list(input_book_ids - summarized_book_ids)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

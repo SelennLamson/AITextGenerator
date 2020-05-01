@@ -6,6 +6,7 @@ import torch
 import numpy as np
 import pandas as pd
 
+
 class GPT2Perplexity(Metrics):
     """
     Perplexity metrics
@@ -13,6 +14,7 @@ class GPT2Perplexity(Metrics):
      -> compute perplexity of each sentence for GPT2 internal probability distribution
      -> normalize by the perplexity of the true P2
     """
+
     def __init__(self, **kwargs):
         """
         Initialize the GPT2 model (base from huggingface transformers) that will be used to compute the perplexity
@@ -53,4 +55,3 @@ class GPT2Perplexity(Metrics):
                 perplexity.append(math.exp(cross_entropy_loss.item()))
 
         return np.array(perplexity)
-

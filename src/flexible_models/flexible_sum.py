@@ -12,6 +12,7 @@ from gensim.summarization import keywords
 from tqdm.notebook import tqdm
 import torch
 
+
 class SummarizerModel(Enum):
     T5 = 0
     BART = 1
@@ -31,6 +32,7 @@ class SummarizerModel(Enum):
         if self == SummarizerModel.KW:
             return 'KW'
 
+
 class FlexibleSum(FlexibleModel):
     """
     FlexibleSum class allows the use of 4 differents type of summarizers
@@ -39,6 +41,7 @@ class FlexibleSum(FlexibleModel):
     - BERT_SUM
     - PYSUM
     """
+
     def __init__(self, summarizer, batch_size=1):
         """
         :param summarizer: SummarizerModel value
@@ -74,7 +77,7 @@ class FlexibleSum(FlexibleModel):
         if self.summarizer == SummarizerModel.PYSUM:
             self.model = AutoAbstractor()
             self.model.tokenizable_doc = SimpleTokenizer()
-            self.model.delimiter_list = ['.','\n']
+            self.model.delimiter_list = ['.', '\n']
             self.doc_filtering = TopNRankAbstractor()
 
         if self.summarizer == SummarizerModel.KW:
@@ -101,10 +104,10 @@ class FlexibleSum(FlexibleModel):
                         for output in outputs]
 
             summaries = []
-            for i in tqdm(range(len(paragraphs)//self.batch_size)):
-                summaries += predict_on_single_batch(paragraphs[i * self.batch_size: (i+1) * self.batch_size])
+            for i in tqdm(range(len(paragraphs) // self.batch_size)):
+                summaries += predict_on_single_batch(paragraphs[i * self.batch_size: (i + 1) * self.batch_size])
             if len(paragraphs) % self.batch_size != 0:
-                summaries += predict_on_single_batch(paragraphs[len(paragraphs)//self.batch_size * self.batch_size:])
+                summaries += predict_on_single_batch(paragraphs[len(paragraphs) // self.batch_size * self.batch_size:])
 
             return summaries
 
@@ -125,11 +128,3 @@ class FlexibleSum(FlexibleModel):
             kw_sum = [' - '.join(self.model(paragraph, lemmatize=False, pos_filter=('NN', 'JJ', 'VB')).split('\n'))
                       for paragraph in paragraphs]
             return kw_sum
-
-
-
-
-
-
-
-

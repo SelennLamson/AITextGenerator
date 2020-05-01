@@ -2,7 +2,6 @@ from torch.utils.data import Dataset
 from src.torch_loader.vectorize_input import TrainInput
 import json
 
-# TODO : MAKE THE DATASET USE A VECTORIZER INPUT
 
 class DatasetFromJson(Dataset):
     """
@@ -13,6 +12,7 @@ class DatasetFromJson(Dataset):
         1/ will generate (nb_paragraphes - 2) tupple (input, label)
         2/ will apply a GPT_2 tokenization for each input, label
     """
+
     def __init__(self, path, transform):
         """
         :param path: JSON file
@@ -37,7 +37,7 @@ class DatasetFromJson(Dataset):
         """
         with open(self.path, 'r', encoding='utf-8') as json_files:
             data = json.load(json_files)
-        P1, P2, P3 = data['paragraphs'][idx:idx+3]
+        P1, P2, P3 = data['paragraphs'][idx:idx + 3]
 
         training_example = TrainInput(
             P1=P1['text'],
