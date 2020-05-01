@@ -40,9 +40,9 @@ It contains the weights of the different models used and/or trained during this 
 1. Download it at: https://drive.google.com/open?id=1svTqyugLI36zaX6Fo6hr-Od4ATRxH2vf
 2. Extract it directly in the project root.
 
-## Run fine-tuning script 
+## Script 
 
-To fine-tune the GPT2 model : 
+Once the project is installed in a clean environment : 
 
 ```
 git clone https://github.com/WeazelDev/AITextGenerator.git
@@ -50,9 +50,9 @@ cd AITextGenerator
 pip install -r requirements.txt
 ```
 
-Then download the preprocess text data from : # TODO ADD LINK TO DATA and then simply run the *train* script
-
-```
-./train 
-```
-
+In order to make our experiments, we used the following script that can be found on project root 
+- **splitter.py**: to split the raw text file in paragraph and save them in json files 
+- **ner.py**: to perform entities recognition on the paragrap 
+- **summarization.py**: to summarize with differents summarizer the paragraph 
+- **finetuning.py** : to finetune GPT. We used the [fine-tuning script proposed by Huggingface](https://github.com/huggingface/transformers/blob/master/examples/run_language_modeling.py). We make a few changes to be able to load our custom torch dataset and correctly handle some specifity of our projects. 
+-- **evaluation.py** : to generate text with a fine-tune GPT2 and compute our custom metrics on the generated paragraph 
