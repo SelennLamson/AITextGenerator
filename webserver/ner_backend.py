@@ -15,7 +15,7 @@ from src.utils import *
 from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
 
 
-CONFIG = json.load(open('webserver/config.json', 'r'))
+CONFIG = json.load(open('../config.json', 'r'))
 Handler = http.server.SimpleHTTPRequestHandler
 
 

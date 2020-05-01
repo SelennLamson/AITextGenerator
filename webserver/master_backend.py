@@ -13,10 +13,10 @@ from typing import List, Dict, Tuple
 
 from src.utils import *
 
-CONFIG = json.load(open('webserver/config.json', 'r'))
+CONFIG = json.load(open('../config.json', 'r'))
 Handler = http.server.SimpleHTTPRequestHandler
-WEBSERVICE_FEEDBACK = 'webserver/webservice_feedback/'
-WEBSERVICE_SHARED = 'webserver/webservice_feedback/shared.json'
+WEBSERVICE_FEEDBACK = CONFIG['webservice-data-path']
+WEBSERVICE_SHARED = WEBSERVICE_FEEDBACK + 'shared.json'
 
 class MasterBackendHTTPServer(Handler):
 	def do_OPTIONS(self):

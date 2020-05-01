@@ -20,7 +20,7 @@ from src.flexible_models.GPT2_lm_segment_model import GPT2LMSegmentModel
 from transformers import GPT2Tokenizer
 
 
-CONFIG = json.load(open('webserver/config.json', 'r'))
+CONFIG = json.load(open('../config.json', 'r'))
 Handler = http.server.SimpleHTTPRequestHandler
 
 
