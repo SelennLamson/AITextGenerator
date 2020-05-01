@@ -9,11 +9,7 @@ import nltk
 import os
 import logging
 
-
-
 from src.model_training.update_model import add_special_tokens
-
-
 
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
@@ -34,7 +30,7 @@ if __name__ == '__main__':
     parser.add_argument("--model", type=str, required=True,
                         help="Path to the folder containing the fine-tune models that need to be evaluated")
 
-    parser.add_argument("--ner",  required=True,
+    parser.add_argument("--ner", required=True,
                         help="Path to the folder containing the weights of BERT NER model")
 
     parser.add_argument("--batch_size", type=int, default=8,
@@ -78,10 +74,8 @@ if __name__ == '__main__':
                              tokenizer=tokenizer,
                              decoding_strategy=DEFAULT_DECODING_STRATEGY)
 
-
         print("Begin text generation ...")
         script.generate_texts(generation_path, gpt_2, verbose=1)
 
     print("Compute metrics ...")
     script.compute_metrics(generation_path, results_path, args.metrics, verbose=1)
-
