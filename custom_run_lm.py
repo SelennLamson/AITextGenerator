@@ -445,15 +445,18 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
     args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
     # Note that DistributedSampler samples randomly
 
+
     def collate(examples: List[Tuple[torch.Tensor]]):
         all_inputs = [elt[0] for elt in examples]
         all_types = [elt[1] for elt in examples]
+        all_labels = [elt[2] for elt in examples]
 
         padded_inputs = pad_sequence(all_inputs, batch_first=True, padding_value=tokenizer.pad_token_id)
         padded_types = pad_sequence(all_types, batch_first=True, padding_value=tokenizer.pad_token_id)
-        padded_labels = pad_sequence(all_labels, batch_first=True, padding_value=tokenizer.pad_token_type_id)
+        padded_labels = pad_sequence(all_labels, batch_first=True, padding_value=-100)
 
         return padded_inputs, padded_types, padded_labels
+
 
     eval_sampler = SequentialSampler(eval_dataset)
     eval_dataloader = DataLoader(
