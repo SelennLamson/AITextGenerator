@@ -47,8 +47,7 @@ DEFAULT_DECODING_STRATEGY = {
 	'do_sample': True,
 	'min_length': 0,
 	'max_length': GPT2_BLOCK_SIZE,
-	'top_k': 50,
-	'top_p': 0.95
+	'top_p': 0.9
 }
 BART_DECODING_STRAT = \
 	{'temperature':1.25,
