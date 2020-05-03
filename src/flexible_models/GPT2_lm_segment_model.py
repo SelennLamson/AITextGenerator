@@ -1,5 +1,8 @@
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import torch
+import torch.nn as nn
+from torch.nn import CrossEntropyLoss
+import numpy as np
 
 class GPT2LMSegmentModel(GPT2LMHeadModel):
 	def __init__(self, config):
@@ -7,9 +10,12 @@ class GPT2LMSegmentModel(GPT2LMHeadModel):
 		self.min_special = None
 		self.p2_token = None
 		self.max_special = None
+		self.eos_token = None
+		self.eos_weight = 10
 
 	def set_special_tokens(self, tokenizer: GPT2Tokenizer):
 		self.p2_token = self.min_special = tokenizer.bos_token_id
+		self.eos_token = tokenizer.eos_token_id
 		self.max_special = max(tokenizer.additional_special_tokens_ids)
 
 	def prepare_inputs_for_generation(self, input_ids, past, **kwargs):

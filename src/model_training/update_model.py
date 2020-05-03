@@ -15,6 +15,7 @@ def add_special_tokens(model=None, tokenizer=None):
              'additional_special_tokens': ['[P1]', '[P3]', '[S]', '[M]', '[L]', '[T]', '[Sum]',
                                            '[Loc]', '[Per]', '[Org]', '[Misc]']}
         )
+        tokenizer.pad_token = tokenizer.eos_token
 
     if model:
         model.resize_token_embeddings(len(tokenizer))

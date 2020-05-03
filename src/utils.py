@@ -120,18 +120,20 @@ def text_batch_splitter(strings: List[str], max_length: int) -> Tuple[List[str],
 	return new_strings, split_information
 
 
-def token_batch_splitter(inputs: List[str], max_length: int) -> Tuple[List[str], List[Tuple[int, int]]]:
+def token_batch_splitter(inputs: List, max_length: int) -> Tuple[List[int], List[Tuple[int, int]]]:
 	"""
 	Takes a list of strings and split the ones of them that are longer than a specified length, growing the list
 	where splitting is needed. Split information can then be used to merge the output information back after use.
 	Cuts happen at whitespaces.
-	:param inputs: list of input arrays of any length, each input containing tuples of (token, is valid position to cut)
+	:param inputs: list of input arrays of any length, each input containing tuples of (token, is valid position to cut), or only lists of tokens
 	:param max_length: maximum length after which a string must be split into smaller ones
 	:return new list of strings of size <= max_length, with long strings splitted in consecutive indices
 	:return split information: indices of split strings, with number of consecutive elements involved (pass to merger later)
 	"""
 	new_inputs = []
 	split_information = []
+
+	check_cut_validity = (isinstance(inputs[0], tuple) or isinstance(inputs[0], list)) and len(inputs[0]) == 2
 
 	for i, full_input in enumerate(inputs):
 		if len(full_input) <= max_length:
@@ -150,14 +152,14 @@ def token_batch_splitter(inputs: List[str], max_length: int) -> Tuple[List[str],
 				current_seq.append(inp)
 
 				if len(current_seq) > max_length:
-					if inp[1] == 1:
+					if (not check_cut_validity) or inp[1] == 1:
 						split_seqs.append(current_seq[:-1])
 						current_seq = [inp]
 					else:
 						split_seqs.append(current_seq[:last_word])
 						current_seq = current_seq[last_word:]
 					last_word = 0
-				elif inp[1] == 1:
+				elif (not check_cut_validity) or inp[1] == 1:
 					last_word = len(current_seq) - 1
 
 			split_seqs.append(current_seq)
@@ -165,13 +167,7 @@ def token_batch_splitter(inputs: List[str], max_length: int) -> Tuple[List[str],
 			new_inputs += split_seqs
 
 			assert sum(len(ss) for ss in split_seqs) == len(full_input)
-
-			try:
-				assert all(len(ss) <= max_length for ss in split_seqs)
-			except AssertionError:
-				for ss in split_seqs:
-					if len(ss) > max_length:
-						print(ss)
+			assert all(len(ss) <= max_length for ss in split_seqs)
 
 	return new_inputs, split_information
 

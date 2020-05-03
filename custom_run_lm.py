@@ -226,11 +226,9 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
         all_types = [elt[1] for elt in examples]
         all_labels = [elt[2] for elt in examples]
 
-        pad_token = 0 if tokenizer._pad_token is None else tokenizer.pad_token_id
-
-        padded_inputs = pad_sequence(all_inputs, batch_first=True, padding_value=pad_token)
-        padded_types = pad_sequence(all_types, batch_first=True, padding_value=pad_token)
-        padded_labels = pad_sequence(all_labels, batch_first=True, padding_value=pad_token)
+        padded_inputs = pad_sequence(all_inputs, batch_first=True, padding_value=tokenizer.pad_token_id)
+        padded_types = pad_sequence(all_types, batch_first=True, padding_value=tokenizer.pad_token_id)
+        padded_labels = pad_sequence(all_labels, batch_first=True, padding_value=-100)
 
         return padded_inputs, padded_types, padded_labels
 
@@ -343,6 +341,11 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
 
             input_ids, type_ids, labels = batch
 
+            # np.save("input_ids.npy", input_ids.numpy())
+            # np.save("type_ids.npy", type_ids.numpy())
+            # np.save("labels.npy", labels.numpy())
+
+
             if args.print_input:
                 logger.info("Examples contained in the batch that will be given as input in the model")
                 for i in range(input_ids.shape[0]):
@@ -442,17 +445,18 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
     args.eval_batch_size = args.per_gpu_eval_batch_size * max(1, args.n_gpu)
     # Note that DistributedSampler samples randomly
 
+
     def collate(examples: List[Tuple[torch.Tensor]]):
         all_inputs = [elt[0] for elt in examples]
         all_types = [elt[1] for elt in examples]
+        all_labels = [elt[2] for elt in examples]
 
-        pad_token = 0 if tokenizer._pad_token is None else tokenizer.pad_token_id
-
-        padded_inputs = pad_sequence(all_inputs, batch_first=True, padding_value=pad_token)
-        padded_types = pad_sequence(all_types, batch_first=True, padding_value=pad_token)
-        padded_labels = pad_sequence(all_labels, batch_first=True, padding_value=pad_token)
+        padded_inputs = pad_sequence(all_inputs, batch_first=True, padding_value=tokenizer.pad_token_id)
+        padded_types = pad_sequence(all_types, batch_first=True, padding_value=tokenizer.pad_token_id)
+        padded_labels = pad_sequence(all_labels, batch_first=True, padding_value=-100)
 
         return padded_inputs, padded_types, padded_labels
+
 
     eval_sampler = SequentialSampler(eval_dataset)
     eval_dataloader = DataLoader(

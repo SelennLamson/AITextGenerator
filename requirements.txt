@@ -2,7 +2,7 @@ pandas
 sortedcontainers
 numpy
 transformers==2.6.0
-torch==1.4.0
+torch==1.5.0
 tqdm
 
 # for fine tuning
