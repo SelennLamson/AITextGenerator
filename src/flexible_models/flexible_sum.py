@@ -3,14 +3,16 @@ from src.utils import T5_DECODING_STRAT, BART_DECODING_STRAT
 
 from typing import List
 from enum import Enum
+from tqdm.notebook import tqdm
+import torch
+
 from summarizer import Summarizer
 from transformers import BartTokenizer, BartForConditionalGeneration, T5Tokenizer, T5ForConditionalGeneration
 from pysummarization.nlpbase.auto_abstractor import AutoAbstractor
 from pysummarization.tokenizabledoc.simple_tokenizer import SimpleTokenizer
 from pysummarization.abstractabledoc.top_n_rank_abstractor import TopNRankAbstractor
 from gensim.summarization import keywords
-from tqdm.notebook import tqdm
-import torch
+
 
 
 class SummarizerModel(Enum):
@@ -35,11 +37,12 @@ class SummarizerModel(Enum):
 
 class FlexibleSum(FlexibleModel):
     """
-    FlexibleSum class allows the use of 4 differents type of summarizers
+    FlexibleSum class allows the use of 5 differents type of summarizers
     - T5
     - BART
-    - BERT_SUM
+    - BERT SUM
     - PYSUM
+    - KW
     """
 
     def __init__(self, summarizer, batch_size=1):
@@ -85,7 +88,7 @@ class FlexibleSum(FlexibleModel):
 
     def predict(self, paragraphs: List[str]) -> List[str]:
         """
-        Performs summarization on each paragraph
+        Performs summarization on each paragraph using the given summarizer
         :param paragraphs: list of strings.
         :return: list[str] : summary for each input
         """

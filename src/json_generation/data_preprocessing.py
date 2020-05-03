@@ -3,11 +3,11 @@ from src.utils import *
 import json
 import os
 from tqdm import tqdm
-from gutenberg.acquire import load_etext
-from gutenberg.cleanup import strip_headers
-from gutenberg.query import get_etexts, list_supported_metadatas, get_metadata
 from sortedcontainers import SortedDict
 import zlib  # error message
+
+from gutenberg.acquire import load_etext
+from gutenberg.cleanup import strip_headers
 from gutenberg._domain_model.exceptions import UnknownDownloadUriException  # error message
 
 
@@ -92,7 +92,11 @@ class DataPrepro:
                 pass
 
     @staticmethod
-    def leave_one_genre(folder_data='data/preproc/'):
+    def leave_one_genre(folder_data=METADATA_PATH):
+        """
+        Attribute a genre to each book from unstructured theme metadata.
+        :param folder_data: path where the data is stored
+        """
         books = os.listdir(folder_data)
 
         for book in tqdm(books):
@@ -129,10 +133,11 @@ class DataPrepro:
                 if 'science' in flat_list:
                     data['genre'] = ['science-fiction']
 
+            # Save file
             json.dump(data, open(folder_data + book, 'w', encoding='utf-8'),
                       ensure_ascii=False, indent=1)
 
-    def stats_genre(self, folder_data='data/preproc/'):
+    def stats_genre(self, folder_data=METADATA_PATH):
         """
         :param folder_data: folder where data is placed
         :return: dictionary giving information on genre repartition
