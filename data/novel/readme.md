@@ -1,5 +1,6 @@
-Here are the cleaned content of the novels (without headers or content table), plus metadata.
-Entites are detected and registered based on their position index in text.
+Contains each book's full text and metadata. 
+Obtained from 'metadata/files/' by additionally detecting entities and storing their position in the text.
+
 
 **Format:** JSON
 
@@ -22,9 +23,7 @@ Entites are detected and registered based on their position index in text.
      ],
      "id": "1342",
      "genre": [
-        "fiction",
-        "teen",
-        ...
+        "romance"
      ],
     "text": "However little known the feelings or views of such a man may be [...]",
     "persons": {
