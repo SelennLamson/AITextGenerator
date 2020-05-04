@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Feb 15 2020
-
-@author: thomaslamson
-"""
-
 from typing import List, Any, Tuple
 import functools
 from math import ceil
@@ -30,16 +22,17 @@ ENTITY_TAGS = ("PER", "ORG", "LOC", "MISC")
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
 BERT_NER_BASE = 'models/entity_recognition/BERT_NER_Base/'
 
-FOLDER_NAME_KW = 'data/Preproc_KW/'
+FOLDER_NAME_KW = 'data/summaries/Preproc_KW/'
 PREFIX_KW = 'KW_'
-FOLDER_NAME_T5 = 'data/Preproc_T5/'
+FOLDER_NAME_T5 = 'data/summaries/Preproc_T5/'
 PREFIX_T5 = 'T5_'
-FOLDER_NAME_BART = 'data/Preproc_BART/'
+FOLDER_NAME_BART = 'data/summaries/Preproc_BART/'
 PREFIX_BART = 'BART_'
-FOLDER_NAME_BERTSUM = 'data/Preproc_BERTSUM/'
+FOLDER_NAME_BERTSUM = 'data/summaries/Preproc_BERTSUM/'
 PREFIX_BERTSUM = 'BERTSUM_'
-FOLDER_NAME_PYSUM = 'data/Preproc_PYSUM/'
+FOLDER_NAME_PYSUM = 'data/summaries/Preproc_PYSUM/'
 PREFIX_PYSUM = 'PYSUM_'
+OUTPUT_DATA_FOLDERS = [FOLDER_NAME_PYSUM, FOLDER_NAME_KW, FOLDER_NAME_BART, FOLDER_NAME_T5]
 
 GPT2_BLOCK_SIZE = 1020
 
@@ -232,42 +225,44 @@ def summary_selector(summary_models=None):
 
 
 
-def merge_summaries():
+def merge_summaries(path, summaries=['KW', 'PYSUM', 'T5', 'BART']):
 	"""
 	Add summaries for each paragraph of every book.
 	We merge the 4 distinct summaries obtained from the summarizers (T5, BART, PYSUM, KW) in our preproc data files
 	These summaries are stored as json files (like preproc) in a different folder per summarizer
 	The final format in preproc files is a {'summarizer_name':'summary',...}
+	:param path: path to the data that need to be merged
+	:param summaries: list of summaries' names that need to be merged
 	"""
 	# Loop on all books. Look at original json file + corresponding files but with a summary (x4)
-	files = os.listdir(PREPROC_PATH)
+	files = os.listdir(path)
 	for f in files:
 		if PREPROC_SUFFIX in f:
 			d_id = f[:-len(PREPROC_SUFFIX)]
-			data = json.load(open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'r'))
-			if os.path.exists(FOLDER_NAME_T5):
+			data = json.load(open(path + d_id + PREPROC_SUFFIX, 'r'))
+			if os.path.exists(FOLDER_NAME_T5 + PREFIX_T5 + d_id + PREPROC_SUFFIX):
 				data_t5 = json.load(open(FOLDER_NAME_T5 + PREFIX_T5 + d_id + PREPROC_SUFFIX, 'r'))
-			if os.path.exists(FOLDER_NAME_BART):
+			if os.path.exists(FOLDER_NAME_BART + PREFIX_BART + d_id + PREPROC_SUFFIX):
 				data_bart = json.load(open(FOLDER_NAME_BART + PREFIX_BART + d_id + PREPROC_SUFFIX, 'r'))
-			if os.path.exists(FOLDER_NAME_PYSUM):
+			if os.path.exists(FOLDER_NAME_PYSUM + PREFIX_PYSUM + d_id + PREPROC_SUFFIX):
 				data_pysum = json.load(open(FOLDER_NAME_PYSUM + PREFIX_PYSUM + d_id + PREPROC_SUFFIX, 'r'))
-			if os.path.exists(FOLDER_NAME_BERTSUM):
+			if os.path.exists(FOLDER_NAME_BERTSUM + PREFIX_BERTSUM + d_id + PREPROC_SUFFIX):
 				data_bertsum = json.load(open(FOLDER_NAME_BERTSUM + PREFIX_BERTSUM + d_id + PREPROC_SUFFIX, 'r'))
-			if os.path.exists(FOLDER_NAME_KW):
+			if os.path.exists(FOLDER_NAME_KW + PREFIX_KW + d_id + PREPROC_SUFFIX):
 				data_kw = json.load(open(FOLDER_NAME_KW + PREFIX_KW + d_id + PREPROC_SUFFIX, 'r'))
 
 			# Add summary from each summariser to the original preproc json file
 			for i in range(len(data['paragraphs'])):
 				data['paragraphs'][i]['summaries'] = dict()
-				if os.path.exists(FOLDER_NAME_T5):
+				if os.path.exists(FOLDER_NAME_T5) and 'T5' in summaries:
 					data['paragraphs'][i]['summaries'].update(data_t5['paragraphs'][i]['summaries'])
-				if os.path.exists(FOLDER_NAME_BART):
+				if os.path.exists(FOLDER_NAME_BART) and 'BART' in summaries:
 					data['paragraphs'][i]['summaries'].update(data_bart['paragraphs'][i]['summaries'])
-				if os.path.exists(FOLDER_NAME_PYSUM):
+				if os.path.exists(FOLDER_NAME_PYSUM) and 'PYSUM' in summaries:
 					data['paragraphs'][i]['summaries'].update(data_pysum['paragraphs'][i]['summaries'])
-				if os.path.exists(FOLDER_NAME_BERTSUM):
+				if os.path.exists(FOLDER_NAME_BERTSUM) and 'BERTSUM' in summaries:
 					data['paragraphs'][i]['summaries'].update(data_bertsum['paragraphs'][i]['summaries'])
-				if os.path.exists(FOLDER_NAME_KW):
+				if os.path.exists(FOLDER_NAME_KW) and 'KW' in summaries:
 					data['paragraphs'][i]['summaries'].update(data_kw['paragraphs'][i]['summaries'])
 
 			# Save modifications to preproc json files

@@ -35,7 +35,7 @@ def apply_summarization(input_folder_path, output_folder_path, list_of_book_id, 
                 data['paragraphs'][i]['summaries'] = dict()
             data['paragraphs'][i]['summaries'][str(summarizer_model)] = summary
 
-        json.dump(data, open(output_folder_path + str(summarizer_model) + '_' + book_id+PREPROC_SUFFIX,
+        json.dump(data, open(output_folder_path + str(summarizer_model) + '_' + book_id + PREPROC_SUFFIX,
                              'w', encoding='utf-8'))
 
 
