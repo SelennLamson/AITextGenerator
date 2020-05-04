@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 import torch
 import pandas as pd
+import gc
 
 from src.utils import *
 from src.torch_loader import DatasetFromRepo, VectorizeParagraph, VectorizeMode, TrainInput
@@ -130,6 +131,7 @@ class GPT2EvaluationScript:
             metric = getattr(metrics, metric_name)(**self.init_args)
             results.append(metric(generated_sentences, original_contexts))
             del metric
+            gc.collect()
 
         if verbose:
             print("Saving results on disk...")

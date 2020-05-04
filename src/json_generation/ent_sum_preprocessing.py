@@ -11,11 +11,11 @@ import os
 import time
 from typing import List, Dict, Tuple
 from src.utils import *
-from src.flexible_models.flexible_bert_sum import FlexibleSummarizer
+from src.flexible_models.flexible_sum import FlexibleSum
 from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
 
 
-def perform_summarization_on_all(models: List[FlexibleSummarizer], files: List[str] = None, replace=False, verbose=1):
+def perform_summarization_on_all(models: List[FlexibleSum], files: List[str] = None, replace=False, verbose=1):
 	"""
 	Applies summarization models to all _ent_sum.json file and their paragraphs.
 	:param models: a list of models to apply, all of them having a predict(text) method.
@@ -34,7 +34,7 @@ def perform_summarization_on_all(models: List[FlexibleSummarizer], files: List[s
 		add_summaries(models, replace, d_id, verbose)
 
 
-def add_summaries(models: List[FlexibleSummarizer], replace=False, d_id=None, verbose=1):
+def add_summaries(models: List[FlexibleSum], replace=False, d_id=None, verbose=1):
 	"""
 	Applies summarization model to an _ent_sum.json file for each of its paragraphs.
 	:param models: a list of models to apply, all of them having a predict(text) method.
@@ -133,14 +133,16 @@ def perform_global_ner_on_file(model: FlexibleBERTNER, d_id:str = None, verbose:
 		if verbose >= 1:
 			print("\rNER outputs - {:.2f}%".format(pi / len(output) * 100), end="")
 
-		if tag == "PER":
-			persons[index] = entity
-		elif tag == "LOC":
-			locations[index] = entity
-		elif tag == "ORG":
-			organisations[index] = entity
-		elif tag == "MISC":
-			misc[index] = entity
+		e = entity.strip()
+		if len(e) > 2 and e not in ['The', 'the']:
+			if tag == "PER":
+				persons[index] = e
+			elif tag == "LOC":
+				locations[index] = e
+			elif tag == "ORG":
+				organisations[index] = e
+			elif tag == "MISC":
+				misc[index] = e
 
 	novel_data['persons'] = persons
 	novel_data['locations'] = locations
