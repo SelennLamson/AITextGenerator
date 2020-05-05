@@ -1,12 +1,13 @@
+"""
+Data pre-processing Pipeline
+"""
+
 from src.json_generation.data_preprocessing import DataPrepro
 from src.json_generation.prepare_data import prepare_data
 from src.json_generation.ent_sum_preprocessing import *
 from src.utils import *
 from src.flexible_models.flexible_sum import FlexibleSum, SummarizerModel
 
-"""
-Data pre-processing Pipeline
-"""
 
 # Populate the cash metadata first - CAREFUL: LONG OPERATION
 # cache = get_metadata_cache()

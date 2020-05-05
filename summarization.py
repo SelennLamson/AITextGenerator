@@ -1,3 +1,7 @@
+"""
+Script to apply summarization on the preproccess paragraph
+"""
+
 from src.flexible_models.flexible_sum import FlexibleSum, SummarizerModel
 from src.utils import PREPROC_SUFFIX
 from tqdm.notebook import tqdm
@@ -5,11 +9,6 @@ import os
 import json
 import argparse
 import re
-
-"""
-Script to apply summarization on the preproccess paragraph 
-"""
-
 
 def apply_summarization(input_folder_path, output_folder_path, list_of_book_id, summarizer_model, batch_size=1):
 	"""
