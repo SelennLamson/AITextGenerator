@@ -1,7 +1,10 @@
-from typing import List
 from abc import ABC
 
+
 class FlexibleModel(ABC):
+	"""
+	Abstract class to encapsulate transformer models.
+	"""
 	def __init__(self):
 		pass
 

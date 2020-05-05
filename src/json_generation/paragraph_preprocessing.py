@@ -1,19 +1,10 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Feb 15 2020
-
-@author: thomaslamson
-"""
-
-# Import libraries 
-import json
-import os
 from src.utils import *
 from src.flexible_models.paragraph_parser import ParagraphParser
 
 
-def separate_paragraphs_all_files(overwrite:bool, files: List[str] = None, min_threshold:int = 20, min_length:int = 600, max_length:int = 900, skip_begin=0.0, skip_end=0.0, verbose:int = 1):
+def separate_paragraphs_all_files(overwrite: bool, files: List[str] = None, min_threshold: int = 20,
+								  min_length: int = 600, max_length: int = 900, skip_begin=0.0, skip_end=0.0,
+								  verbose: int = 1):
 	"""
 	Applies the paragraph separation process (next function) on all _novel.json files to produce _preproc.json files.
 	:param overwrite: should already preprocessed files be re-preprocessed
@@ -41,7 +32,7 @@ def separate_paragraphs_all_files(overwrite:bool, files: List[str] = None, min_t
 			separate_in_paragraphs(parser, d_id, skip_begin, skip_end, verbose)
 
 
-def separate_in_paragraphs(parser: ParagraphParser, d_id:str = None, skip_begin=0.0, skip_end=0.0, verbose:int = 2):
+def separate_in_paragraphs(parser: ParagraphParser, d_id: str = None, skip_begin=0.0, skip_end=0.0, verbose: int = 2):
 	"""
 	Separates the text contained in a _novel.json file into sub-paragraphs of desired length in a _preproc.json file.
 	It will try to preserve consistency by avoiding to merge different parts of the book and to cut sentences in the middle.
@@ -73,7 +64,8 @@ def separate_in_paragraphs(parser: ParagraphParser, d_id:str = None, skip_begin=
 		print("Title:\t", novel_data['title'])
 		print("Author:\t", novel_data['author'])
 		print("Theme:\t", novel_data['theme'])
-	paragraphs = parser(full_text, novel_data['persons'], novel_data['organisations'], novel_data['locations'], novel_data['misc'], verbose)
+	paragraphs = parser(full_text, novel_data['persons'], novel_data['organisations'], novel_data['locations'],
+						novel_data['misc'], verbose)
 
 	len_par = len(paragraphs)
 	if skip_begin > 0:

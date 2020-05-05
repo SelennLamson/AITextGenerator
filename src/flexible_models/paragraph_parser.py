@@ -1,14 +1,14 @@
 from typing import List, Any, Dict
 import re
-import random
 from collections import OrderedDict
 import matplotlib.pyplot as plt
 
 from .flexible_model import FlexibleModel
 from src.utils import *
 
+
 class ParagraphParser(FlexibleModel):
-	def __init__(self, min_threshold=20, min_length=600, max_length=900):
+	def __init__(self, min_threshold=20):
 		"""
 		Initializes a paragraph parser.
 		:param min_threshold: minimum length (in chars) a paragraph should be to be taken into account.
@@ -18,8 +18,6 @@ class ParagraphParser(FlexibleModel):
 		"""
 		super().__init__()
 		self.min_threshold = min_threshold
-		# self.min_length = min_length
-		# self.max_length = max_length
 
 		self.size_index = 0
 		self.prev_size_index = 0
@@ -44,7 +42,8 @@ class ParagraphParser(FlexibleModel):
 	def max_length(self):
 		return SIZES[self.size_index].sup_chars
 
-	def predict(self, full_text:str, ents_p: Dict[str, str], ents_o: Dict[str, str], ents_l: Dict[str, str], ents_m: Dict[str, str], verbose:int = 0) -> List[Dict[str, Any]]:
+	def predict(self, full_text: str, ents_p: Dict[str, str], ents_o: Dict[str, str], ents_l: Dict[str, str],
+				ents_m: Dict[str, str], verbose: int = 0) -> List[Dict[str, Any]]:
 		"""
 		Splits a text into paragraphs.
 		:param full_text: string to summarize.
@@ -62,10 +61,14 @@ class ParagraphParser(FlexibleModel):
 		all_m = set(ents_m.values()).difference({'M', 'Mr', 'Ms', 'The', 'Dr'})
 
 		classes = dict()
-		classes['persons'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_p.items()], key=lambda x: x[0])})
-		classes['organisations'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_o.items()], key=lambda x: x[0])})
-		classes['locations'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_l.items()], key=lambda x: x[0])})
-		classes['misc'] = OrderedDict({key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_m.items()], key=lambda x: x[0])})
+		classes['persons'] = OrderedDict(
+			{key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_p.items()], key=lambda x: x[0])})
+		classes['organisations'] = OrderedDict(
+			{key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_o.items()], key=lambda x: x[0])})
+		classes['locations'] = OrderedDict(
+			{key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_l.items()], key=lambda x: x[0])})
+		classes['misc'] = OrderedDict(
+			{key: elt for key, elt in sorted([(int(key), elt) for key, elt in ents_m.items()], key=lambda x: x[0])})
 
 		paragraphs = []
 
@@ -224,4 +227,3 @@ class ParagraphParser(FlexibleModel):
 				plt.show()
 
 		return paragraphs
-

@@ -4,11 +4,13 @@ from src.model_evaluation.metrics.flexible_metrics import Metrics
 import numpy as np
 import pandas as pd
 
+
 class BertSimilarity(Metrics):
 	"""
 	Compute the Bert Similarity between pred_P2 and true_P2
 		ie : cosine similarity between the embeddings of the two paragraphs
 	"""
+
 	def __init__(self, **kwargs):
 		"""
 		Initialized the BERT model
@@ -19,8 +21,8 @@ class BertSimilarity(Metrics):
 
 	def __call__(self, predicted_sentences, original_contexts):
 		"""
-        :param predicted_sentences: list[str] batch of sentences corresponding to the generated P2
-        :param original_contexts: list[TrainInput] corresponding to original training examples
+		:param predicted_sentences: list[str] batch of sentences corresponding to the generated P2
+		:param original_contexts: list[TrainInput] corresponding to original training examples
 		:return: pd.DataFrame['similarity']
 		"""
 		# Change notation to match with Thomas old codes

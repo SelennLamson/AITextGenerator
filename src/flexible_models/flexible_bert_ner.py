@@ -5,7 +5,7 @@ from src.utils import *
 
 
 class FlexibleBERTNER(FlexibleModel):
-	def __init__(self, bert_path: str, batch_size:int, max_length: int = 128):
+	def __init__(self, bert_path: str, batch_size: int, max_length: int = 128):
 		"""
 		Initializes a BERT-NER model.
 		:param bert_path: Path to BERT-NER weights
@@ -47,7 +47,6 @@ class FlexibleBERTNER(FlexibleModel):
 
 			input_tokens = [[s[0] for s in st] for st in split_tokens[start_i:start_i + self.batch_size]]
 			input_valid_positions = [[s[1] for s in st] for st in split_tokens[start_i:start_i + self.batch_size]]
-
 
 			# inputs = [s + '.' for s in split_strings[start_i:start_i + self.batch_size]]
 			outputs += self.bert_model.predict_batch(input_tokens, input_valid_positions)
@@ -103,9 +102,9 @@ class FlexibleBERTNER(FlexibleModel):
 					ent_len = len(current_entity)
 					ent_index = input_text.find(current_entity, cursor, cursor + 5000)
 
-
 					if ent_index != -1:
-						min_cursor = min(min_cursor, ent_index + ent_len) if min_cursor is not None else ent_index + ent_len
+						min_cursor = min(min_cursor,
+										 ent_index + ent_len) if min_cursor is not None else ent_index + ent_len
 						all_entities.append((ent_index, current_entity, current_tag))
 
 					# After registering, we reset the entity to None

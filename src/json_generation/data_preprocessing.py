@@ -1,21 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Dec 17 10:04:40 2020
-
-@author: alexandreduval
-"""
-
-# Import libraries 
+# Import libraries
 from src.utils import *
 import json
 import os
 from tqdm import tqdm
-from gutenberg.acquire import load_etext 
-from gutenberg.cleanup import strip_headers 
-from gutenberg.query import get_etexts, list_supported_metadatas, get_metadata
 from sortedcontainers import SortedDict
 import zlib  # error message
+
+from gutenberg.acquire import load_etext
+from gutenberg.cleanup import strip_headers
 from gutenberg._domain_model.exceptions import UnknownDownloadUriException  # error message
 
 
@@ -31,24 +23,25 @@ class DataPrepro:
 		self.stats = dict()
 		# Define literature genres - assign them keywords to be able to spot the genre from the theme of the book
 		self.genres = SortedDict({
-				'fiction': ['fiction', 'fictions'],
-				'adventure':['action', 'adventure', 'adventures'],
-				'biography/history': ['biography', 'autobiography','history', 'historical', 'historical-fiction'],
-				'children': ['child', 'tale', 'tales','children', 'baby', 'fairy',
-				             'teenager', 'teen', 'teenage', 'young', 'juvenile'],
-				'fantasy':['fantasy', 'fantastic'],
-				'romance':['romance', 'love'],
-				'science-fiction': ['sci-fy', 'science-fiction', 'scify', 'science'],
-				'thriller':['suspense', 'thriller', 'thrillers', 'horror', 'paranormal', 'ghost', 'mystery', 'mysteries',
-				            'detective', 'crime', 'crimes', 'detectives', 'murder', 'police']
+			'fiction': ['fiction', 'fictions'],
+			'adventure': ['action', 'adventure', 'adventures'],
+			'biography/history': ['biography', 'autobiography', 'history', 'historical', 'historical-fiction'],
+			'children': ['child', 'tale', 'tales', 'children', 'baby', 'fairy',
+						 'teenager', 'teen', 'teenage', 'young', 'juvenile'],
+			'fantasy': ['fantasy', 'fantastic'],
+			'romance': ['romance', 'love'],
+			'science-fiction': ['sci-fy', 'science-fiction', 'scify', 'science'],
+			'thriller': ['suspense', 'thriller', 'thrillers', 'horror', 'paranormal', 'ghost', 'mystery', 'mysteries',
+						 'detective', 'crime', 'crimes', 'detectives', 'murder', 'police']
 		})
-		# Import json dataset 
+		# Import json dataset
 		try:
 			self.data = json.load(open(METADATA_ROOT + self.old_filename, 'r'))
 		except UnicodeDecodeError:
 			self.data = json.load(open(METADATA_ROOT + self.old_filename, 'r', encoding='utf-8'))
 
-	def find_real_genre(self, l, genres, new_el):
+	@staticmethod
+	def find_real_genre(l, genres, new_el):
 		"""
 		:param l: list of sentences indicating the theme of the book, gathered form gutenberg
 		:param genres: dictionnary with keys: genres, keys: keywords to detect genre
@@ -61,7 +54,7 @@ class DataPrepro:
 		# If keywords in 'theme' correspond to a genre, store it
 		genre = []
 		for el in flat_list:
-			for i,sublist in enumerate(list(genres.values())):
+			for i, sublist in enumerate(list(genres.values())):
 				if el in sublist:
 					genre.append(genres.keys()[i])
 					genre = list(set(genre))
@@ -81,21 +74,29 @@ class DataPrepro:
 		# choose this way to avoid computationally expensive storage
 		# It will contain all information (text, id, author, title, genre, theme) and strips useless info at beginning
 		new_el = self.data[str(b_id)]
-		if 'en' in new_el['language']: # keep only english files
-			new_el['id'] = str(b_id) # keep its id
-			new_el = self.find_real_genre(new_el['theme'], genres, new_el) # find genre
-			self.data[str(b_id)]['genre'] = new_el['genre'] # add genre to original document
+		if 'en' in new_el['language']:  # keep only english files
+			new_el['id'] = str(b_id)  # keep its id
+			new_el = self.find_real_genre(new_el['theme'], genres, new_el)  # find genre
+			self.data[str(b_id)]['genre'] = new_el['genre']  # add genre to original document
 			try:
 				new_el['text'] = strip_headers(load_etext(b_id)).strip()
-				if len(new_el['genre']) != 0: # do not include these files (not relevant for our study)
+				if len(new_el['genre']) != 0:  # do not include these files (not relevant for our study)
 					# Save it as a new json file if it is a novel
 					new_filename = str(b_id)
-					json.dump(new_el, open(METADATA_PATH + new_filename + METADATA_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-			except (zlib.error, UnknownDownloadUriException): # deal with errors when importing text or removing headers
+					json.dump(new_el, open(METADATA_PATH + new_filename + METADATA_SUFFIX, 'w', encoding='utf-8'),
+							  ensure_ascii=False, indent=1)
+			except (
+					zlib.error,
+					UnknownDownloadUriException):  # deal with errors when importing text or removing headers
 				# print('exception')
 				pass
 
-	def leave_one_genre(self, folder_data='data/preproc/'):
+	@staticmethod
+	def leave_one_genre(folder_data=METADATA_PATH):
+		"""
+		Attribute a genre to each book from unstructured theme metadata.
+		:param folder_data: path where the data is stored
+		"""
 		books = os.listdir(folder_data)
 
 		for book in tqdm(books):
@@ -106,12 +107,12 @@ class DataPrepro:
 				pass
 
 			# Change names
-			mapping_names = {'biography':'biography/history',
-			                 'history':'biography/history',
-			                 'detective':'thriller',
-			                 'mystery':'thriller',
-			                 'horror':'thriller',
-			                 'teen':'children'}
+			mapping_names = {'biography': 'biography/history',
+							 'history': 'biography/history',
+							 'detective': 'thriller',
+							 'mystery': 'thriller',
+							 'horror': 'thriller',
+							 'teen': 'children'}
 			for i, genre in enumerate(data['genre']):
 				if genre in list(mapping_names.keys()):
 					data['genre'][i] = mapping_names[genre]
@@ -120,7 +121,8 @@ class DataPrepro:
 
 			# Preprocess genre again to leave only one
 			if len(data['genre']) > 1:
-				for genre in ['fiction', 'children', 'adventure', 'biography/history', 'romance', 'thriller', 'science-fiction']:
+				for genre in ['fiction', 'children', 'adventure', 'biography/history', 'romance', 'thriller',
+							  'science-fiction']:
 					if genre in data['genre'] and len(data['genre']) != 1: data['genre'].remove(genre)
 			if len(data['genre']) == 0:
 				data['genre'] = ['fiction']
@@ -131,11 +133,11 @@ class DataPrepro:
 				if 'science' in flat_list:
 					data['genre'] = ['science-fiction']
 
+			# Save file
 			json.dump(data, open(folder_data + book, 'w', encoding='utf-8'),
-			          ensure_ascii=False, indent=1)
+					  ensure_ascii=False, indent=1)
 
-
-	def stats_genre(self, folder_data ='data/preproc/'):
+	def stats_genre(self, folder_data=METADATA_PATH):
 		"""
 		:param folder_data: folder where data is placed
 		:return: dictionary giving information on genre repartition

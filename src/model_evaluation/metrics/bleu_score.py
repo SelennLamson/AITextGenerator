@@ -3,6 +3,7 @@ from src.model_evaluation.metrics.flexible_metrics import Metrics
 import pandas as pd
 import numpy as np
 
+
 class BleuScore(Metrics):
 	"""
 	Compute BleuScore between generated P2 and pred P2
@@ -18,7 +19,7 @@ class BleuScore(Metrics):
 		:param original_contexts: original P2
 		:return: bleu score for each pair of pred, orig sentence
 		"""
-		df_results = pd.DataFrame(columns=["bleu_score"], data=np.zeros((len(predicted_sentences),1)))
+		df_results = pd.DataFrame(columns=["bleu_score"], data=np.zeros((len(predicted_sentences), 1)))
 
 		for i, (predicted_sentence, original_context) in enumerate(zip(predicted_sentences, original_contexts)):
 			try:

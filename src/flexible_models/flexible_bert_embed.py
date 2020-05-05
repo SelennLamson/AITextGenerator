@@ -1,4 +1,3 @@
-from typing import List
 import numpy as np
 import transformers as ppb
 import torch
@@ -6,8 +5,9 @@ from src.utils import *
 
 from .flexible_model import FlexibleModel
 
+
 class FlexibleBERTEmbed(FlexibleModel):
-	def __init__(self, max_length:int, batch_size:int, cuda_device:int = -2):
+	def __init__(self, max_length: int, batch_size: int, cuda_device: int = -2):
 		"""
 		Initializes a BERT embedding model (using [CLS] token).
 		:param max_length: The maximum length (in char) the model can handle
@@ -56,7 +56,9 @@ class FlexibleBERTEmbed(FlexibleModel):
 		assert len(split_inputs) >= len(tokenized_strings)
 
 		# Adding special tokens to every input and padding every input to max_length
-		padded = torch.LongTensor([[self.cls_token] + toks + [self.sep_token] + [self.pad_token] * (self.max_length - len(toks) - 2) for toks in split_inputs])
+		padded = torch.LongTensor(
+			[[self.cls_token] + toks + [self.sep_token] + [self.pad_token] * (self.max_length - len(toks) - 2) for toks
+			 in split_inputs])
 		assert padded.shape[1] == self.max_length
 
 		# Building attention mask to hide padding
@@ -92,7 +94,8 @@ class FlexibleBERTEmbed(FlexibleModel):
 
 			# The embeddings of the [CLS] tokens are the embeddings of the first token of each sentence
 			with torch.no_grad():
-				embeddings[start_i:start_i + self.batch_size, :] = self.bert_model.forward(input_ids, attention_mask=attention_mask)[0][:, 0, :]
+				embeddings[start_i:start_i + self.batch_size, :] = \
+					self.bert_model.forward(input_ids, attention_mask=attention_mask)[0][:, 0, :]
 
 			# Next batch
 			start_i += self.batch_size
@@ -105,5 +108,3 @@ class FlexibleBERTEmbed(FlexibleModel):
 
 		# Merging the values back when input was split before, using mean as a reduce operation
 		return np.array(batch_merger(embeddings, split_information, merge_function=lambda x: np.mean(x, axis=0)))
-
-
