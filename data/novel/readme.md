@@ -1,4 +1,4 @@
-Contains each book's full text and metadata. 
+Contains each book's full text, metadata and entities.
 Obtained from 'metadata/files/' by additionally detecting entities and storing their position in the text.
 
 

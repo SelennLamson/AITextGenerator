@@ -1,5 +1,5 @@
 Final data format, ready to be used. 
-Builds on 'data/novel/'. It was additionally split into paragraphs,
+Builds on 'data/novel/' and 'data/summaries/'. After NER, the text was split into paragraphs,
 each of which was then summarized using four different summarizers.  
 
 **Format:** JSON
