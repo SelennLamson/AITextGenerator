@@ -4,6 +4,10 @@ from src.json_generation.ent_sum_preprocessing import *
 from src.utils import *
 from src.flexible_models.flexible_sum import FlexibleSum, SummarizerModel
 
+"""
+Data pre-processing Pipeline
+"""
+
 # Populate the cash metadata first - CAREFUL: LONG OPERATION
 # cache = get_metadata_cache()
 # cache.populate()
@@ -31,19 +35,3 @@ for summarizer_model, OUTPUT_DATA_FOLDER in zip(summarizers_models, OUTPUT_DATA_
 
 # Merge selected summaries in the preproc data folder
 merge_summaries(PREPROC_PATH, summaries)
-
-
-"""
-# Split into paragraphs
-paragraph_preprocessing.separate_paragraphs_all_files(overwrite=False)
-parser = paragraph_preprocessing.ParagraphParser(min_threshold=20, min_length=600, max_length=900)
-paragraph_preprocessing.separate_in_paragraphs(parser, d_id='1342')
-
-# Create ent_sum template
-ent_sum_preprocessing.prepare_json_templates(True)
-
-# Perform NER
-model = FlexibleBERTNER(BERT_NER_LARGE, batch_size=128, max_length=2000)
-ent_sum_preprocessing.perform_ner_on_file(model)
-ent_sum_preprocessing.perform_ner_on_file(model, d_id= '1342')
-"""

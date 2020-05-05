@@ -16,6 +16,9 @@ from gensim.summarization import keywords
 
 
 class SummarizerModel(Enum):
+    """
+    Defines the summarizers that we consider using.
+    """
     T5 = 0
     BART = 1
     BERT_SUM = 2

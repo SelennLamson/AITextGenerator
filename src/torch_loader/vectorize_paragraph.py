@@ -5,6 +5,9 @@ from src.torch_loader.vectorize_input import TrainInput, GenerationInput
 
 
 class VectorizeMode(Enum):
+    """
+    Defines the 3 possible modes of our model: Training, Evaluation, Generation
+    """
     TRAIN = 0
     EVAL = 1
     GENERATE = 2

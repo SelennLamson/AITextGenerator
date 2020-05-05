@@ -3,6 +3,10 @@ from src.json_generation.paragraph_preprocessing import separate_paragraphs_all_
 from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
 from src.utils import *
 
+"""
+NER and split text into paragraphs 
+"""
+
 
 def prepare_data(files: List[str] = None, do_ner=True, do_split=True, verbose=0):
     """

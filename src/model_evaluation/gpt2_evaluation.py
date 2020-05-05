@@ -7,6 +7,10 @@ from src.torch_loader import DatasetFromRepo, VectorizeParagraph, VectorizeMode,
 from src.flexible_models.flexible_GPT2 import FlexibleGPT2
 from src.model_evaluation import metrics
 
+"""
+Evaluates model 
+"""
+
 
 class GPT2EvaluationScript:
     def __init__(self,
@@ -17,7 +21,7 @@ class GPT2EvaluationScript:
                  path_to_bert_ner=BERT_NER_LARGE,
                  summarizer=''):
         """
-        Initializes a GPT-2 Benchmark script that will perform text generation on the paragraphs of given files.
+        Initializes a script that will perform text generation on the paragraphs of given files.
         Call the script using parentheses to launch it.
         :param file_ids: list of book ids from data_folder that will be evaluated
             (optionnal, if None will compute on every novel in the data_folder)

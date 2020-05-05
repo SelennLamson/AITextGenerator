@@ -16,12 +16,15 @@ METADATA_PATH = 'data/metadata/files/'
 METADATA_SUFFIX = '.json'
 METADATA_ROOT = 'data/metadata/'
 
+# Categories for NER
 ENTITY_CLASSES = ("persons", "organisations", "locations", "misc")
 ENTITY_TAGS = ("PER", "ORG", "LOC", "MISC")
 
+# NER model
 BERT_NER_LARGE = 'models/entity_recognition/BERT_NER_Large/'
 BERT_NER_BASE = 'models/entity_recognition/BERT_NER_Base/'
 
+# Folder structure for summaries
 FOLDER_NAME_KW = 'data/summaries/Preproc_KW/'
 PREFIX_KW = 'KW_'
 FOLDER_NAME_T5 = 'data/summaries/Preproc_T5/'
@@ -36,6 +39,7 @@ OUTPUT_DATA_FOLDERS = [FOLDER_NAME_PYSUM, FOLDER_NAME_KW, FOLDER_NAME_BART, FOLD
 
 GPT2_BLOCK_SIZE = 1020
 
+# Model Parameters
 DEFAULT_DECODING_STRATEGY = {
 	'do_sample': True,
 	'min_length': 0,
@@ -43,25 +47,28 @@ DEFAULT_DECODING_STRATEGY = {
 	'top_p': 0.9
 }
 BART_DECODING_STRAT = \
-	{'temperature':1.25,
-	 'top_p':0.9,
-	 'min_length':25,
-	 'max_length':65,
-	 'repetition_penalty':3}
+	{'temperature': 1.25,
+	 'top_p': 0.9,
+	 'min_length': 25,
+	 'max_length': 65,
+	 'repetition_penalty': 3}
 
 T5_DECODING_STRAT = \
-	{'top_p':0.85,
-	 'min_length':10,
-	 'max_length':30,
-	 'repetition_penalty':4}
+	{'top_p': 0.85,
+	 'min_length': 10,
+	 'max_length': 30,
+	 'repetition_penalty': 4}
 
+# Evaluation
 ALL_METRICS = ['BertSimilarity', 'EntitiesCount', 'GPT2Perplexity', 'KwCount', 'BleuScore', 'RougeScore']
 
+# Size paragraphs
 SizeInfo = namedtuple('Size', 'inf_chars sup_chars mean_tokens token')
 SMALL = SizeInfo(inf_chars=1, sup_chars=700, mean_tokens=100, token='[S]')
 MEDIUM = SizeInfo(inf_chars=701, sup_chars=1200, mean_tokens=250, token='[M]')
 LARGE = SizeInfo(inf_chars=1201, sup_chars=1700, mean_tokens=350, token='[L]')
 SIZES = [SMALL, MEDIUM, LARGE]
+
 
 def get_size_from_chars(length_in_chars):
 	size = SMALL
@@ -224,8 +231,7 @@ def summary_selector(summary_models=None):
 	return lambda summaries_dict: summaries_dict[summary_model]
 
 
-
-def merge_summaries(path, summaries=['KW', 'PYSUM', 'T5', 'BART']):
+def merge_summaries(path, summaries):
 	"""
 	Add summaries for each paragraph of every book.
 	We merge the 4 distinct summaries obtained from the summarizers (T5, BART, PYSUM, KW) in our preproc data files
@@ -268,6 +274,7 @@ def merge_summaries(path, summaries=['KW', 'PYSUM', 'T5', 'BART']):
 			# Save modifications to preproc json files
 			json.dump(data, open(PREPROC_PATH + d_id + PREPROC_SUFFIX, 'w', encoding='utf-8'), ensure_ascii=False,
 					  indent=1)
+
 
 def pad_left_side(sequences, padding_value):
 	"""

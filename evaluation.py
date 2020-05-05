@@ -8,7 +8,6 @@ from src.flexible_models.GPT2_lm_segment_model import GPT2LMSegmentModel
 import nltk
 import os
 import logging
-
 from src.model_training.update_model import add_special_tokens
 
 logger = logging.getLogger()
