@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import List, Any, Dict
 import re
 from collections import OrderedDict
 import matplotlib.pyplot as plt
@@ -8,7 +8,7 @@ from src.utils import *
 
 
 class ParagraphParser(FlexibleModel):
-    def __init__(self, min_threshold=20, min_length=600, max_length=900):
+    def __init__(self, min_threshold=20):
         """
         Initializes a paragraph parser.
         :param min_threshold: minimum length (in chars) a paragraph should be to be taken into account.
@@ -18,8 +18,6 @@ class ParagraphParser(FlexibleModel):
         """
         super().__init__()
         self.min_threshold = min_threshold
-        # self.min_length = min_length
-        # self.max_length = max_length
 
         self.size_index = 0
         self.prev_size_index = 0
@@ -82,15 +80,16 @@ class ParagraphParser(FlexibleModel):
         def add_paragraph(content):
             c = content.strip()
 
-            p_data = {
-                         'size': len(c),
-                         'text': c,
-                         'summaries': list()
-                     } + {ent_class: [] for ent_class in ENTITY_CLASSES}
+			p_data = {
+				'size': len(c),
+				'text': c,
+				'summaries': list()
+			}
 
-            search_content = content.replace(',', ' ').replace('"', '').replace("'", '').replace(';', '').replace('_',
-                                                                                                                  '').replace(
-                '”', '').replace('“', '')
+			for ent_class in ENTITY_CLASSES:
+				p_data[ent_class] = []
+
+			search_content = content.replace(',', ' ').replace('"', '').replace("'", '').replace(';', '').replace('_', '').replace('”', '').replace('“', '')
 
             p_data['persons'] = [p for p in all_p if p in search_content]
             p_data['organisations'] = [o for o in all_o if o in search_content]

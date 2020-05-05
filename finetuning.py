@@ -1,7 +1,3 @@
-"""
-This script is an adaption of huggingface example run language model script.
-"""
-
 # coding=utf-8
 # Copyright 2018 The Google AI Language Team Authors and The HuggingFace Inc. team.
 # Copyright (c) 2018, NVIDIA CORPORATION.  All rights reserved.
@@ -17,6 +13,10 @@ This script is an adaption of huggingface example run language model script.
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+"""
+This script is an adaption of huggingface example run language model script.
+"""
 
 import argparse
 import glob
@@ -335,14 +335,7 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
                 steps_trained_in_current_epoch -= 1
                 continue
 
-            # inputs, labels = mask_tokens(batch, tokenizer, args) if args.mlm else (batch, batch)
-
             input_ids, type_ids, labels = batch
-
-            # np.save("input_ids.npy", input_ids.numpy())
-            # np.save("type_ids.npy", type_ids.numpy())
-            # np.save("labels.npy", labels.numpy())
-
 
             if args.print_input:
                 logger.info("Examples contained in the batch that will be given as input in the model")
@@ -446,10 +439,11 @@ def evaluate(args, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, prefi
     def collate(examples: List[Tuple[torch.Tensor]]):
         all_inputs = [elt[0] for elt in examples]
         all_types = [elt[1] for elt in examples]
+        all_labels = [elt[2] for elt in examples]
 
         padded_inputs = pad_sequence(all_inputs, batch_first=True, padding_value=tokenizer.pad_token_id)
         padded_types = pad_sequence(all_types, batch_first=True, padding_value=tokenizer.pad_token_id)
-        padded_labels = pad_sequence(all_labels, batch_first=True, padding_value=tokenizer.pad_token_type_id)
+        padded_labels = pad_sequence(all_labels, batch_first=True, padding_value=-100)
 
         return padded_inputs, padded_types, padded_labels
 

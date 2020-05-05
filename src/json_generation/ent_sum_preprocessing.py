@@ -1,17 +1,17 @@
+"""
+Script to apply NER and summarization on the pre-proccessed paragraph
+"""
+
 import time
 from tqdm import tqdm
 import os
 import json
 import re
+from typing import List, Dict, Tuple
 
 from src.utils import *
 from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
 from src.flexible_models.flexible_sum import FlexibleSum, SummarizerModel
-
-
-"""
-Script to apply NER and summarization on the pre-proccessed paragraph 
-"""
 
 
 def perform_global_ner_on_all(model: FlexibleBERTNER, files: List[str] = None, verbose: int = 1):
@@ -64,14 +64,16 @@ def perform_global_ner_on_file(model: FlexibleBERTNER, d_id: str = None, verbose
         if verbose >= 1:
             print("\rNER outputs - {:.2f}%".format(pi / len(output) * 100), end="")
 
-        if tag == "PER":
-            persons[index] = entity
-        elif tag == "LOC":
-            locations[index] = entity
-        elif tag == "ORG":
-            organisations[index] = entity
-        elif tag == "MISC":
-            misc[index] = entity
+		e = entity.strip()
+		if len(e) > 2 and e not in ['The', 'the']:
+			if tag == "PER":
+				persons[index] = e
+			elif tag == "LOC":
+				locations[index] = e
+			elif tag == "ORG":
+				organisations[index] = e
+			elif tag == "MISC":
+				misc[index] = e
 
     novel_data['persons'] = persons
     novel_data['locations'] = locations

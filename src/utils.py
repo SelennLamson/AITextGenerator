@@ -132,7 +132,7 @@ def token_batch_splitter(inputs: List, max_length: int) -> Tuple[List[int], List
 	new_inputs = []
 	split_information = []
 
-	check_cut_validity = (isinstance(inputs[0], tuple) or isinstance(inputs[0], list)) and len(inputs[0]) == 2
+	check_cut_validity = (isinstance(inputs[0][0], tuple) or isinstance(inputs[0][0], list)) and len(inputs[0][0]) == 2
 
 	for i, full_input in enumerate(inputs):
 		if len(full_input) <= max_length:
