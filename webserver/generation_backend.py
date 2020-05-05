@@ -22,6 +22,7 @@ from transformers import GPT2Tokenizer
 
 CONFIG = json.load(open('../config.json', 'r'))
 Handler = http.server.SimpleHTTPRequestHandler
+WEBSERVICE_DATA = CONFIG['webservice-data-path']
 
 
 class Generator:
@@ -117,6 +118,14 @@ class GenerationBackendHTTPServer(Handler):
 					if not GENERATOR.ready:
 						GENERATOR.setup()
 					generated = GENERATOR.generate_text(p1, sp2, p3, persons, locations, organisations, misc, genre, size)
+
+					params['generated'] = generated
+					if os.path.exists(WEBSERVICE_DATA + 'record.json'):
+						saved = json.load(open(WEBSERVICE_DATA + 'record.json', 'r', encoding='utf-8'))
+					else:
+						saved = []
+					saved.append(params)
+					json.dump(saved, open(WEBSERVICE_DATA + 'record.json', 'w', encoding='utf-8'))
 
 					response.write(bytes('||'.join(generated), 'utf-8'))
 
