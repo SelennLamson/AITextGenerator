@@ -10,7 +10,7 @@ Created on Feb 15 2020
 import json
 import os
 from src.utils import *
-from src.flexible_models import *
+from src.flexible_models.paragraph_parser import ParagraphParser
 
 
 def separate_paragraphs_all_files(overwrite:bool, files: List[str] = None, min_threshold:int = 20, min_length:int = 600, max_length:int = 900, skip_begin=0.0, skip_end=0.0, verbose:int = 1):

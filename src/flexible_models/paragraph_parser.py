@@ -81,7 +81,10 @@ class ParagraphParser(FlexibleModel):
 				'size': len(c),
 				'text': c,
 				'summaries': list()
-			} + {ent_class: [] for ent_class in ENTITY_CLASSES}
+			}
+
+			for ent_class in ENTITY_CLASSES:
+				p_data[ent_class] = []
 
 			search_content = content.replace(',', ' ').replace('"', '').replace("'", '').replace(';', '').replace('_', '').replace('”', '').replace('“', '')
 
