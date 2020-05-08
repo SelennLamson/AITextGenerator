@@ -62,10 +62,11 @@ if __name__ == '__main__':
 	if not os.path.exists(generation_path):
 		print("Load GPT2 model in memory ...")
 
-		if args.no_context:
+		if args.no_context or args.model == 'gpt2':
 			model = GPT2LMHeadModel.from_pretrained(args.model)
 		else:
 			model = GPT2LMSegmentModel.from_pretrained(args.model)
+
 		tokenizer = GPT2Tokenizer.from_pretrained(args.model)
 		# add_special_tokens(model, tokenizer)
 
