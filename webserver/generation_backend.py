@@ -148,5 +148,3 @@ def launch_generation_backend():
 		print("serving at port", CONFIG['generation-port'])
 		httpd.serve_forever()
 
-
-

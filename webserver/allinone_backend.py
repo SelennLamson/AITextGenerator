@@ -12,13 +12,19 @@ from io import BytesIO
 from typing import List, Dict, Tuple
 
 from src.utils import *
+from webserver.generation_backend import Generator
+from webserver.ner_backend import Extractor
 
 CONFIG = json.load(open('../config.json', 'r'))
 Handler = http.server.SimpleHTTPRequestHandler
 WEBSERVICE_FEEDBACK = CONFIG['webservice-data-path']
 WEBSERVICE_SHARED = WEBSERVICE_FEEDBACK + 'shared.json'
 
-class MasterBackendHTTPServer(Handler):
+GENERATOR = Generator()
+EXTRACTOR = Extractor()
+
+
+class AllInOneBackendHTTPServer(Handler):
 	def do_OPTIONS(self):
 		self.send_response(200, "ok")
 		self.send_header('Access-Control-Allow-Origin', '*')
@@ -54,7 +60,7 @@ class MasterBackendHTTPServer(Handler):
 				order = params["order"]
 
 				if order == 'ipconfig':
-					rep = random.choice(CONFIG['generation-ips']) + ':' + CONFIG['generation-port'] + '|' + CONFIG['ner-ip'] + ':' + CONFIG['ner-port']
+					rep = CONFIG['master-ip'] + ':' + CONFIG['master-port'] + '|' + CONFIG['master-ip'] + ':' + CONFIG['master-port']
 					response.write(bytes(rep, 'utf-8'))
 
 				elif order == 'feedback':
@@ -100,6 +106,44 @@ class MasterBackendHTTPServer(Handler):
 
 					response.write(bytes('||'.join(messages[:100]), 'utf-8'))
 
+				elif order == 'generate':
+					p1 = params["p1"]
+					sp2 = params["sp2"]
+					p3 = params["p3"]
+					persons = params["persons"]
+					locations = params["locations"]
+					organisations = params["organisations"]
+					misc = params["misc"]
+					genre = params["genre"]
+					size_tok = params["size"]
+
+					size = SMALL
+					for s in SIZES:
+						if s.token == size_tok:
+							size = s
+
+					if not GENERATOR.ready:
+						GENERATOR.setup()
+					generated = GENERATOR.generate_text(p1, sp2, p3, persons, locations, organisations, misc, genre, size)
+
+					params['generated'] = generated
+					if os.path.exists(WEBSERVICE_FEEDBACK + 'record.json'):
+						saved = json.load(open(WEBSERVICE_FEEDBACK + 'record.json', 'r', encoding='utf-8'))
+					else:
+						saved = []
+					saved.append(params)
+					json.dump(saved, open(WEBSERVICE_FEEDBACK + 'record.json', 'w', encoding='utf-8'))
+
+					response.write(bytes('||'.join(generated), 'utf-8'))
+
+				elif order == 'extract_entities':
+					if not EXTRACTOR.ready:
+						EXTRACTOR.setup()
+					ent_dict = EXTRACTOR.perform_ner(params['body'])
+					entities = set([v[0] + ':' + k.strip() for k, v in ent_dict.items()])
+
+					response.write(bytes('</p><p>'.join(entities), 'utf-8'))
+
 				else:
 					response.write(bytes('ERROR', 'utf-8'))
 
@@ -114,8 +158,8 @@ class MasterBackendHTTPServer(Handler):
 		self.wfile.write(response.getvalue())
 
 
-def launch_master_backend():
-	with socketserver.TCPServer(("0.0.0.0", int(CONFIG['master-port'])), MasterBackendHTTPServer) as httpd:
+def launch_all_in_one_backend():
+	with socketserver.TCPServer(("0.0.0.0", int(CONFIG['master-port'])), AllInOneBackendHTTPServer) as httpd:
 		print("serving at port", CONFIG['master-port'])
 		httpd.serve_forever()
 
