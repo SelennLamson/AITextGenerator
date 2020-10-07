@@ -17,6 +17,7 @@ from src.flexible_models.flexible_GPT2 import FlexibleGPT2
 from src.torch_loader.vectorize_input import GenerationInput
 from src.torch_loader import VectorizeParagraph, VectorizeMode
 from src.flexible_models.GPT2_lm_segment_model import GPT2LMSegmentModel
+from src.flexible_models.flexible_bert_ner import FlexibleBERTNER
 
 from webserver.webutils import *
 
@@ -100,11 +101,9 @@ def clean(txt):
 
 
 def handle_request(headers, file):
-
 	content_length = int(headers['Content-Length'])
 	if content_length > 20000:
 		return 'ERROR'
-
 
 	content = file.read(content_length).decode("utf-8").replace('</p>', '\\n')
 	try:
@@ -199,15 +198,14 @@ def handle_request(headers, file):
 		generated = GENERATOR.generate_text(p1, sp2, p3, persons, locations, organisations, misc, genre, size)
 
 		params['generated'] = generated
-		if os.path.exists(WEBSERVICE_DATA + 'record.json'):
-			saved = json.load(open(WEBSERVICE_DATA + 'record.json', 'r', encoding='utf-8'))
+		if os.path.exists(WEBSERVICE_RECORD):
+			saved = json.load(open(WEBSERVICE_RECORD, 'r', encoding='utf-8'))
 		else:
 			saved = []
 		saved.append(params)
-		json.dump(saved, open(WEBSERVICE_DATA + 'record.json', 'w', encoding='utf-8'))
+		json.dump(saved, open(WEBSERVICE_RECORD, 'w', encoding='utf-8'))
 
-		response.write(bytes('||'.join(generated), 'utf-8'))
-
+		return '||'.join(generated)
 
 	elif order == 'extract_entities':
 		if not EXTRACTOR.ready:
@@ -215,8 +213,7 @@ def handle_request(headers, file):
 		ent_dict = EXTRACTOR.perform_ner(params['body'])
 		entities = set([v[0] + ':' + k.strip() for k, v in ent_dict.items()])
 
-		response.write(bytes('</p><p>'.join(entities), 'utf-8'))
-
+		return '</p><p>'.join(entities)
 
 	else:
 		return 'ERROR'

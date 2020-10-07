@@ -3,9 +3,9 @@
   "master-port": "7777",
   "webservice-data-path": "../webservice_feedback/",
   "generation-ips": ["localhost"],
-  "generation-port": "7778",
+  "generation-port": "7777",
   "generation-model-path": "../../models/generation/epoch_10/",
   "ner-ip": "localhost",
-  "ner-port": "7779",
+  "ner-port": "7777",
   "ner-model-path": "../../models/entity_recognition/BERT_NER_Large/"
 }
