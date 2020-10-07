@@ -4,6 +4,8 @@
 import sys
 sys.path.insert(1, '../../')
 
-from webserver.master_backend import launch_master_backend
+from webserver.webutils import ORDERS, CONFIG, launch_backend
 
-launch_master_backend()
+ORDERS.remove('generate')
+ORDERS.remove('extract_entities')
+launch_backend(CONFIG['master-port'])

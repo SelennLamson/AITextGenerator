@@ -4,6 +4,5 @@
 import sys
 sys.path.insert(1, '../../')
 
-from webserver.allinone_backend import launch_all_in_one_backend
-
-launch_all_in_one_backend()
+from webserver.webutils import CONFIG, launch_backend
+launch_backend(CONFIG['master-port'])

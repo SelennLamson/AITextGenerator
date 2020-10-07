@@ -1,4 +1,4 @@
-webserver/config.json
+webserver/running_directory/config.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
