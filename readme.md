@@ -70,7 +70,7 @@ Refer to the data.py file to observe the framework we utilised to obtain this da
 
 It contains the NER model we used as is, and our trained version of GPT2-Small.
 
-1. Download the archive at: https://drive.google.com/open?id=1svTqyugLI36zaX6Fo6hr-Od4ATRxH2vf
+1. Download the archive at: https://drive.google.com/open?id=1svTqyugLI36zaX6Fo6hr-Od4ATRxH2vf (~1.6 Go)
 2. Extract it directly into the project's root folder.
 
 In order to make our experiments, we used the following script that can be found on project root 
