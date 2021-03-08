@@ -11,13 +11,13 @@ def separate_paragraphs_all_files(overwrite: bool, files: List[str] = None, min_
 	:param files: optional list of files to work on
 	:param min_threshold: minimum length (in chars) a paragraph should be to be taken into account.
 						  Lower than this threshold often means it's a title or a chapter separator.
-	:param min_length: minimum length of final sub-paragraphs. It will not be strictly respected though.
-	:param max_length: maximum length of final sub-paragraphs. Strictly respected.
+	:param min_length: minimum length of final sub-paragraphs. It will not be strictly respected though (not used anymore).
+	:param max_length: maximum length of final sub-paragraphs. Strictly respected (not used anymore).
 	:param skip_begin: percent of the paragraphs to skip at the beginning of the books, to avoid non-relevant content
 	:param skip_end: percent of the paragraphs to skip at the end of the books, to avoid non-relevant content
 	:param verbose: 0 for silent execution, 1 for statistics and 2 for statistics and histogram of paragraphs sizes.
 	"""
-	parser = ParagraphParser(min_threshold, min_length, max_length)
+	parser = ParagraphParser(min_threshold)
 
 	files = os.listdir(NOVEL_PATH) if files is None else [f + NOVEL_SUFFIX for f in files]
 	treated_files = os.listdir(PREPROC_PATH)
